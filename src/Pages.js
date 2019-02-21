@@ -5,6 +5,7 @@ import WalletPage from './pages/WalletPage'
 import SettingsPage from './pages/SettingsPage'
 import OnboardingPage from './pages/OnboardingPage'
 import CreateWalletPage from './pages/CreateWalletPage'
+import UnlockWalletPage from './pages/UnlockWalletPage'
 
 export class Pages extends React.Component {
     render() {
@@ -14,11 +15,9 @@ export class Pages extends React.Component {
                     <Redirect from='/onboarding' to='/onboarding/0' exact={true}/>
                     <Route path="/onboarding/:onboardingStep" component={OnboardingPage}/>
                 </Switch>
-                <Switch>
-                    <Redirect from='/create' to='/create/password' exact={true}/>
-                    <Route path="/create/:createWalletStep" component={CreateWalletPage}/>
-                </Switch>
-                <Route path="/unlock" component={CreateWalletPage}/>
+
+                <Route path="/create" component={CreateWalletPage}/>
+                <Route path="/unlock" component={UnlockWalletPage}/>
             </div>
         );
     }

@@ -5,8 +5,113 @@ import GradientButton from '../components/buttons/GradientButton'
 import Wallet from '../services/Wallet'
 import { downloadFile } from '../utils/Utils'
 
-//const uuidv4 = require('uuid/v4');
+class WalletCreationCompleteCard extends React.Component {
+    render() {
+        return (
+            <div className="WalletCreationCompleteCard">
+                <div className="WalletCreationCompleteCard__content">
+                    <div className="WalletCreationCompleteCard__header"/>
 
+                    <div className="WalletCreationCompleteCard__success">
+                        <img className="WalletCreationCompleteCard__icon" src={'/img/icons/wallet-success@2x.png'}/>
+
+                        <div className="WalletCreationCompleteCard__success-title">
+                            You're ready!
+                        </div>
+                        <div className="WalletCreationCompleteCard__success-body">
+                            You are now ready to use your new Theta wallet.
+                        </div>
+                    </div>
+
+                    <div className="WalletCreationCompleteCard__footer">
+                        <GradientButton title="Unlock Wallet"
+                                        href="/unlock"
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+class MnemonicCard extends React.Component {
+    render() {
+        return (
+            <div className="MnemonicCard">
+                <div className="MnemonicCard__content">
+                    <div className="MnemonicCard__header">
+                        <div className="MnemonicCard__title">
+                            Mnemonic Phrase
+                        </div>
+                        <div className="MnemonicWarningCard__subtitle">
+                            12 words which allow you to recover your wallet.
+                        </div>
+                    </div>
+
+                    <div className="MnemonicCard__body">
+                        <div className="MnemonicCard__instructions">
+                            Back up the text below on paper and keep it somewhere secret and safe. It will not be shown again.
+                        </div>
+
+                        <div className="MnemonicCard__phrase-container">
+                            <p>
+                                cat house phone trip design donkey coffee office hat charger heart rate
+                            </p>
+                        </div>
+
+                        <a className="MnemonicCard__view-private-key">View my Private Key</a>
+                    </div>
+
+                    <div className="MnemonicCard__footer">
+                        <GradientButton title="Continue"
+                                        onClick={this.props.onContinue}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+class MnemonicWarningCard extends React.Component {
+    render() {
+        return (
+            <div className="MnemonicWarningCard">
+                <div className="MnemonicWarningCard__content">
+                    <div className="MnemonicWarningCard__header">
+                        <div className="MnemonicWarningCard__title">
+                            Mnemonic Phrase
+                        </div>
+                        <div className="MnemonicWarningCard__subtitle">
+                            12 words which allow you to recover your wallet.
+                        </div>
+                    </div>
+
+                    <img className="MnemonicWarningCard__icon" src={'/img/icons/word-blocks@2x.png'}/>
+
+                    <div className="MnemonicWarningCard__warning">
+                        <div className="MnemonicWarningCard__warning-title">
+                            Warning!
+                        </div>
+                        <div className="MnemonicWarningCard__warning-body">
+                            We are about to show your nmemonic phrase. Please ensure no one can see your screen before you continue.
+                        </div>
+                    </div>
+
+
+
+                    <div className="MnemonicWarningCard__footer">
+                        <GradientButton title="Continue"
+                                        onClick={this.props.onContinue}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+//TODO rename to create keystore card
 class ChoosePasswordCard extends React.Component {
     constructor(){
         super();
@@ -36,6 +141,8 @@ class ChoosePasswordCard extends React.Component {
         downloadFile(data.wallet.address + '.keystore', JSON.stringify(data.keystore));
 
         this.setState({loading: false});
+
+        this.props.onContinue();
     }
 
     isValid(){
@@ -104,17 +211,70 @@ class ChoosePasswordCard extends React.Component {
     }
 }
 
+const CREATE_WALLET_STEP_CREATE_KEYSTORE = 0;
+const CREATE_WALLET_STEP_MNEMONIC_WARNING = 1;
+const CREATE_WALLET_STEP_MNEMONIC = 2;
+const CREATE_WALLET_STEP_COMPLETE = 3;
+
 class CreateWalletPage extends React.Component {
+    constructor(){
+        super();
+
+        this.state = {
+            currentStep: CREATE_WALLET_STEP_CREATE_KEYSTORE
+        }
+    }
+
+    continue(){
+        this.setState({ currentStep: this.state.currentStep + 1 });
+    }
+
     render() {
+        let card = null;
+        let footer = null;
+        let pageTitle = (this.state.currentStep === CREATE_WALLET_STEP_COMPLETE ? "" : "Create New Wallet");
+
+        if(this.state.currentStep === CREATE_WALLET_STEP_CREATE_KEYSTORE){
+            card = (
+                <ChoosePasswordCard onContinue={this.continue.bind(this)}/>
+            );
+        }
+        else if(this.state.currentStep === CREATE_WALLET_STEP_MNEMONIC_WARNING){
+            card = (
+                <MnemonicWarningCard onContinue={this.continue.bind(this)}/>
+            );
+        }
+        else if(this.state.currentStep === CREATE_WALLET_STEP_MNEMONIC){
+            card = (
+                <MnemonicCard onContinue={this.continue.bind(this)}/>
+            );
+        }
+        else if(this.state.currentStep === CREATE_WALLET_STEP_COMPLETE){
+            card = (
+                <WalletCreationCompleteCard onContinue={this.continue.bind(this)}/>
+            );
+        }
+
+
+        if(this.state.currentStep !== CREATE_WALLET_STEP_COMPLETE){
+            footer = (
+                <div className="CreateWalletPage__subtitle">
+                    <span>Already have a wallet?</span>
+                    <Link to="/unlock">Unlock Wallet</Link>
+                </div>
+            );
+        }
+
         return (
             <div className="CreateWalletPage">
                 <div className="CreateWalletPage__wrapper">
-                    <div className="CreateWalletPage__title">Create New Wallet</div>
-                    <ChoosePasswordCard></ChoosePasswordCard>
-                    <div className="CreateWalletPage__subtitle">
-                        <span>Already have a wallet?</span>
-                        <Link to="/unlock">Unlock Wallet</Link>
+                    <div className="CreateWalletPage__title">
+                        {pageTitle}
                     </div>
+
+                    {card}
+
+                    {footer}
                 </div>
             </div>
         );

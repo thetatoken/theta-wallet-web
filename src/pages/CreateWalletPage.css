@@ -19,6 +19,7 @@
     font-weight: 300;
     text-align: center;
     line-height: 33px;
+    min-height: 33px;
     color: white;
     margin-bottom: 20px;
 }
@@ -35,12 +36,20 @@
     margin-left: 6px;
 }
 
+
+
+
+
+
+
+
+
 .ChoosePasswordCard{
     display: flex;
     flex-direction: column;
     width: 100%;
     background-color: #242F4B;
-    min-height: 400px;
+    min-height: 420px;
 }
 
 .ChoosePasswordCard__content{
@@ -57,7 +66,7 @@
     align-items: center;
     justify-content: center;
     height: 80px;
-    border-bottom: 1px solid rgba(75, 81, 110, 0.5);
+    /*border-bottom: 1px solid rgba(75, 81, 110, 0.5);*/
     margin-bottom: 17px;
 }
 
@@ -108,10 +117,10 @@
 
 .ChoosePasswordCard__error{
     font-size: 15px;
-    font-weight: normal;
+    font-weight: 600;
     text-align: left;
     line-height: 24px;
-    color: #DD1212
+    color: #ff1d25
 }
 
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
@@ -146,4 +155,293 @@
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit (konqueror) browsers */
     -ms-user-select: none; /* IE10+ */
+}
+
+
+
+
+
+
+
+
+
+
+.MnemonicWarningCard{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #242F4B;
+    min-height: 420px;
+}
+
+.MnemonicWarningCard__content{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 17px;
+    padding-top: 0;
+}
+
+.MnemonicWarningCard__header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    /*border-bottom: 1px solid rgba(75, 81, 110, 0.5);*/
+    margin-bottom: 17px;
+}
+
+.MnemonicWarningCard__footer{
+    margin-top: auto;
+}
+
+.MnemonicWarningCard__title{
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 26px;
+    color: white;
+    text-transform: uppercase;
+}
+
+.MnemonicWarningCard__subtitle{
+    font-size: 15px;
+    font-weight: normal;
+    text-align: center;
+    line-height: 20px;
+    color: #92A2D6;
+}
+
+.MnemonicWarningCard__warning-title{
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 20px;
+    color: #ff1d25;
+    text-transform: uppercase;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+
+.MnemonicWarningCard__warning-body{
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 20px;
+    color: #92A2D6;
+    max-width: 310px;
+}
+
+.MnemonicWarningCard__warning{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+}
+
+
+.MnemonicWarningCard__icon{
+    height: 116px;
+    width: auto;
+    align-self: center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.MnemonicCard{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #242F4B;
+    min-height: 420px;
+}
+
+.MnemonicCard__content{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 17px;
+    padding-top: 0;
+}
+
+.MnemonicCard__header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    /*border-bottom: 1px solid rgba(75, 81, 110, 0.5);*/
+    margin-bottom: 17px;
+}
+
+.MnemonicCard__footer{
+    margin-top: auto;
+}
+
+.MnemonicCard__title{
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 26px;
+    color: white;
+    text-transform: uppercase;
+}
+
+.MnemonicCard__subtitle{
+    font-size: 15px;
+    font-weight: normal;
+    text-align: center;
+    line-height: 20px;
+    color: #92A2D6;
+}
+
+.MnemonicCard__body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.MnemonicCard__instructions{
+    font-size: 15px;
+    font-weight: normal;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.MnemonicCard__phrase-container{
+    text-align: center;
+    position: relative;
+    background: #404C6E;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+.MnemonicCard__phrase-container p{
+    line-height: 25px;
+    font-size: 18px;
+    word-spacing: 6px;
+    font-weight: 900;
+    color: white;
+}
+
+.MnemonicCard__view-private-key{
+    font-size: 12px;
+    font-weight: normal;
+    color: white;
+    text-decoration: none;
+    margin-top: 8px;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+.WalletCreationCompleteCard{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #242F4B;
+    min-height: 420px;
+}
+
+.WalletCreationCompleteCard__content{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 17px;
+    padding-top: 0;
+}
+
+.WalletCreationCompleteCard__header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    /*border-bottom: 1px solid rgba(75, 81, 110, 0.5);*/
+    margin-bottom: 17px;
+}
+
+.WalletCreationCompleteCard__footer{
+    margin-top: auto;
+}
+
+.WalletCreationCompleteCard__title{
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 26px;
+    color: white;
+    text-transform: uppercase;
+}
+
+.WalletCreationCompleteCard__subtitle{
+    font-size: 15px;
+    font-weight: normal;
+    text-align: center;
+    line-height: 20px;
+    color: #92A2D6;
+}
+
+.WalletCreationCompleteCard__success-title{
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 20px;
+    color: #1BDED0;
+    text-transform: uppercase;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+
+.WalletCreationCompleteCard__success-body{
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 20px;
+    color: #92A2D6;
+}
+
+.WalletCreationCompleteCard__success{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+}
+
+
+.WalletCreationCompleteCard__icon{
+    height: 116px;
+    width: auto;
+    align-self: center;
 }
