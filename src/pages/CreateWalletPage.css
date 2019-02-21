@@ -120,7 +120,8 @@
     font-weight: 600;
     text-align: left;
     line-height: 24px;
-    color: #ff1d25
+    color: #ff1d25;
+    min-height: 24px;
 }
 
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */

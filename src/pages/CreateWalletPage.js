@@ -128,7 +128,7 @@ class ChoosePasswordCard extends React.Component {
         let type = event.target.type;
         let value = (type === "password" ? event.target.value : event.target.checked);
 
-        this.setState({[name]: value});
+        this.setState({[name]: value}, this.validate);
     }
 
     createWallet(){
@@ -150,6 +150,17 @@ class ChoosePasswordCard extends React.Component {
             this.state.agreedToTerms === true &&
             this.state.password.length > 0 &&
             this.state.password === this.state.passwordConfirmation);
+    }
+
+    validate(){
+        if(this.state.password.length > 0 &&
+            this.state.passwordConfirmation.length > 0 &&
+            this.state.password !== this.state.passwordConfirmation){
+            this.setState({error: "Your passwords do not match"});
+        }
+        else{
+            this.setState({error: ""});
+        }
     }
 
     render() {
@@ -181,7 +192,7 @@ class ChoosePasswordCard extends React.Component {
                         />
                     </div>
                     <div className="ChoosePasswordCard__error">
-                        Your passwords do not match
+                        {this.state.error}
                     </div>
                     <div className="ChoosePasswordCard__message-wrapper">
                         <input id="agreedToTerms"
