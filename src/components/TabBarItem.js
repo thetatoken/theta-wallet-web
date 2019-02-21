@@ -12,12 +12,20 @@ class TabBarItem extends React.Component {
                          className="TabBarItem"
                          activeClassName='TabBarItem--is-active'
                          onClick={this.props.onClick}>
-                    <img className="TabBarItem__icon"
+                    {
+                        this.props.normalIconUrl &&
+                        <img className="TabBarItem__icon"
                          alt={this.props.title}
                          src={this.props.normalIconUrl}/>
-                    <img className="TabBarItem__icon-active"
-                         alt={this.props.title}
-                         src={this.props.activeIconUrl}/>
+                    }
+
+                    {
+                        this.props.activeIconUrl &&
+                        <img className="TabBarItem__icon-active"
+                             alt={this.props.title}
+                             src={this.props.activeIconUrl}/>
+                    }
+
                     <div className={"TabBarItem__title"}>
                         {this.props.title}
                     </div>

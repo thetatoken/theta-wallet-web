@@ -7,3 +7,14 @@
     padding-left: 29px;
     padding-right: 29px;
 }
+
+.TabBar--is-centered{
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.TabBar--is-centered .TabBarItem{
+    margin-left: 25px;
+    margin-right: 25px;
+}
