@@ -1,0 +1,43 @@
+.TabBarItem{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 70px;
+    margin-right: 50px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.TabBarItem__icon, .TabBarItem__icon-active{
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+}
+
+.TabBarItem__icon-active{
+    display: none;
+}
+
+.TabBarItem__title{
+    font-size: 18px;
+    font-weight: normal;
+    line-height: 22px;
+    color: #8A8FB5;
+    transition: color 0.2s ease-in-out;
+    cursor: pointer;
+    margin-top: 2px;
+}
+
+.TabBarItem--is-active .TabBarItem__title,
+.TabBarItem:hover .TabBarItem__title{
+    color: white;
+}
+
+.TabBarItem--is-active .TabBarItem__icon-active{
+    display: inline-block;
+}
+
+.TabBarItem--is-active .TabBarItem__icon{
+    display: none;
+}
+

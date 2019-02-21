@@ -1,0 +1,63 @@
+.WalletTokenListItem{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 110px;
+    padding-left: 22px;
+    padding-right: 22px;
+    border-bottom: 1px solid rgba(75, 81, 110, 0.5);
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    text-decoration: none;
+}
+
+.WalletTokenListItem__token-container{
+    display: flex;
+    flex-direction: row;
+}
+
+.WalletTokenListItem__token-balance-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.WalletTokenListItem__token-icon{
+    width: 40px;
+    height: 40px;
+    margin-right: 17px;
+}
+
+.WalletTokenListItem__token-name{
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 16px;
+    color: #92A2D6;
+    text-decoration: none;
+}
+
+.WalletTokenListItem__token-balance{
+    font-size: 19px;
+    font-weight: normal;
+    line-height: 21px;
+    color: white;
+    text-decoration: none;
+}
+
+.WalletTokenListItem__action-buttons{
+    display: flex;
+    flex-direction: row;
+    margin-left: 58px;
+    margin-top: 20px;
+}
+
+.WalletTokenListItem__action-buttons .GhostButton:first-child{
+    margin-right: 12px;
+}
+
+.WalletTokenListItem--is-active{
+    background-color: rgba(59,66,99, 0.25);
+}
+
+.WalletTokenListItem:hover{
+    background-color: rgba(59,66,99, 0.25);
+}

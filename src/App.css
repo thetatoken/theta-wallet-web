@@ -1,0 +1,7 @@
+.App {
+    display: flex;
+    flex-direction: column;
+    max-width: 1100px;
+    height: 100%;
+    width: 100%;
+}

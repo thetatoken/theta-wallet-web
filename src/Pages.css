@@ -1,0 +1,8 @@
+.Pages{
+    display: flex;
+    flex: 1;
+}
+
+.Pages--wallet{
+    margin-top: 15px;
+}

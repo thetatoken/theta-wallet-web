@@ -1,0 +1,18 @@
+.NavBar{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #1C243B;
+    height: 100px;
+}
+
+.NavBar__logo{
+    height: 38px;
+}
+
+.NavBar--is-centered{
+    justify-content: center;
+}

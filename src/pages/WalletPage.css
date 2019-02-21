@@ -1,0 +1,21 @@
+.WalletPage{
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+}
+
+.WalletPage__master-view{
+    width: 362px;
+    background-color: rgba(59, 66, 99, 0.25);
+    margin-right: 15px;
+}
+
+
+.WalletPage__detail-view{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background-color: rgba(59, 66, 99, 0.25);
+    padding-left: 32px;
+    padding-right: 32px;
+}

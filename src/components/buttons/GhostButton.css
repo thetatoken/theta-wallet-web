@@ -1,0 +1,23 @@
+.GhostButton{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 45px;
+    border: 1px solid #687399;
+    border-radius: 4px;
+    padding-left: 16px;
+    padding-right: 16px;
+    cursor: pointer;
+}
+
+.GhostButton__icon{
+    height: 30px;
+    margin-right: 8px;
+}
+
+.GhostButton__title{
+    font-size: 16px;
+    font-weight: normal;
+    color: white;
+    cursor: pointer;
+}
