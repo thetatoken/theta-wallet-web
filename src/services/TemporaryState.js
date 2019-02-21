@@ -1,20 +1,11 @@
 export default class TemporaryState {
-    static _wallet = null;
-    static _mnemonic = null;
+    static _walletData = null;
 
-    static getWallet() {
-        return this._wallet;
+    static getWalletData() {
+        return this._walletData;
     }
 
-    static setWallet(wallet) {
-        this._wallet = wallet;
-    }
-
-    static getMnemonic() {
-        return this._mnemonic;
-    }
-
-    static setMnemonic(mnemonic) {
-        this._mnemonic = mnemonic;
+    static setWalletData(data) {
+        this._walletData = data;
     }
 }

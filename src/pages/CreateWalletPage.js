@@ -3,6 +3,7 @@ import './CreateWalletPage.css';
 import {Link} from "react-router-dom";
 import GradientButton from '../components/buttons/GradientButton'
 import Wallet from '../services/Wallet'
+import TemporaryState from '../services/TemporaryState'
 import { downloadFile } from '../utils/Utils'
 
 class WalletCreationCompleteCard extends React.Component {
@@ -36,6 +37,8 @@ class WalletCreationCompleteCard extends React.Component {
 
 class MnemonicCard extends React.Component {
     render() {
+        let { mnemonic, privateKey } = this.props.wallet;
+
         return (
             <div className="MnemonicCard">
                 <div className="MnemonicCard__content">
@@ -55,7 +58,8 @@ class MnemonicCard extends React.Component {
 
                         <div className="MnemonicCard__phrase-container">
                             <p>
-                                cat house phone trip design donkey coffee office hat charger heart rate
+                                {/*cat house phone trip design donkey coffee office hat charger heart rate*/}
+                                { mnemonic }
                             </p>
                         </div>
 
@@ -137,6 +141,8 @@ class ChoosePasswordCard extends React.Component {
         let data = Wallet.createWallet(this.state.password);
         console.log("data ==========");
         console.log(data);
+
+        TemporaryState.setWalletData(data);
 
         downloadFile(data.wallet.address + '.keystore', JSON.stringify(data.keystore));
 
@@ -241,6 +247,7 @@ class CreateWalletPage extends React.Component {
     }
 
     render() {
+        let walletData = TemporaryState.getWalletData();
         let card = null;
         let footer = null;
         let pageTitle = (this.state.currentStep === CREATE_WALLET_STEP_COMPLETE ? "" : "Create New Wallet");
@@ -257,7 +264,9 @@ class CreateWalletPage extends React.Component {
         }
         else if(this.state.currentStep === CREATE_WALLET_STEP_MNEMONIC){
             card = (
-                <MnemonicCard onContinue={this.continue.bind(this)}/>
+                <MnemonicCard onContinue={this.continue.bind(this)}
+                              wallet={walletData.wallet}
+                />
             );
         }
         else if(this.state.currentStep === CREATE_WALLET_STEP_COMPLETE){

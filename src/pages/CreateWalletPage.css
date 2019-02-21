@@ -347,6 +347,7 @@
     word-spacing: 6px;
     font-weight: 900;
     color: white;
+    margin: 0;
 }
 
 .MnemonicCard__view-private-key{
