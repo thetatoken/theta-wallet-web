@@ -1,4 +1,5 @@
 export default {
     RECEIVE: 'receive',
-    SEND: 'send'
+    SEND: 'send',
+    PRIVATE_KEY: 'private-key'
 };

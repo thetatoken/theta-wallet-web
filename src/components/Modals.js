@@ -7,10 +7,12 @@ import {hideModal} from "../state/actions/Modals";
 import ModalTypes from "../constants/ModalTypes";
 import ReceiveModal from "../modals/ReceiveModal";
 import SendModal from "../modals/SendModal";
+import PrivateKeyModal from "../modals/PrivateKeyModal";
 
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
-    [ModalTypes.SEND]: SendModal
+    [ModalTypes.SEND]: SendModal,
+    [ModalTypes.PRIVATE_KEY]: PrivateKeyModal
 };
 
 class ModalContainer extends React.Component {

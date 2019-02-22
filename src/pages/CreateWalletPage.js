@@ -5,6 +5,9 @@ import GradientButton from '../components/buttons/GradientButton'
 import Wallet from '../services/Wallet'
 import TemporaryState from '../services/TemporaryState'
 import { downloadFile } from '../utils/Utils'
+import {store} from "../state";
+import {showModal} from "../state/actions/Modals";
+import ModalTypes from "../constants/ModalTypes";
 
 class WalletCreationCompleteCard extends React.Component {
     render() {
@@ -36,6 +39,21 @@ class WalletCreationCompleteCard extends React.Component {
 }
 
 class MnemonicCard extends React.Component {
+    constructor(){
+        super();
+        
+        this.showPrivateKey = this.showPrivateKey.bind(this);
+    }
+    
+    showPrivateKey(){
+        store.dispatch(showModal({
+            type: ModalTypes.PRIVATE_KEY,
+            props: {
+                privateKey: this.props.wallet.privateKey
+            }
+        }));
+    }
+    
     render() {
         let { mnemonic, privateKey } = this.props.wallet;
 
@@ -63,7 +81,9 @@ class MnemonicCard extends React.Component {
                             </p>
                         </div>
 
-                        <a className="MnemonicCard__view-private-key">View my Private Key</a>
+                        <a className="MnemonicCard__view-private-key"
+                           onClick={this.showPrivateKey}
+                        >View my Private Key</a>
                     </div>
 
                     <div className="MnemonicCard__footer">
