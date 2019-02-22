@@ -57,7 +57,7 @@ class UnlockWalletViaPrivateKey extends React.Component {
                 </div>
 
                 <textarea className="UnlockWalletViaPrivateKey__private-key"
-                          name="mnemonic"
+                          name="privateKey"
                           value={this.state.privateKey}
                           onChange={this.handleChange.bind(this)}
                 />
