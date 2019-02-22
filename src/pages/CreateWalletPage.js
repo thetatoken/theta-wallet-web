@@ -136,19 +136,28 @@ class ChoosePasswordCard extends React.Component {
     }
 
     createWallet(){
+        let data = Wallet.createWallet(this.state.password);
+
+        if(data){
+            TemporaryState.setWalletData(data);
+
+            downloadFile(data.wallet.address + '.keystore', JSON.stringify(data.keystore));
+
+            //Sometimes the browser pauses when downloading a file, to reduce jitters add a pause
+            setTimeout(() => {
+                this.setState({loading: false});
+
+                this.props.onContinue();
+            }, 500);
+        }
+    }
+
+    prepareForWalletCreation(){
         this.setState({loading: true});
 
-        let data = Wallet.createWallet(this.state.password);
-        console.log("data ==========");
-        console.log(data);
-
-        TemporaryState.setWalletData(data);
-
-        downloadFile(data.wallet.address + '.keystore', JSON.stringify(data.keystore));
-
-        this.setState({loading: false});
-
-        this.props.onContinue();
+        setTimeout(() => {
+            this.createWallet();
+        }, 1000);
     }
 
     isValid(){
@@ -218,8 +227,9 @@ class ChoosePasswordCard extends React.Component {
 
                     <div className="ChoosePasswordCard__footer">
                         <GradientButton title="Download Keystore"
-                                        onClick={this.createWallet.bind(this)}
-                                        disabled={(this.isValid() === false)}
+                                        onClick={this.prepareForWalletCreation.bind(this)}
+                                        loading={this.state.loading}
+                                        disabled={(this.state.loading || this.isValid() === false)}
                         />
                     </div>
                 </div>

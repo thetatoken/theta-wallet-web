@@ -98,11 +98,7 @@ export default class Wallet {
                 wallet = Wallet.decryptFromKeystore(JSON.parse(keystore), password);
             }
             else if(strategy === WalletUnlockStrategy.MNEMONIC_PHRASE){
-                console.log("ARE WE HERE?????");
-                console.log("mnemonic == " + mnemonic);
                 wallet = Wallet.walletFromMnemonic(mnemonic);
-                console.log("wallet ==");
-                console.log(wallet);
             }
             else if(strategy === WalletUnlockStrategy.PRIVATE_KEY){
                 wallet = Wallet.walletFromPrivateKey(privateKey);
