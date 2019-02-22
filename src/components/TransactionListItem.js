@@ -9,11 +9,14 @@ class TransactionListItem extends React.Component {
         let { transaction } = this.props;
         let {from, to, token_symbol, token_decimal, dec_value, type, time_stamp, bound, hash, is_local} = transaction;
         let isReceived = (bound === "inbound");
-        token_symbol = (type === "ethereum" ? "ETH" : token_symbol);//ETH transactions don't contain token_symbol...
         let icon = null;
+        let explorerUrl = `https://etherscan.io/tx/${transaction.hash}`;
 
         return (
-            <a className="TransactionListItem">
+            <a className="TransactionListItem"
+               href={explorerUrl}
+               target="_blank"
+            >
                 <div className="TransactionListItem__top-container">
                     <TransactionStatus bound={bound} isLocal={is_local}/>
                     {type === "erc20" &&
