@@ -4,9 +4,14 @@ import {connect} from 'react-redux'
 import WalletTokenList from '../components/WalletTokenList'
 import PageHeader from '../components/PageHeader'
 import TransactionList from '../components/TransactionList'
+import {fetchWalletBalances} from "../state/actions/Wallet";
 
 
 export class WalletPage extends React.Component {
+    componentDidMount(){
+        this.props.dispatch(fetchWalletBalances());
+    }
+
     render() {
         console.log("THIS.match == ");
         console.log(this.props.match);

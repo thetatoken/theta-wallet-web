@@ -1,5 +1,6 @@
 import React from "react";
 import './UnlockWalletPage.css';
+import {connect} from 'react-redux'
 import {Link} from "react-router-dom";
 import GradientButton from '../components/buttons/GradientButton'
 import Wallet from '../services/Wallet'
@@ -316,10 +317,8 @@ class UnlockWalletCard extends React.Component {
     }
 }
 
-class UnlockWalletPage extends React.Component {
+export class UnlockWalletPage extends React.Component {
     onUnlock(){
-        console.log("");
-        console.log(this.props);
         this.props.history.push('/wallet');
     }
 
@@ -347,4 +346,10 @@ class UnlockWalletPage extends React.Component {
     }
 }
 
-export default UnlockWalletPage;
+const mapStateToProps = state => {
+    return {
+
+    };
+};
+
+export default connect(mapStateToProps)(UnlockWalletPage);

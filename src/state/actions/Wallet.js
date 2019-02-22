@@ -5,7 +5,9 @@ import Wallet from '../../services/Wallet'
 import TemporaryState from "../../services/TemporaryState";
 import {resetTransactionsState} from './Transactions'
 
-export function fetchWalletBalances(address){
+export function fetchWalletBalances(){
+    let address = Wallet.getWallet().address;
+
     return reduxFetch(FETCH_WALLET_BALANCES, function(){
         return Api.fetchWallet(address);
     });
