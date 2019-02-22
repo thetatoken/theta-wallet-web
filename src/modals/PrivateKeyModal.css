@@ -1,0 +1,44 @@
+.PrivateKeyModal{
+    display: flex;
+    flex-direction: column;
+    background-color: #242F4B;
+    width: 450px;
+    //height: 500px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.PrivateKeyModal__title{
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    color: white;
+    margin-bottom: 6px;
+}
+
+.PrivateKeyModal__instructions{
+    font-size: 15px;
+    font-weight: normal;
+    text-align: center;
+    line-height: 20px;
+    color: #92A2D6;
+}
+
+.PrivateKeyModal__private-key{
+    background-color: #404C6E;
+    outline: none !important;
+    border: none !important;
+    color: white;
+    padding: 12px;
+    font-size: 17px;
+    height: 45px;
+    resize: none;
+    border-radius: 4px;
+    margin-top: 35px;
+    margin-bottom: 45px;
+}
+
+.PrivateKeyModal .GradientButton{
+    align-self: center;
+    min-width: 200px;
+}
