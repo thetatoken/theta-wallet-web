@@ -6,14 +6,20 @@ const MnemonicPath = "m/44'/500'/0'/0/0";
 const rpcURL = "https://mainnet.infura.io/v3/40980e2189924c8abfc5f60dd2e5dc4b";
 const web3 = new Web3(rpcURL);
 
+export const WalletUnlockStrategy = {
+    KEYSTORE_FILE: 'keystore-file',
+    MNEMONIC_PHRASE: 'mnemonic-phrase',
+    PRIVATE_KEY: 'private-key',
+};
+
 export default class Wallet {
     static _wallet = null;
 
-    static async setWallet(wallet){
+    static setWallet(wallet){
         this._wallet = wallet;
     }
 
-    static async getWallet(){
+    static getWallet(){
         return this._wallet;
     }
 
@@ -81,13 +87,13 @@ export default class Wallet {
         let { keystore, mnemonic, privateKey } = data;
 
         try{
-            if(strategy === "keystore-file"){
+            if(strategy === WalletUnlockStrategy.KEYSTORE_FILE){
                 wallet = Wallet.decryptFromKeystore(JSON.parse(keystore), password);
             }
-            else if(strategy === "mnemonic-phrase"){
+            else if(strategy === WalletUnlockStrategy.MNEMONIC_PHRASE){
                 wallet = Wallet.walletFromMnemonic(mnemonic);
             }
-            else if(strategy === "private-key"){
+            else if(strategy === WalletUnlockStrategy.PRIVATE_KEY){
                 wallet = Wallet.walletFromPrivateKey(privateKey);
             }
 

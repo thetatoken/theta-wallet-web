@@ -3,6 +3,7 @@ import './UnlockWalletPage.css';
 import {Link} from "react-router-dom";
 import GradientButton from '../components/buttons/GradientButton'
 import Wallet from '../services/Wallet'
+import { WalletUnlockStrategy } from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
 
@@ -31,7 +32,7 @@ class UnlockWalletViaPrivateKey extends React.Component {
     }
 
     unlockWallet(){
-        Wallet.unlockWallet("private-key", this.state.password, {privateKey: this.state.privateKey});
+        Wallet.unlockWallet(WalletUnlockStrategy.PRIVATE_KEY, this.state.password, {privateKey: this.state.privateKey});
 
         this.setState({loading: false});
     }
@@ -107,7 +108,7 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
     }
 
     unlockWallet(){
-        Wallet.unlockWallet("mnemonic-phrase", this.state.password, {mnemonic: this.state.mnemonic});
+        Wallet.unlockWallet(WalletUnlockStrategy.MNEMONIC_PHRASE, this.state.password, {mnemonic: this.state.mnemonic});
 
         this.setState({loading: false});
     }
@@ -198,9 +199,11 @@ class UnlockWalletViaKeystoreFile extends React.Component {
     }
 
     unlockWallet(keystore){
-        Wallet.unlockWallet("keystore-file", this.state.password, {keystore: keystore});
+        Wallet.unlockWallet(WalletUnlockStrategy.KEYSTORE_FILE, this.state.password, {keystore: keystore});
 
         this.setState({loading: false});
+
+        this.props.onUnlock();
     }
 
     onKeystoreFileLoad(e){
@@ -227,10 +230,6 @@ class UnlockWalletViaKeystoreFile extends React.Component {
             "UnlockWalletViaKeystoreFile__file-input--has-file": (keystoreFile !== null)
         });
         let isDisabled = (this.state.loading || this.isValid() === false);
-
-        console.log("this.state.loading == " + this.state.loading);
-        console.log("this.isValid == " + this.isValid());
-        console.log("isDisabled == " + isDisabled);
 
         return (
             <div className="UnlockWalletViaKeystoreFile">
@@ -272,21 +271,20 @@ class UnlockWalletViaKeystoreFile extends React.Component {
 class UnlockWalletCard extends React.Component {
     render() {
         let unlockWalletStrategyContent = null;
-        console.log("unlockStrategy == " + this.props.unlockStrategy);
 
-        if(this.props.unlockStrategy === "keystore-file"){
+        if(this.props.unlockStrategy === WalletUnlockStrategy.KEYSTORE_FILE){
             unlockWalletStrategyContent = (
-                <UnlockWalletViaKeystoreFile/>
+                <UnlockWalletViaKeystoreFile onUnlock={this.props.onUnlock}/>
             );
         }
-        else if(this.props.unlockStrategy === "mnemonic-phrase"){
+        else if(this.props.unlockStrategy === WalletUnlockStrategy.MNEMONIC_PHRASE){
             unlockWalletStrategyContent = (
-                <UnlockWalletViaMnemonicPhrase/>
+                <UnlockWalletViaMnemonicPhrase onUnlock={this.props.onUnlock}/>
             );
         }
-        else if(this.props.unlockStrategy === "private-key"){
+        else if(this.props.unlockStrategy === WalletUnlockStrategy.PRIVATE_KEY){
             unlockWalletStrategyContent = (
-                <UnlockWalletViaPrivateKey/>
+                <UnlockWalletViaPrivateKey onUnlock={this.props.onUnlock}/>
             );
         }
 
@@ -298,15 +296,15 @@ class UnlockWalletCard extends React.Component {
                                 className="UnlockWalletCard__tab-bar">
                             <TabBarItem
                                 title="Keystore File"
-                                href="/unlock/keystore-file"
+                                href={"/unlock/" + WalletUnlockStrategy.KEYSTORE_FILE}
                             />
                             <TabBarItem
                                 title="Mnemonic Phrase"
-                                href="/unlock/mnemonic-phrase"
+                                href={"/unlock/" + WalletUnlockStrategy.MNEMONIC_PHRASE}
                             />
                             <TabBarItem
                                 title="Private Key"
-                                href="/unlock/private-key"
+                                href={"/unlock/" + WalletUnlockStrategy.PRIVATE_KEY}
                             />
                         </TabBar>
                     </div>
@@ -319,6 +317,12 @@ class UnlockWalletCard extends React.Component {
 }
 
 class UnlockWalletPage extends React.Component {
+    onUnlock(){
+        console.log("");
+        console.log(this.props);
+        this.props.history.push('/wallet');
+    }
+
     render() {
         let unlockStrategy = this.props.match.params.unlockStrategy;
 
@@ -329,7 +333,9 @@ class UnlockWalletPage extends React.Component {
                         Unlock Your Wallet
                     </div>
 
-                    <UnlockWalletCard unlockStrategy={unlockStrategy}/>
+                    <UnlockWalletCard unlockStrategy={unlockStrategy}
+                                      onUnlock={this.onUnlock.bind(this)}
+                    />
 
                     <div className="UnlockWalletPage__subtitle">
                         <span>Don't have a wallet?</span>
