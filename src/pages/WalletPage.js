@@ -7,13 +7,15 @@ import TransactionList from '../components/TransactionList'
 import {fetchWalletBalances} from "../state/actions/Wallet";
 import {fetchERC20Transactions, fetchETHTransactions} from "../state/actions/Transactions";
 import {getERC20Transactions, getEthereumTransactions} from "../state/selectors/Transactions";
+import EmptyState from "../components/EmptyState";
+import TokenTypes from "../constants/TokenTypes";
 
 export class WalletPage extends React.Component {
     fetchTransactions(tokenType){
-        if(tokenType === "erc20"){
+        if(tokenType === TokenTypes.ERC20_THETA){
             this.props.dispatch(fetchERC20Transactions());
         }
-        else if(tokenType === "ethereum"){
+        else if(tokenType === TokenTypes.ETHEREUM){
             this.props.dispatch(fetchETHTransactions());
         }
     }
@@ -50,7 +52,18 @@ export class WalletPage extends React.Component {
                     <PageHeader title="Transactions"
                                 sticky={true}
                     />
-                    <TransactionList transactions={this.props.transactions}/>
+
+                    {
+                        this.props.transactions.length > 0 &&
+                        <TransactionList transactions={this.props.transactions}/>
+                    }
+
+                    {
+                        this.props.transactions.length === 0 &&
+                        <EmptyState icon="/img/icons/empty-transactions@2x.png"
+                                    title="No Transactions"
+                        />
+                    }
                 </div>
             </div>
         );
@@ -62,10 +75,10 @@ const mapStateToProps = (state, ownProps) => {
     let localTransactionsByID = (state.transactions.localTransactionsByID || {});
     let transactions = [];
 
-    if(tokenType === "erc20"){
+    if(tokenType === TokenTypes.ERC20_THETA){
         transactions = getERC20Transactions(state);
     }
-    else if(tokenType === "ethereum"){
+    else if(tokenType === TokenTypes.ETHEREUM){
         transactions = getEthereumTransactions(state);
     }
 

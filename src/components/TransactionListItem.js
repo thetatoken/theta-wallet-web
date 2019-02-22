@@ -3,13 +3,14 @@ import './TransactionListItem.css';
 import moment from 'moment';
 import TransactionStatus from './TransactionStatus'
 import ERC20Badge from './ERC20Badge'
+import TokenTypes from "../constants/TokenTypes";
 
 class TransactionListItem extends React.Component {
     render() {
         let { transaction } = this.props;
         let {from, to, token_symbol, token_decimal, dec_value, type, time_stamp, bound, hash, is_local} = transaction;
         let isReceived = (bound === "inbound");
-        let icon = null;
+        let iconUrl = `/img/tokens/${type}_small@2x.png`;
         let explorerUrl = `https://etherscan.io/tx/${transaction.hash}`;
 
         return (
@@ -36,8 +37,8 @@ class TransactionListItem extends React.Component {
                     <div className="TransactionListItem__date">{moment.unix(time_stamp).fromNow()}</div>
                     <div className="TransactionListItem__token-container">
                         <div className="TransactionListItem__token-symbol">{token_symbol}</div>
-                        {icon &&
-                        <img src={icon}
+                        {iconUrl &&
+                        <img src={iconUrl}
                              className="TransactionListItem__token-icon"/>
                         }
                     </div>

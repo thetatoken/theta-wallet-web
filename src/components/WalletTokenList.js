@@ -7,13 +7,13 @@ const tokens = [
     {
         type: TokenTypes.ERC20_THETA,
         name: "ERC20 Theta",
-        iconUrl: "/img/tokens/theta_large@2x.png",
+        iconUrl: `/img/tokens/${TokenTypes.ERC20_THETA}_large@2x.png`,
         href: "/wallet/tokens/" + TokenTypes.ERC20_THETA
     },
     {
         type: TokenTypes.ETHEREUM,
         name: "Ethereum",
-        iconUrl: "/img/tokens/eth_large@2x.png",
+        iconUrl: `/img/tokens/${TokenTypes.ETHEREUM}_large@2x.png`,
         href: "/wallet/tokens/" + TokenTypes.ETHEREUM
     }];
 
