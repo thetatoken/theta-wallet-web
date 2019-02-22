@@ -7,6 +7,15 @@
     min-height: calc(132px - 30px);
     cursor: pointer;
     padding-right: 10px;
+    transition: background-color, 0.3s, ease-in-out;
+}
+
+.TransactionListItem *{
+    cursor: pointer;
+}
+
+.TransactionListItem:hover{
+    background-color: rgba(0,0,0,0.05);
 }
 
 .TransactionListItem__top-container{
