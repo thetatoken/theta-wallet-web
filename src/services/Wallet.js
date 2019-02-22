@@ -111,9 +111,12 @@ export default class Wallet {
             if(wallet){
                 Wallet.setWallet(wallet);
             }
+
+            return wallet;
         }
         catch (e) {
             //TODO throw the caught error?
+            return null;
         }
     }
 }

@@ -7,6 +7,7 @@ import Wallet from '../services/Wallet'
 import { WalletUnlockStrategy } from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
+import {unlockWallet} from "../state/actions/Wallet";
 
 const classNames = require('classnames');
 
@@ -33,11 +34,11 @@ class UnlockWalletViaPrivateKey extends React.Component {
     }
 
     unlockWallet(){
-        Wallet.unlockWallet(WalletUnlockStrategy.PRIVATE_KEY, this.state.password, {privateKey: this.state.privateKey});
+        //Wallet.unlockWallet(WalletUnlockStrategy.PRIVATE_KEY, this.state.password, {privateKey: this.state.privateKey});
+
+        this.props.unlockWallet(WalletUnlockStrategy.PRIVATE_KEY, this.state.password, {privateKey: this.state.privateKey});
 
         this.setState({loading: false});
-
-        this.props.onUnlock();
     }
 
     prepareForUnlock(){
@@ -111,11 +112,11 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
     }
 
     unlockWallet(){
-        Wallet.unlockWallet(WalletUnlockStrategy.MNEMONIC_PHRASE, this.state.password, {mnemonic: this.state.mnemonic});
+        //Wallet.unlockWallet(WalletUnlockStrategy.MNEMONIC_PHRASE, this.state.password, {mnemonic: this.state.mnemonic});
+
+        this.props.unlockWallet(WalletUnlockStrategy.MNEMONIC_PHRASE, this.state.password, {mnemonic: this.state.mnemonic});
 
         this.setState({loading: false});
-
-        this.props.onUnlock();
     }
 
     prepareForUnlock(){
@@ -204,11 +205,13 @@ class UnlockWalletViaKeystoreFile extends React.Component {
     }
 
     unlockWallet(keystore){
-        Wallet.unlockWallet(WalletUnlockStrategy.KEYSTORE_FILE, this.state.password, {keystore: keystore});
+        //Wallet.unlockWallet(WalletUnlockStrategy.KEYSTORE_FILE, this.state.password, {keystore: keystore});
+
+        this.props.unlockWallet(WalletUnlockStrategy.KEYSTORE_FILE, this.state.password, {keystore: keystore});
 
         this.setState({loading: false});
 
-        this.props.onUnlock();
+        //this.props.onUnlock();
     }
 
     onKeystoreFileLoad(e){
@@ -279,17 +282,17 @@ class UnlockWalletCard extends React.Component {
 
         if(this.props.unlockStrategy === WalletUnlockStrategy.KEYSTORE_FILE){
             unlockWalletStrategyContent = (
-                <UnlockWalletViaKeystoreFile onUnlock={this.props.onUnlock}/>
+                <UnlockWalletViaKeystoreFile unlockWallet={this.props.unlockWallet}/>
             );
         }
         else if(this.props.unlockStrategy === WalletUnlockStrategy.MNEMONIC_PHRASE){
             unlockWalletStrategyContent = (
-                <UnlockWalletViaMnemonicPhrase onUnlock={this.props.onUnlock}/>
+                <UnlockWalletViaMnemonicPhrase unlockWallet={this.props.unlockWallet}/>
             );
         }
         else if(this.props.unlockStrategy === WalletUnlockStrategy.PRIVATE_KEY){
             unlockWalletStrategyContent = (
-                <UnlockWalletViaPrivateKey onUnlock={this.props.onUnlock}/>
+                <UnlockWalletViaPrivateKey unlockWallet={this.props.unlockWallet}/>
             );
         }
 
@@ -322,8 +325,17 @@ class UnlockWalletCard extends React.Component {
 }
 
 export class UnlockWalletPage extends React.Component {
-    onUnlock(){
-        this.props.history.push('/wallet');
+    constructor(){
+        super();
+
+        this.unlockWallet = this.unlockWallet.bind(this)
+    }
+
+    async unlockWallet(strategy, password, data){
+        let response = await this.props.dispatch(unlockWallet(strategy, password, data));
+        console.log("response == ");
+        console.log(response);
+        //this.props.history.push('/wallet');
     }
 
     render() {
@@ -337,7 +349,7 @@ export class UnlockWalletPage extends React.Component {
                     </div>
 
                     <UnlockWalletCard unlockStrategy={unlockStrategy}
-                                      onUnlock={this.onUnlock.bind(this)}
+                                      unlockWallet={this.unlockWallet.bind(this)}
                     />
 
                     <div className="UnlockWalletPage__subtitle">

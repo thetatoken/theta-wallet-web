@@ -4,6 +4,7 @@ import {FETCH_WALLET_BALANCES, SET_GAS_PRICE, SET_WALLET_ADDRESS, SET_WALLET_NAM
 import Wallet from '../../services/Wallet'
 import TemporaryState from "../../services/TemporaryState";
 import {resetTransactionsState} from './Transactions'
+import Router from "../../services/Router";
 
 export function fetchWalletBalances(){
     let address = Wallet.getWalletAddress();
@@ -94,6 +95,20 @@ export function clearWallet(){
 }
 
 
+
+export function unlockWallet(strategy, password, data){
+    return async function(dispatch, getState){
+        let wallet = Wallet.unlockWallet(strategy, password, data);
+
+        if(wallet){
+            dispatch(setWalletAddress(wallet.address));
+
+            //Navigate to the wallet
+            Router.push('/wallet');
+        }
+    };
+}
+
 export function logout(){
     return async function(dispatch, getState){
         //Clear the wallet
@@ -107,5 +122,8 @@ export function logout(){
 
         //Reset transactions state
         dispatch(resetTransactionsState());
+
+        //Navigate away
+        Router.push('/unlock');
     };
 }

@@ -10,4 +10,6 @@ export const SET_WALLET_ADDRESS = `${name}/SET_WALLET_ADDRESS`;
 export const SET_WALLET_NAME = `${name}/SET_WALLET_NAME`;
 export const SET_GAS_PRICE = `${name}/SET_GAS_PRICE`;
 
+export const UNLOCK = `${name}/UNLOCK`;
+
 export const RESET = `${name}/RESET`;

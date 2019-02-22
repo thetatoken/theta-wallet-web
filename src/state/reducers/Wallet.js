@@ -47,6 +47,7 @@ export const walletReducer = (state = INITIAL_STATE, action) => {
                 gasPrice: action.gasPrice
             });
         }
+
         //Reset all state (useful when recovering a wallet which may have another wallet's state stored in memory))
         case actionTypes.RESET:{
             return INITIAL_STATE;

@@ -8,6 +8,8 @@ import Modals from "./components/Modals";
 import {showModal} from "./state/actions/Modals";
 import ModalTypes from "./constants/ModalTypes";
 import {store} from "./state";
+import Router from "./services/Router";
+
 
 class WalletTabBar extends Component {
     constructor(){
@@ -63,6 +65,10 @@ class WalletTabBar extends Component {
 }
 
 export class App extends Component {
+    componentDidMount(){
+        Router.setHistory(this.props.history);
+    }
+
     render() {
         return (
             <div className="App">
@@ -75,6 +81,10 @@ export class App extends Component {
 }
 
 export class WalletApp extends Component {
+    componentDidMount(){
+        Router.setHistory(this.props.history);
+    }
+
     render() {
         return (
             <div className="App WalletApp">
