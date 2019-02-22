@@ -34,8 +34,6 @@ class UnlockWalletViaPrivateKey extends React.Component {
     }
 
     unlockWallet(){
-        //Wallet.unlockWallet(WalletUnlockStrategy.PRIVATE_KEY, this.state.password, {privateKey: this.state.privateKey});
-
         this.props.unlockWallet(WalletUnlockStrategy.PRIVATE_KEY, this.state.password, {privateKey: this.state.privateKey});
 
         this.setState({loading: false});
@@ -112,8 +110,6 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
     }
 
     unlockWallet(){
-        //Wallet.unlockWallet(WalletUnlockStrategy.MNEMONIC_PHRASE, this.state.password, {mnemonic: this.state.mnemonic});
-
         this.props.unlockWallet(WalletUnlockStrategy.MNEMONIC_PHRASE, this.state.password, {mnemonic: this.state.mnemonic});
 
         this.setState({loading: false});
@@ -205,13 +201,9 @@ class UnlockWalletViaKeystoreFile extends React.Component {
     }
 
     unlockWallet(keystore){
-        //Wallet.unlockWallet(WalletUnlockStrategy.KEYSTORE_FILE, this.state.password, {keystore: keystore});
-
         this.props.unlockWallet(WalletUnlockStrategy.KEYSTORE_FILE, this.state.password, {keystore: keystore});
 
         this.setState({loading: false});
-
-        //this.props.onUnlock();
     }
 
     onKeystoreFileLoad(e){
@@ -331,11 +323,8 @@ export class UnlockWalletPage extends React.Component {
         this.unlockWallet = this.unlockWallet.bind(this)
     }
 
-    async unlockWallet(strategy, password, data){
-        let response = await this.props.dispatch(unlockWallet(strategy, password, data));
-        console.log("response == ");
-        console.log(response);
-        //this.props.history.push('/wallet');
+    unlockWallet(strategy, password, data){
+        this.props.dispatch(unlockWallet(strategy, password, data));
     }
 
     render() {
