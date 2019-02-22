@@ -1,8 +1,11 @@
 import { createSelector } from 'reselect'
 import _ from "lodash";
+import TokenTypes from "../../constants/TokenTypes";
+import Wallet from '../../services/Wallet'
 
 const getTransactionsByType = (state) => state.transactions.transactionsByType;
 const getLocalTransactionsByID = (state) => state.transactions.localTransactionsByID;
+const getWalletAddress = (state) => Wallet.getWallet().address;
 
 function transformTransaction(walletAddress, transaction) {
     console.log("transformTransaction :: transaction == ");
@@ -36,15 +39,15 @@ function getTransactions(walletAddress, type, transactionsByType, localTransacti
 }
 
 export const getERC20Transactions = createSelector(
-    [ getTransactionsByType, getLocalTransactionsByID ],
-    (transactionsByType, localTransactionsByID) => {
-        return getTransactions("", "erc20", transactionsByType, localTransactionsByID);
+    [ getWalletAddress, getTransactionsByType, getLocalTransactionsByID ],
+    (walletAddress, transactionsByType, localTransactionsByID) => {
+        return getTransactions(walletAddress, TokenTypes.ERC20_THETA, transactionsByType, localTransactionsByID);
     }
 );
 
 export const getEthereumTransactions = createSelector(
-    [ getTransactionsByType, getLocalTransactionsByID ],
-    (transactionsByType, localTransactionsByID) => {
-        return getTransactions("", "ethereum", transactionsByType, localTransactionsByID);
+    [ getWalletAddress, getTransactionsByType, getLocalTransactionsByID, getWalletAddress ],
+    (walletAddress, transactionsByType, localTransactionsByID) => {
+        return getTransactions(walletAddress, TokenTypes.ETHEREUM, transactionsByType, localTransactionsByID);
     }
 );
