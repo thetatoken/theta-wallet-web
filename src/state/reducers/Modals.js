@@ -1,12 +1,7 @@
 import * as actionTypes from "../types/Modals";
 
 const INITIAL_STATE = {
-    modals : [{
-        type: 'receive',
-        props: {
-            foo: 'bar'
-        }
-    }]
+    modals : []
 };
 
 export const modalsReducer = (state = INITIAL_STATE, action) => {
