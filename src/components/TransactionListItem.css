@@ -1,3 +1,108 @@
 .TransactionListItem{
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #4B516E;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    min-height: calc(132px - 30px);
+}
 
+.TransactionListItem__top-container{
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.TransactionListItem__middle-container{
+    display: flex;
+    flex: 2;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.TransactionListItem__bottom-container{
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.TransactionListItem__address-container{
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+}
+
+.TransactionListItem__address-prefix{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 16px;
+    color: #92A2D6;
+    margin-right: 5px;
+    height: 16px;
+}
+
+.TransactionListItem__address{
+    font-size: 18px;
+    font-weight: 100;
+    line-height: 18px;
+    color: white;
+    height: 18px;
+    padding-right: 5px;
+    text-overflow: ellipsis;
+}
+
+.TransactionListItem__amount-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.TransactionListItem__amount{
+    font-size: 28px;
+    font-weight: 100;
+    line-height: 28px;
+    height: 28px;
+    color: white;
+    text-align: right;
+    margin-left: 15px;
+}
+
+.TransactionListItem__date{
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 14px;
+    color: #7A88B5;
+    height: 14px;
+}
+
+.TransactionListItem__token-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 19px;
+}
+
+.TransactionListItem__token-symbol{
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 15px;
+    color: #92A2D6;
+    height: 15px;
+}
+
+.TransactionListItem__token-icon{
+    height: 18px;
+    width: 18px;
+    margin-left: 5px;
 }

@@ -47,7 +47,9 @@ export class WalletPage extends React.Component {
                     <WalletTokenList balancesByType={this.props.balancesByType}/>
                 </div>
                 <div className="WalletPage__detail-view">
-                    <PageHeader title="Transactions"/>
+                    <PageHeader title="Transactions"
+                                sticky={true}
+                    />
                     <TransactionList transactions={this.props.transactions}/>
                 </div>
             </div>

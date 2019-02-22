@@ -13,4 +13,12 @@
     line-height: 16px;
     text-transform: uppercase;
     color: #565D8A;
+    letter-spacing: 1.5px;
+}
+
+.PageHeader--is-sticky{
+    top: 0;
+    position: relative;
+    position: sticky;
+    background-color: #262C41;
 }

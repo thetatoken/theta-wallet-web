@@ -1,0 +1,30 @@
+.TransactionStatus{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.TransactionStatus__dot{
+    height: 9px;
+    width: 9px;
+    border-radius: 5px;
+    background-color: #92A2D6;
+    margin-right: 6px;
+}
+
+.TransactionStatus__text{
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 13px;
+    height: 13px;
+    color: #92A2D6;
+    text-transform: uppercase;
+}
+
+.TransactionStatus--is-inbound .TransactionStatus__dot{
+    color: #24D13B;
+}
+
+.TransactionStatus--is-inbound .TransactionStatus__text{
+    color: #24D13B;
+}

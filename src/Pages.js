@@ -37,6 +37,7 @@ export class WalletPages extends React.Component {
                         Wallet.unlocked() === false && <Redirect to='/unlock'/>
                     }
                     <Route path="/wallet/settings" component={SettingsPage}/>
+                    <Redirect from='/wallet' to='/wallet/tokens/erc20' exact={true}/>
                     <Redirect from='/wallet/tokens' to='/wallet/tokens/erc20' exact={true}/>
                     <Route path="/wallet/tokens/:tokenType" component={WalletPage}/>
                 </Switch>
