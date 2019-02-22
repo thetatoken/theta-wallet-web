@@ -6,6 +6,7 @@ import SettingsPage from './pages/SettingsPage'
 import OnboardingPage from './pages/OnboardingPage'
 import CreateWalletPage from './pages/CreateWalletPage'
 import UnlockWalletPage from './pages/UnlockWalletPage'
+import Wallet from './services/Wallet'
 
 export class Pages extends React.Component {
     render() {
@@ -17,7 +18,11 @@ export class Pages extends React.Component {
                 </Switch>
 
                 <Route path="/create" component={CreateWalletPage}/>
-                <Route path="/unlock" component={UnlockWalletPage}/>
+
+                <Switch>
+                    <Redirect from='/unlock' to='/unlock/keystore-file' exact={true}/>
+                    <Route path="/unlock/:unlockStrategy" component={UnlockWalletPage}/>
+                </Switch>
             </div>
         );
     }
@@ -28,6 +33,9 @@ export class WalletPages extends React.Component {
         return (
             <div className="Pages Pages--wallet">
                 <Switch>
+                    {
+                        Wallet.unlocked() === false && <Redirect to='/unlock'/>
+                    }
                     <Route path="/wallet/settings" component={SettingsPage}/>
                     <Redirect from='/wallet/tokens' to='/wallet/tokens/erc20' exact={true}/>
                     <Route path="/wallet/tokens/:tokenType" component={WalletPage}/>

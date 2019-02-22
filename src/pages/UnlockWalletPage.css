@@ -87,3 +87,222 @@
 .UnlockWalletCard__tab-bar{
     width: calc(100% + 34px);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+.UnlockWalletViaKeystoreFile{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    min-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.UnlockWalletViaKeystoreFile__footer{
+    margin-top: auto;
+}
+
+.UnlockWalletViaKeystoreFile__file-input{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 45px;
+    border: 1px dashed #687399;
+    border-radius: 4px;
+    padding-left: 16px;
+    padding-right: 16px;
+    cursor: pointer;
+    color: white;
+    text-align: center;
+    transition: all 0.2s ease-in-out;
+    margin-bottom: 20px;
+}
+
+.UnlockWalletViaKeystoreFile__file-input--has-file{
+    border: 1px solid #1BDED0;
+}
+
+.UnlockWalletViaKeystoreFile__file-input:hover{
+    background-color: rgba(0,0,0,0.1);
+}
+
+.UnlockWalletViaKeystoreFile__file-input input[type="file"] {
+    display: none;
+}
+
+.UnlockWalletViaKeystoreFile__title{
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 26px;
+    color: white;
+    margin-bottom: 17px;
+}
+
+.UnlockWalletViaKeystoreFile__password-input{
+    background-color: #404C6E;
+    height: 50px;
+    color: white;
+    border-radius: 4px;
+    border: none;
+    outline: none;
+    font-size: 17px;
+    width: calc(100% - 24px);
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-bottom: 20px;
+    font-family: 'AlwynNew', "Helvetica Neue", -apple-system, sans-serif;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.UnlockWalletViaMnemonicPhrase{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    min-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.UnlockWalletViaMnemonicPhrase__footer{
+    margin-top: auto;
+}
+
+.UnlockWalletViaMnemonicPhrase__title{
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 26px;
+    color: white;
+    margin-bottom: 17px;
+}
+
+.UnlockWalletViaMnemonicPhrase__mnemonic{
+    background-color: #404C6E;
+    outline: none !important;
+    border: none !important;
+    color: white;
+    padding: 12px;
+    font-size: 17px;
+    height: 70px;
+    resize: none;
+    border-radius: 4px;
+}
+
+.UnlockWalletViaMnemonicPhrase__mnemonic-instructions{
+    font-size: 12px;
+    color: white;
+    line-height: 16px;
+    margin-top: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.UnlockWalletViaMnemonicPhrase__password-input{
+    background-color: #404C6E;
+    height: 50px;
+    color: white;
+    border-radius: 4px;
+    border: none;
+    outline: none;
+    font-size: 17px;
+    width: calc(100% - 24px);
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-bottom: 20px;
+    font-family: 'AlwynNew', "Helvetica Neue", -apple-system, sans-serif;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.UnlockWalletViaPrivateKey{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    min-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.UnlockWalletViaPrivateKey__footer{
+    margin-top: auto;
+}
+
+.UnlockWalletViaPrivateKey__title{
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 26px;
+    color: white;
+    margin-bottom: 17px;
+}
+
+.UnlockWalletViaPrivateKey__private-key{
+    background-color: #404C6E;
+    outline: none !important;
+    border: none !important;
+    color: white;
+    padding: 12px;
+    font-size: 17px;
+    height: 70px;
+    resize: none;
+    border-radius: 4px;
+}
+
+.UnlockWalletViaPrivateKey__private-key-instructions{
+    font-size: 12px;
+    color: white;
+    line-height: 16px;
+    margin-top: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.UnlockWalletViaPrivateKey__password-input{
+    background-color: #404C6E;
+    height: 50px;
+    color: white;
+    border-radius: 4px;
+    border: none;
+    outline: none;
+    font-size: 17px;
+    width: calc(100% - 24px);
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-bottom: 20px;
+    font-family: 'AlwynNew', "Helvetica Neue", -apple-system, sans-serif;
+}

@@ -3,59 +3,299 @@ import './UnlockWalletPage.css';
 import {Link} from "react-router-dom";
 import GradientButton from '../components/buttons/GradientButton'
 import Wallet from '../services/Wallet'
-import TemporaryState from "../services/TemporaryState";
-import {downloadFile} from "../utils/Utils";
 import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
 
-class UnlockWalletCard extends React.Component {
+const classNames = require('classnames');
+
+class UnlockWalletViaPrivateKey extends React.Component {
     constructor(){
         super();
 
         this.state = {
-            password: '',
-            passwordConfirmation: '',
+            privateKey: "",
+            password: "",
+            loading: false
         }
-    }
-
-    handleChange(event) {
-        let name = event.target.name;
-        let type = event.target.type;
-        let value = (type === "password" ? event.target.value : event.target.checked);
-
-        this.setState({[name]: value}, this.validate);
-    }
-
-    unlockWallet(){
-        console.log("Unlock the wallet...");
     }
 
     isValid(){
-        return (
-            this.state.agreedToTerms === true &&
-            this.state.password.length > 0 &&
-            this.state.password === this.state.passwordConfirmation);
+        return this.state.privateKey.length > 0;
     }
 
-    validate(){
-        if(this.state.password.length > 0 &&
-            this.state.passwordConfirmation.length > 0 &&
-            this.state.password !== this.state.passwordConfirmation){
-            this.setState({error: "Your passwords do not match"});
-        }
-        else{
-            this.setState({error: ""});
-        }
+    handleChange(event){
+        let name = event.target.name;
+        let value = event.target.value;
+
+        this.setState({[name]: value});
+    }
+
+    unlockWallet(){
+        Wallet.unlockWallet("private-key", this.state.password, {privateKey: this.state.privateKey});
+
+        this.setState({loading: false});
+    }
+
+    prepareForUnlock(){
+        this.setState({loading: true});
+
+        setTimeout(() => {
+            this.unlockWallet()
+        }, 1500);
     }
 
     render() {
+        let isDisabled = (this.state.loading || this.isValid() === false);
+
+        return (
+            <div className="UnlockWalletViaPrivateKey">
+                <div className="UnlockWalletViaPrivateKey__title">
+                    Please enter your private key
+                </div>
+
+                <textarea className="UnlockWalletViaPrivateKey__private-key"
+                          name="mnemonic"
+                          value={this.state.privateKey}
+                          onChange={this.handleChange.bind(this)}
+                />
+
+                <div className="UnlockWalletViaPrivateKey__private-key-instructions">
+                    Please enter your private key in HEX format.
+                </div>
+
+                <input className="UnlockWalletViaPrivateKey__password-input"
+                       placeholder="Enter temporary session password"
+                       name="password"
+                       type="password"
+                       value={this.state.password}
+                       ref={this.passwordInput}
+                       onChange={this.handleChange.bind(this)}
+                />
+
+                <div className="UnlockWalletViaPrivateKey__footer">
+                    <GradientButton title="Unlock Wallet"
+                                    loading={this.state.loading}
+                                    onClick={this.prepareForUnlock.bind(this)}
+                                    disabled={isDisabled}
+                    />
+                </div>
+            </div>
+        );
+    }
+}
+
+class UnlockWalletViaMnemonicPhrase extends React.Component {
+    constructor(){
+        super();
+
+        this.state = {
+            mnemonic: "",
+            password: "",
+            loading: false
+        }
+    }
+
+    isValid(){
+        return this.state.mnemonic.length > 0;
+    }
+
+    handleChange(event){
+        let name = event.target.name;
+        let value = event.target.value;
+
+        this.setState({[name]: value});
+    }
+
+    unlockWallet(){
+        Wallet.unlockWallet("mnemonic-phrase", this.state.password, {mnemonic: this.state.mnemonic});
+
+        this.setState({loading: false});
+    }
+
+    prepareForUnlock(){
+        this.setState({loading: true});
+
+        setTimeout(() => {
+            this.unlockWallet()
+        }, 1500);
+    }
+
+    render() {
+        let isDisabled = (this.state.loading || this.isValid() === false);
+
+        return (
+            <div className="UnlockWalletViaMnemonicPhrase">
+                <div className="UnlockWalletViaMnemonicPhrase__title">
+                    Please enter your 12 word phrase
+                </div>
+
+                <textarea className="UnlockWalletViaMnemonicPhrase__mnemonic"
+                          name="mnemonic"
+                          value={this.state.mnemonic}
+                          onChange={this.handleChange.bind(this)}
+                />
+
+                <div className="UnlockWalletViaMnemonicPhrase__mnemonic-instructions">
+                    Please separate each Mnemonic Phrase with a space.
+                </div>
+
+                <input className="UnlockWalletViaMnemonicPhrase__password-input"
+                       placeholder="Enter temporary session password"
+                       name="password"
+                       type="password"
+                       value={this.state.password}
+                       ref={this.passwordInput}
+                       onChange={this.handleChange.bind(this)}
+                />
+
+                <div className="UnlockWalletViaMnemonicPhrase__footer">
+                    <GradientButton title="Unlock Wallet"
+                                    loading={this.state.loading}
+                                    onClick={this.prepareForUnlock.bind(this)}
+                                    disabled={isDisabled}
+                    />
+                </div>
+            </div>
+        );
+    }
+}
+
+class UnlockWalletViaKeystoreFile extends React.Component {
+    constructor(){
+        super();
+
+        this.fileInput = React.createRef();
+        this.passwordInput = React.createRef();
+
+
+        this.state = {
+            password: "",
+            loading: false
+        }
+    }
+
+    isValid(){
+        let keystoreFile = this.keystoreFile();
+
+        return keystoreFile !== null && this.state.password.length > 0;
+    }
+
+    keystoreFile(){
+        let fileInput = this.fileInput.current;
+
+        return (fileInput ? fileInput.files[0] : null);
+    }
+
+    handleChange(event){
+        let name = event.target.name;
+        let value = event.target.value;
+
+        this.setState({[name]: value});
+
+        if(name === "file"){
+            this.passwordInput.current.focus();
+        }
+    }
+
+    unlockWallet(keystore){
+        Wallet.unlockWallet("keystore-file", this.state.password, {keystore: keystore});
+
+        this.setState({loading: false});
+    }
+
+    onKeystoreFileLoad(e){
+        let keystoreData = e.target.result;
+
+        setTimeout(() => {
+            this.unlockWallet(keystoreData)
+        }, 1500);
+    }
+
+    prepareForUnlock(){
+        let fileToLoad = this.keystoreFile();
+        let fileReader = new FileReader();
+
+        this.setState({loading: true});
+
+        fileReader.onload = this.onKeystoreFileLoad.bind(this);
+        fileReader.readAsText(fileToLoad, "UTF-8");
+    }
+
+    render() {
+        let keystoreFile = this.keystoreFile();
+        let fileInputClassName = classNames("UnlockWalletViaKeystoreFile__file-input", {
+            "UnlockWalletViaKeystoreFile__file-input--has-file": (keystoreFile !== null)
+        });
+        let isDisabled = (this.state.loading || this.isValid() === false);
+
+        console.log("this.state.loading == " + this.state.loading);
+        console.log("this.isValid == " + this.isValid());
+        console.log("isDisabled == " + isDisabled);
+
+        return (
+            <div className="UnlockWalletViaKeystoreFile">
+                <div className="UnlockWalletViaKeystoreFile__title">
+                    Please select your keystore file
+                </div>
+
+                <label htmlFor="file-upload" className={fileInputClassName}>
+                    <input id="file-upload"
+                           type="file"
+                           name="file"
+                           ref={this.fileInput}
+                           onChange={this.handleChange.bind(this)}
+                    />
+                    Upload Keystore File
+                </label>
+
+                <input className="UnlockWalletViaKeystoreFile__password-input"
+                       placeholder="Enter your wallet password"
+                       name="password"
+                       type="password"
+                       value={this.state.password}
+                       ref={this.passwordInput}
+                       onChange={this.handleChange.bind(this)}
+                />
+
+                <div className="UnlockWalletViaKeystoreFile__footer">
+                    <GradientButton title="Unlock Wallet"
+                                    loading={this.state.loading}
+                                    onClick={this.prepareForUnlock.bind(this)}
+                                    disabled={isDisabled}
+                    />
+                </div>
+            </div>
+        );
+    }
+}
+
+class UnlockWalletCard extends React.Component {
+    render() {
+        let unlockWalletStrategyContent = null;
+        console.log("unlockStrategy == " + this.props.unlockStrategy);
+
+        if(this.props.unlockStrategy === "keystore-file"){
+            unlockWalletStrategyContent = (
+                <UnlockWalletViaKeystoreFile/>
+            );
+        }
+        else if(this.props.unlockStrategy === "mnemonic-phrase"){
+            unlockWalletStrategyContent = (
+                <UnlockWalletViaMnemonicPhrase/>
+            );
+        }
+        else if(this.props.unlockStrategy === "private-key"){
+            unlockWalletStrategyContent = (
+                <UnlockWalletViaPrivateKey/>
+            );
+        }
+
         return (
             <div className="UnlockWalletCard">
                 <div className="UnlockWalletCard__content">
                     <div className="UnlockWalletCard__header">
                         <TabBar centered={true}
-                                className="UnlockWalletCard__tab-bar"
-                        >
+                                className="UnlockWalletCard__tab-bar">
                             <TabBarItem
                                 title="Keystore File"
                                 href="/unlock/keystore-file"
@@ -71,13 +311,7 @@ class UnlockWalletCard extends React.Component {
                         </TabBar>
                     </div>
 
-
-                    <div className="UnlockWalletCard__footer">
-                        <GradientButton title="Unlock Wallet"
-                                        onClick={this.unlockWallet.bind(this)}
-                                        disabled={(this.isValid() === false)}
-                        />
-                    </div>
+                    {unlockWalletStrategyContent}
                 </div>
             </div>
         );
@@ -86,6 +320,8 @@ class UnlockWalletCard extends React.Component {
 
 class UnlockWalletPage extends React.Component {
     render() {
+        let unlockStrategy = this.props.match.params.unlockStrategy;
+
         return (
             <div className="UnlockWalletPage">
                 <div className="UnlockWalletPage__wrapper">
@@ -93,7 +329,7 @@ class UnlockWalletPage extends React.Component {
                         Unlock Your Wallet
                     </div>
 
-                    <UnlockWalletCard/>
+                    <UnlockWalletCard unlockStrategy={unlockStrategy}/>
 
                     <div className="UnlockWalletPage__subtitle">
                         <span>Don't have a wallet?</span>
