@@ -1,9 +1,13 @@
 import React from "react";
 import './WalletTokenListItem.css';
 import {NavLink} from 'react-router-dom'
+import {BigNumber} from 'bignumber.js';
 
 class WalletTokenListItem extends React.Component {
     render() {
+        let tokenBalance = (this.props.tokenBalance || "0");
+        tokenBalance = new BigNumber(tokenBalance).toFixed(6);
+
         return (
             <NavLink to={this.props.token.href}
                      className="WalletTokenListItem"
@@ -17,7 +21,7 @@ class WalletTokenListItem extends React.Component {
                             {this.props.token.name}
                         </div>
                         <div className="WalletTokenListItem__token-balance">
-                            {this.props.tokenBalance || "0.0000"}
+                            {tokenBalance}
                         </div>
                     </div>
                 </div>
