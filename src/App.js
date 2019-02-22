@@ -5,8 +5,31 @@ import TabBar from './components/TabBar'
 import TabBarItem from './components/TabBarItem'
 import {Pages, WalletPages} from './Pages'
 import Modals from "./components/Modals";
+import {showModal} from "./state/actions/Modals";
+import ModalTypes from "./constants/ModalTypes";
+import {store} from "./state";
 
 class WalletTabBar extends Component {
+    constructor(){
+        super();
+
+        this.onSendClick = this.onSendClick.bind(this);
+        this.onReceiveClick = this.onReceiveClick.bind(this);
+    }
+
+    onSendClick(){
+        store.dispatch(showModal({
+            type: ModalTypes.SEND,
+        }));
+    }
+
+    onReceiveClick(){
+        store.dispatch(showModal({
+            type: ModalTypes.RECEIVE,
+        }));
+    }
+
+
     render() {
         return (
             <TabBar>
@@ -18,13 +41,13 @@ class WalletTabBar extends Component {
                 />
                 <TabBarItem
                     title="Send"
-                    onClick={function(){}}
+                    onClick={this.onSendClick}
                     normalIconUrl="/img/tab-bar/send@2x.png"
                     activeIconUrl="/img/tab-bar/send-active@2x.png"
                 />
                 <TabBarItem
                     title="Receive"
-                    onClick={function(){}}
+                    onClick={this.onReceiveClick}
                     normalIconUrl="/img/tab-bar/receive@2x.png"
                     activeIconUrl="/img/tab-bar/receive-active@2x.png"
                 />

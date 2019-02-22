@@ -16,3 +16,7 @@
 .Modal{
 
 }
+
+.Modal:focus {
+    outline: none;
+}

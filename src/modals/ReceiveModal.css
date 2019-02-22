@@ -1,0 +1,48 @@
+.ReceiveModal{
+    display: flex;
+    flex-direction: column;
+    background-color: #242F4B;
+    width: 450px;
+    height: 500px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.ReceiveModal__title{
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
+}
+
+.ReceiveModal__public-address-title{
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    color: #92A2D6;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.ReceiveModal__public-address{
+    font-size: 17px;
+    font-weight: normal;
+    text-align: center;
+    color: white;
+}
+
+.ReceiveModal__buttons{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.ReceiveModal__qr{
+    display: flex;
+    align-self: center;
+    width: 160px;
+    height: 160px;
+}

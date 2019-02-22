@@ -10,6 +10,10 @@
     cursor: pointer;
 }
 
+.GhostButton:hover{
+    background-color: rgba(0,0,0,0.05);
+}
+
 .GhostButton__icon{
     height: 30px;
     margin-right: 8px;

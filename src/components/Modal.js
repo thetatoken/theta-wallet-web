@@ -4,8 +4,7 @@ import './Modal.css';
 export default class Modal extends React.Component {
     render() {
         return (
-            <div>
-                I am the modal base...
+            <div className="Modal">
                 {this.props.children}
             </div>
         )

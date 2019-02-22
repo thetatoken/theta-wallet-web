@@ -1,31 +1,16 @@
 import React from 'react'
 import './Modals.css';
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 import ReactModal from 'react-modal';
 import _ from 'lodash';
 import {hideModal} from "../state/actions/Modals";
 import ModalTypes from "../constants/ModalTypes";
-import Modal from './Modal'
-
-class ReceiveModal extends React.Component {
-    render() {
-        return (
-            <Modal>
-                <div>
-                    I am the receive modal
-                </div>
-            </Modal>
-        )
-    }
-}
-
-
-const mapStateToProps = state => ({
-    modals: state.modals.modals
-});
+import ReceiveModal from "../modals/ReceiveModal";
+import SendModal from "../modals/SendModal";
 
 const ModalComponentByType = {
-    [ModalTypes.RECEIVE]: ReceiveModal
+    [ModalTypes.RECEIVE]: ReceiveModal,
+    [ModalTypes.SEND]: SendModal
 };
 
 class ModalContainer extends React.Component {
@@ -33,17 +18,13 @@ class ModalContainer extends React.Component {
         let modal = this.props.modal;
         let ModalComponent = (modal ? modal.component : null);
 
-        console.log("ModalContainer :: modal == ");
-        console.log(modal);
-
         return (
             <ReactModal
                 isOpen={modal !== null}
                 onRequestClose={this.props.closeModal}
                 ariaHideApp={false}
                 overlayClassName="ModalOverlay"
-                className="Modal"
-            >
+                className="Modal">
                 {
                     modal &&
                     <ModalComponent
@@ -57,22 +38,21 @@ class ModalContainer extends React.Component {
 }
 
 class Modals extends React.Component {
-    constructor(){
+    constructor() {
         super();
 
         this.closeModal = this.closeModal.bind(this);
     }
 
     closeModal() {
-        console.log("Modals :: closeModal");
         this.props.dispatch(hideModal());
     }
 
-    getModal(idx){
+    getModal(idx) {
         let modalData = _.get(this.props.modals, [idx], null);
-        if(modalData){
+        if (modalData) {
             modalData = Object.assign({}, modalData, {
-               component: ModalComponentByType[modalData.type]
+                component: ModalComponentByType[modalData.type]
             });
         }
 
@@ -94,5 +74,9 @@ class Modals extends React.Component {
         )
     }
 }
+
+const mapStateToProps = state => ({
+    modals: state.modals.modals
+});
 
 export default connect(mapStateToProps, null)(Modals)

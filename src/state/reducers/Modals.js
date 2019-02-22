@@ -12,10 +12,12 @@ const INITIAL_STATE = {
 export const modalsReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case actionTypes.SHOW_MODAL:{
+            let { type, props } = action.modal;
+
             return Object.assign({}, state, {
                 modals: [...state.modals, {
-                    type: action.type,
-                    props: action.props
+                    type: type,
+                    props: props
                 }]
             });
         }
