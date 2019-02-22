@@ -13,7 +13,7 @@ import TokenTypes from "../../constants/TokenTypes";
 
 
 export function fetchERC20Transactions() {
-    let address = Wallet.getWallet().address;
+    let address = Wallet.getWalletAddress();
 
     return reduxFetch(FETCH_TRANSACTIONS_ERC20, function () {
         return Api.fetchTransactions(address, {type: TokenTypes.ERC20_THETA});
@@ -21,7 +21,7 @@ export function fetchERC20Transactions() {
 }
 
 export function fetchETHTransactions() {
-    let address = Wallet.getWallet().address;
+    let address = Wallet.getWalletAddress();
 
     return reduxFetch(FETCH_TRANSACTIONS_ETH, function () {
         return Api.fetchTransactions(address, {type: TokenTypes.ETHEREUM});

@@ -5,7 +5,7 @@ import Wallet from '../../services/Wallet'
 
 const getTransactionsByType = (state) => state.transactions.transactionsByType;
 const getLocalTransactionsByID = (state) => state.transactions.localTransactionsByID;
-const getWalletAddress = (state) => Wallet.getWallet().address;
+const getWalletAddress = (state) => Wallet.getWalletAddress();
 
 function transformTransaction(walletAddress, transaction) {
     console.log("transformTransaction :: transaction == ");
@@ -20,9 +20,11 @@ function getTransactions(walletAddress, type, transactionsByType, localTransacti
     console.log("transactionsByType[type] == ");
     console.log(transactionsByType[type]);
 
+    walletAddress = (walletAddress ? walletAddress.toLowerCase() : null);
+
     //Merge these transactions and sort by timestamp
     let scopedTransactions = transactionsByType[type];
-    let txTransformer = _.partial(transformTransaction, walletAddress.toLowerCase());
+    let txTransformer = _.partial(transformTransaction, walletAddress);
     let transactions = _(scopedTransactions)
         .sortBy(tx => parseInt(tx.time_stamp))
         .reverse()

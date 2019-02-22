@@ -16,3 +16,45 @@
 .NavBar--is-centered{
     justify-content: center;
 }
+
+.NavBar__account{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.NavBar__wallet{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.NavBar__wallet-title{
+    font-size: 14px;
+    font-weight: normal;
+    color: #8A8FB5;
+    margin-right: 6px;
+}
+
+.NavBar__wallet-address{
+    font-size: 14px;
+    font-weight: normal;
+    color: white;
+}
+
+.NavBar__wallet-copy-address-icon{
+    cursor: pointer;
+    margin-left: 6px;
+    margin-top: 2px;
+}
+
+.NavBar__wallet-copy-address-icon img{
+    height: 19px;
+}
+
+.NavBar__logout{
+    color: #8A8FB5;
+    margin-top: 6px;
+    cursor: pointer;
+    transition: opacity, 0.2s, ease-in-out;
+}

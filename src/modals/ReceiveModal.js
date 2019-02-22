@@ -1,13 +1,12 @@
 import React from 'react'
 import './ReceiveModal.css';
-import _ from 'lodash';
 import Modal from '../components/Modal'
 import Wallet from '../services/Wallet'
 import GhostButton from '../components/buttons/GhostButton'
 
 export default class ReceiveModal extends React.Component {
     render() {
-        let address = _.get(Wallet.getWallet(), ['address'], "0x");
+        let address = Wallet.getWalletAddress();
         let qrCodeURL = `https://chart.googleapis.com/chart?chs=160x160&cht=qr&chl=${address}&choe=UTF-8&chld=L|0`;
 
         return (

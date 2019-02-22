@@ -6,7 +6,7 @@ import TemporaryState from "../../services/TemporaryState";
 import {resetTransactionsState} from './Transactions'
 
 export function fetchWalletBalances(){
-    let address = Wallet.getWallet().address;
+    let address = Wallet.getWalletAddress();
 
     return reduxFetch(FETCH_WALLET_BALANCES, function(){
         return Api.fetchWallet(address);
@@ -84,6 +84,23 @@ export function clearWallet(){
         //Delete the temp state
         TemporaryState.setMnemonic(null);
         TemporaryState.setWallet(null);
+
+        //Reset wallet state
+        dispatch(resetWalletState());
+
+        //Reset transactions state
+        dispatch(resetTransactionsState());
+    };
+}
+
+
+export function logout(){
+    return async function(dispatch, getState){
+        //Clear the wallet
+        Wallet.setWallet(null);
+
+        //Delete the temp state
+        TemporaryState.setWalletData(null);
 
         //Reset wallet state
         dispatch(resetWalletState());

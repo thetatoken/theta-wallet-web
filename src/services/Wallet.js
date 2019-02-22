@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import Web3 from 'web3';
+import _ from "lodash";
 
 const MnemonicPath = "m/44'/500'/0'/0/0";
 
@@ -21,6 +22,10 @@ export default class Wallet {
 
     static getWallet(){
         return this._wallet;
+    }
+
+    static getWalletAddress(){
+        return _.get(this._wallet, ['address'], null);
     }
 
     static async signTransaction(transactionData){

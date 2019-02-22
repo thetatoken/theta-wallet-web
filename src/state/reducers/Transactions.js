@@ -1,6 +1,7 @@
 import * as actionTypes from "../types/Transactions";
 import { zipMap } from "../../utils/Utils";
 import _ from 'lodash';
+import TokenTypes from "../../constants/TokenTypes";
 
 const INITIAL_STATE = {
     isFetchingERC20Transactions : false,
@@ -19,12 +20,12 @@ function pendingTransactionToLocalTransaction(pendingTransaction, hash){
     let type = null;
     let tokenSymbol = null;
 
-    if(pendingTransaction.currency === "erc20 theta"){
-        type = "erc20";
+    if(pendingTransaction.currency === TokenTypes.ERC20_THETA){
+        type = TokenTypes.ERC20_THETA;
         tokenSymbol = "THETA";
     }
-    else if(pendingTransaction.currency === "ethereum"){
-        type = "ethereum";
+    else if(pendingTransaction.currency === TokenTypes.ETHEREUM){
+        type = TokenTypes.ETHEREUM;
         tokenSymbol = "ETH";
     }
 
