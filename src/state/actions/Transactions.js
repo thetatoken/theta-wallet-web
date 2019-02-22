@@ -11,13 +11,17 @@ import {
 import Wallet from "../../services/Wallet";
 
 
-export function fetchERC20Transactions(address) {
+export function fetchERC20Transactions() {
+    let address = Wallet.getWallet().address;
+
     return reduxFetch(FETCH_TRANSACTIONS_ERC20, function () {
         return Api.fetchTransactions(address, {type: "erc20"});
     });
 }
 
-export function fetchETHTransactions(address) {
+export function fetchETHTransactions() {
+    let address = Wallet.getWallet().address;
+
     return reduxFetch(FETCH_TRANSACTIONS_ETH, function () {
         return Api.fetchTransactions(address, {type: "ethereum"});
     });

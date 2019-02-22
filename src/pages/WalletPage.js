@@ -5,11 +5,25 @@ import WalletTokenList from '../components/WalletTokenList'
 import PageHeader from '../components/PageHeader'
 import TransactionList from '../components/TransactionList'
 import {fetchWalletBalances} from "../state/actions/Wallet";
+import {fetchERC20Transactions, fetchETHTransactions} from "../state/actions/Transactions";
 
 
 export class WalletPage extends React.Component {
     componentDidMount(){
         this.props.dispatch(fetchWalletBalances());
+    }
+
+    componentWillReceiveProps(nextProps){
+        let nextTokenType = nextProps.match.params.tokenType;
+
+        if(this.props.match.params.tokenType !== nextTokenType){
+            if(nextTokenType === "erc20"){
+                this.props.dispatch(fetchERC20Transactions());
+            }
+            else if(nextTokenType === "ethereum"){
+                this.props.dispatch(fetchETHTransactions());
+            }
+        }
     }
 
     render() {

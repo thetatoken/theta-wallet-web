@@ -11,6 +11,10 @@ const DEFAULT_HEADERS = {
 export function isResponseSuccessful(response){
     let { status } = response;
 
+    console.log("isResponseSuccessful :: response == ");
+    console.log(response);
+    console.log(status);
+
     return (status === 200 || status === 201 || status === 202 || status === 204);
 }
 

@@ -36,6 +36,8 @@ class UnlockWalletViaPrivateKey extends React.Component {
         Wallet.unlockWallet(WalletUnlockStrategy.PRIVATE_KEY, this.state.password, {privateKey: this.state.privateKey});
 
         this.setState({loading: false});
+
+        this.props.onUnlock();
     }
 
     prepareForUnlock(){
@@ -112,6 +114,8 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
         Wallet.unlockWallet(WalletUnlockStrategy.MNEMONIC_PHRASE, this.state.password, {mnemonic: this.state.mnemonic});
 
         this.setState({loading: false});
+
+        this.props.onUnlock();
     }
 
     prepareForUnlock(){
