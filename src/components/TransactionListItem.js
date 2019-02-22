@@ -1,11 +1,11 @@
 import React from "react";
-import './TransactionsListItem.css';
+import './TransactionListItem.css';
 
 class TransactionListItem extends React.Component {
     render() {
         return (
-            <a className="TransactionsListItem">
-
+            <a className="TransactionListItem">
+                {this.props.transaction.hash}
             </a>
         );
     }
