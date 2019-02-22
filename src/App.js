@@ -4,6 +4,7 @@ import NavBar from './components/NavBar'
 import TabBar from './components/TabBar'
 import TabBarItem from './components/TabBarItem'
 import {Pages, WalletPages} from './Pages'
+import Modals from "./components/Modals";
 
 class WalletTabBar extends Component {
     render() {
@@ -44,6 +45,7 @@ export class App extends Component {
             <div className="App">
                 <NavBar centered={true}/>
                 <Pages/>
+                <Modals/>
             </div>
         );
     }
@@ -52,10 +54,11 @@ export class App extends Component {
 export class WalletApp extends Component {
     render() {
         return (
-            <div className="App">
+            <div className="App WalletApp">
                 <NavBar/>
                 <WalletTabBar/>
                 <WalletPages/>
+                <Modals/>
             </div>
         );
     }

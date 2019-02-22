@@ -6,7 +6,7 @@ import {BigNumber} from 'bignumber.js';
 class WalletTokenListItem extends React.Component {
     render() {
         let tokenBalance = (this.props.tokenBalance || "0");
-        tokenBalance = new BigNumber(tokenBalance).toFixed(6);
+        tokenBalance = new BigNumber(tokenBalance).toString();
 
         return (
             <NavLink to={this.props.token.href}

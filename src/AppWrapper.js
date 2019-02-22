@@ -3,6 +3,7 @@ import {BrowserRouter, Route, Switch} from 'react-router-dom'
 import {Provider} from 'react-redux'
 import {store} from "./state";
 import {App, WalletApp} from './App'
+import Modals from './components/Modals'
 
 class AppWrapper extends Component {
     render() {

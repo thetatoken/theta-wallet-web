@@ -9,13 +9,14 @@ import {
     RESET
 } from "../types/Transactions";
 import Wallet from "../../services/Wallet";
+import TokenTypes from "../../constants/TokenTypes";
 
 
 export function fetchERC20Transactions() {
     let address = Wallet.getWallet().address;
 
     return reduxFetch(FETCH_TRANSACTIONS_ERC20, function () {
-        return Api.fetchTransactions(address, {type: "erc20"});
+        return Api.fetchTransactions(address, {type: TokenTypes.ERC20_THETA});
     });
 }
 
@@ -23,13 +24,13 @@ export function fetchETHTransactions() {
     let address = Wallet.getWallet().address;
 
     return reduxFetch(FETCH_TRANSACTIONS_ETH, function () {
-        return Api.fetchTransactions(address, {type: "ethereum"});
+        return Api.fetchTransactions(address, {type: TokenTypes.ETHEREUM});
     });
 }
 
 export function fetchETHTransaction(txHash) {
     return reduxFetch(FETCH_TRANSACTION, function () {
-        return Api.fetchTransaction(txHash, {network: "ethereum"});
+        return Api.fetchTransaction(txHash, {network: TokenTypes.ETHEREUM});
     });
 }
 
