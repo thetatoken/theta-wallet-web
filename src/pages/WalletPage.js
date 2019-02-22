@@ -44,7 +44,7 @@ export class WalletPage extends React.Component {
         return (
             <div className="WalletPage">
                 <div className="WalletPage__master-view">
-                    <WalletTokenList />
+                    <WalletTokenList balancesByType={this.props.balancesByType}/>
                 </div>
                 <div className="WalletPage__detail-view">
                     <PageHeader title="Transactions"/>
