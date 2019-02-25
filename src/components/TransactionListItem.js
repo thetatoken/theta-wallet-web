@@ -5,6 +5,21 @@ import TransactionStatus from './TransactionStatus'
 import ERC20Badge from './ERC20Badge'
 import TokenTypes from "../constants/TokenTypes";
 
+var truncate = function (fullStr, strLen, separator) {
+    if (fullStr.length <= strLen) return fullStr;
+
+    separator = separator || '...';
+
+    var sepLen = separator.length,
+        charsToShow = strLen - sepLen,
+        frontChars = Math.ceil(charsToShow/2),
+        backChars = Math.floor(charsToShow/2);
+
+    return fullStr.substr(0, frontChars) +
+        separator +
+        fullStr.substr(fullStr.length - backChars);
+};
+
 class TransactionListItem extends React.Component {
     render() {
         let { transaction } = this.props;
@@ -12,6 +27,10 @@ class TransactionListItem extends React.Component {
         let isReceived = (bound === "inbound");
         let iconUrl = `/img/tokens/${type}_small@2x.png`;
         let explorerUrl = `https://etherscan.io/tx/${transaction.hash}`;
+
+        //Truncate the addresses to help reduce the run ons
+        from = truncate(from, 23, '...');
+        to = truncate(to, 23, '...');
 
         return (
             <a className="TransactionListItem"
