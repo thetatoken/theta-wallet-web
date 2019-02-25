@@ -9,6 +9,21 @@
     cursor: pointer;
     transition: all 0.25s ease-in-out;
     text-decoration: none;
+    position: relative;
+}
+
+.WalletTokenListItem__active-indicator{
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 2px;
+    background: #1BDED0; /* Old browsers */
+    background: -moz-linear-gradient(bottom, #22ABE3 0%, #1BDED0 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #22ABE3 0%,#1BDED0 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to top, #22ABE3 0%,#1BDED0 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    background-size: 100%;
+    display: none;
 }
 
 .WalletTokenListItem__token-container{
@@ -60,4 +75,8 @@
 
 .WalletTokenListItem:hover{
     background-color: rgba(59,66,99, 0.25);
+}
+
+.WalletTokenListItem--is-active .WalletTokenListItem__active-indicator{
+    display: block;
 }
