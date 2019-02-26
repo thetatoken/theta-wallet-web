@@ -1,11 +1,8 @@
 import { ethers } from 'ethers';
-import Web3 from 'web3';
 import _ from "lodash";
+import Ethereum from './Ethereum'
 
 const MnemonicPath = "m/44'/500'/0'/0/0";
-
-const rpcURL = "https://mainnet.infura.io/v3/40980e2189924c8abfc5f60dd2e5dc4b";
-const web3 = new Web3(rpcURL);
 
 export const WalletUnlockStrategy = {
     KEYSTORE_FILE: 'keystore-file',
@@ -48,10 +45,14 @@ export default class Wallet {
     }
 
     static encryptToKeystore(privateKey, password){
+        let web3 = Ethereum.getWeb3();
+
         return web3.eth.accounts.encrypt(privateKey, password);
     }
 
     static decryptFromKeystore(keystoreJsonV3, password){
+        let web3 = Ethereum.getWeb3();
+
         try{
             return web3.eth.accounts.decrypt(keystoreJsonV3, password);
         }
@@ -71,6 +72,8 @@ export default class Wallet {
     }
 
     static walletFromPrivateKey(privateKey){
+        let web3 = Ethereum.getWeb3();
+
         try {
             return web3.eth.accounts.privateKeyToAccount(privateKey);
         } catch (exception) {

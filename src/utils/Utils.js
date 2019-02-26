@@ -1,4 +1,3 @@
-
 /**
  * Returns a new object with vals mapped to keys
  * @param {Array} keys

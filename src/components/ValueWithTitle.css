@@ -1,0 +1,21 @@
+.ValueWithTitle{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.ValueWithTitle__title{
+    font-size: 18px;
+    font-weight: normal;
+    line-height: 21px;
+    color: #92A2D6;
+    text-align: left;
+}
+
+.ValueWithTitle__value{
+    font-size: 17px;
+    font-weight: normal;
+    line-height: 21px;
+    color: white;
+    text-align: left;
+}
