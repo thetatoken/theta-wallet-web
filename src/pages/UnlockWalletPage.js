@@ -19,7 +19,11 @@ class UnlockWalletViaPrivateKey extends React.Component {
             privateKey: "",
             password: "",
             loading: false
-        }
+        };
+
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleUnlockClick = this.handleUnlockClick.bind(this);
     }
 
     isValid(){
@@ -31,6 +35,12 @@ class UnlockWalletViaPrivateKey extends React.Component {
         let value = event.target.value;
 
         this.setState({[name]: value});
+    }
+
+    handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            this.handleUnlockClick();
+        }
     }
 
     unlockWallet(){
@@ -47,6 +57,12 @@ class UnlockWalletViaPrivateKey extends React.Component {
         }, 1500);
     }
 
+    handleUnlockClick(){
+        if(this.isValid()){
+            this.prepareForUnlock();
+        }
+    }
+
     render() {
         let isDisabled = (this.state.loading || this.isValid() === false);
 
@@ -59,7 +75,7 @@ class UnlockWalletViaPrivateKey extends React.Component {
                 <textarea className="UnlockWalletViaPrivateKey__private-key"
                           name="privateKey"
                           value={this.state.privateKey}
-                          onChange={this.handleChange.bind(this)}
+                          onChange={this.handleChange}
                 />
 
                 <div className="UnlockWalletViaPrivateKey__private-key-instructions">
@@ -72,13 +88,14 @@ class UnlockWalletViaPrivateKey extends React.Component {
                        type="password"
                        value={this.state.password}
                        ref={this.passwordInput}
-                       onChange={this.handleChange.bind(this)}
+                       onChange={this.handleChange}
+                       onKeyPress={this.handleKeyPress}
                 />
 
                 <div className="UnlockWalletViaPrivateKey__footer">
                     <GradientButton title="Unlock Wallet"
                                     loading={this.state.loading}
-                                    onClick={this.prepareForUnlock.bind(this)}
+                                    onClick={this.handleUnlockClick}
                                     disabled={isDisabled}
                     />
                 </div>
@@ -95,7 +112,11 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
             mnemonic: "",
             password: "",
             loading: false
-        }
+        };
+
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleUnlockClick = this.handleUnlockClick.bind(this);
     }
 
     isValid(){
@@ -107,6 +128,12 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
         let value = event.target.value;
 
         this.setState({[name]: value});
+    }
+
+    handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            this.handleUnlockClick();
+        }
     }
 
     unlockWallet(){
@@ -123,6 +150,12 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
         }, 1500);
     }
 
+    handleUnlockClick(){
+        if(this.isValid()){
+            this.prepareForUnlock();
+        }
+    }
+
     render() {
         let isDisabled = (this.state.loading || this.isValid() === false);
 
@@ -135,7 +168,7 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
                 <textarea className="UnlockWalletViaMnemonicPhrase__mnemonic"
                           name="mnemonic"
                           value={this.state.mnemonic}
-                          onChange={this.handleChange.bind(this)}
+                          onChange={this.handleChange}
                 />
 
                 <div className="UnlockWalletViaMnemonicPhrase__mnemonic-instructions">
@@ -148,13 +181,14 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
                        type="password"
                        value={this.state.password}
                        ref={this.passwordInput}
-                       onChange={this.handleChange.bind(this)}
+                       onChange={this.handleChange}
+                       onKeyPress={this.handleKeyPress}
                 />
 
                 <div className="UnlockWalletViaMnemonicPhrase__footer">
                     <GradientButton title="Unlock Wallet"
                                     loading={this.state.loading}
-                                    onClick={this.prepareForUnlock.bind(this)}
+                                    onClick={this.handleUnlockClick}
                                     disabled={isDisabled}
                     />
                 </div>
@@ -174,7 +208,11 @@ class UnlockWalletViaKeystoreFile extends React.Component {
         this.state = {
             password: "",
             loading: false
-        }
+        };
+
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleUnlockClick = this.handleUnlockClick.bind(this);
     }
 
     isValid(){
@@ -197,6 +235,12 @@ class UnlockWalletViaKeystoreFile extends React.Component {
 
         if(name === "file"){
             this.passwordInput.current.focus();
+        }
+    }
+
+    handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            this.handleUnlockClick();
         }
     }
 
@@ -224,6 +268,12 @@ class UnlockWalletViaKeystoreFile extends React.Component {
         fileReader.readAsText(fileToLoad, "UTF-8");
     }
 
+    handleUnlockClick(){
+        if(this.isValid()){
+            this.prepareForUnlock();
+        }
+    }
+
     render() {
         let keystoreFile = this.keystoreFile();
         let fileInputClassName = classNames("UnlockWalletViaKeystoreFile__file-input", {
@@ -242,7 +292,7 @@ class UnlockWalletViaKeystoreFile extends React.Component {
                            type="file"
                            name="file"
                            ref={this.fileInput}
-                           onChange={this.handleChange.bind(this)}
+                           onChange={this.handleChange}
                     />
                     Upload Keystore File
                 </label>
@@ -253,13 +303,14 @@ class UnlockWalletViaKeystoreFile extends React.Component {
                        type="password"
                        value={this.state.password}
                        ref={this.passwordInput}
-                       onChange={this.handleChange.bind(this)}
+                       onChange={this.handleChange}
+                       onKeyPress={this.handleKeyPress}
                 />
 
                 <div className="UnlockWalletViaKeystoreFile__footer">
                     <GradientButton title="Unlock Wallet"
                                     loading={this.state.loading}
-                                    onClick={this.prepareForUnlock.bind(this)}
+                                    onClick={this.handleUnlockClick}
                                     disabled={isDisabled}
                     />
                 </div>
