@@ -231,11 +231,9 @@ export class EthereumNetworkTxForm extends React.Component {
             this.validateAddress();
         }
 
-        if (this.state.amount !== prevState.amount
-            || this.state.currency !== prevState.currency
-            || this.state.gasPrice !== prevState.gasPrice) {
+        if (this.state.amount !== prevState.amount || this.state.gasPrice !== prevState.gasPrice) {
             this.validateAmount();
-
+            
             this.updateTransactionFee();
         }
     }

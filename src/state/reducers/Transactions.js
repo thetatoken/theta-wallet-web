@@ -20,11 +20,11 @@ function pendingTransactionToLocalTransaction(pendingTransaction, hash){
     let type = null;
     let tokenSymbol = null;
 
-    if(pendingTransaction.currency === TokenTypes.ERC20_THETA){
+    if(pendingTransaction.tokenType === TokenTypes.ERC20_THETA){
         type = TokenTypes.ERC20_THETA;
         tokenSymbol = "THETA";
     }
-    else if(pendingTransaction.currency === TokenTypes.ETHEREUM){
+    else if(pendingTransaction.tokenType === TokenTypes.ETHEREUM){
         type = TokenTypes.ETHEREUM;
         tokenSymbol = "ETH";
     }
@@ -90,7 +90,7 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
         case actionTypes.CREATE_TRANSACTION_START:{
             return Object.assign({}, state, {
                 isCreatingTransaction: true,
-                pendingTransaction: action.metadata.transactionData
+                pendingTransaction: action.metadata.txData
             });
         }
         case actionTypes.CREATE_TRANSACTION_END:{
