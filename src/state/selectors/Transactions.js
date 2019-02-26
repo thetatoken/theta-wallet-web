@@ -37,7 +37,10 @@ function getTransactions(walletAddress, type, transactionsByType, localTransacti
         return !transactionHashes.has(transaction.hash) && transaction["type"] === type;
     });
 
-    return _.flatten([localTransactions, transactions]);
+    let allTransactions = _.flatten([localTransactions, transactions]);
+
+    //Ensure all transactiosn are unique
+    return _.uniqBy(allTransactions, 'hash')
 }
 
 export const getERC20Transactions = createSelector(
