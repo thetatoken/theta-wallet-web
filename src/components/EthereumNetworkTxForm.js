@@ -64,13 +64,10 @@ export class EthereumNetworkTxForm extends React.Component {
         }
         else {
             if (name === "amount") {
-                console.log("AMOUNT!!!!!!!!");
                 value = value.replace(/[^0-9.]/g, '');
             }
 
             this.setState({[name]: value}, () => {
-                console.log("SET STATE FINISHED...");
-
                 this.validate();
 
                 this.updateTransactionFee();
@@ -102,11 +99,7 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     async updateGasPrice() {
-        console.log("updateGasPrice :: before gasPrice == ");
-
         let gasPrice = await Ethereum.getGasPrice();
-
-        console.log("updateGasPrice :: gasPrice == " + gasPrice);
 
         this.setState({gasPrice: gasPrice});
 
@@ -130,12 +123,6 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     isValid() {
-        // console.log("this.state.to.length == " + this.state.to.length);
-        // console.log("this.state.amount.length == " + this.state.amount.length);
-        // console.log("this.state.invalidAddress == " + this.state.invalidAddress);
-        // console.log("this.state.insufficientFunds == " + this.state.insufficientFunds);
-        // console.log("this.state.invalidDecimalPlaces == " + this.state.invalidDecimalPlaces);
-
         return (
             this.state.to.length > 0 &&
             this.state.amount.length > 0 &&
@@ -145,17 +132,9 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     async updateTransactionFee() {
-        console.log("updateTransactionFee!!!!!!!!");
-
         if (this.isValid()) {
-            console.log("updateTransactionFee :: isValid == true!!!!!!!!");
-
             let gasPrice = this.state.gasPrice;
             let gasLimit = await this.updateGasLimit();
-
-            console.log("updateTransactionFee :: gasPrice == " + gasPrice);
-            console.log("updateTransactionFee :: gasLimit == " + gasLimit);
-
 
             if (gasPrice != null && gasLimit != null) {
                 let transactionFee = await Ethereum.getTransactionFee(this.state.gasPrice, gasLimit);
@@ -170,8 +149,6 @@ export class EthereumNetworkTxForm extends React.Component {
             }
         }
         else {
-            console.log("updateTransactionFee :: isValid == false!!!!!!!!!!");
-
             this.setState({transactionFee: null});
 
             return null;
@@ -266,8 +243,6 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     componentDidMount() {
-        console.log("componentDidMount!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
         this.updateGasPrice();
     }
 
