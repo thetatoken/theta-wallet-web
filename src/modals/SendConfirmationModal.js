@@ -31,8 +31,9 @@ export class SendConfirmationModal extends React.Component {
     }
 
     render() {
-        var { tokenType, amount, to, gas, gasPrice, transactionFee } = this.props.transaction;
-
+        let { tokenType, amount, to, gas, gasPrice, transactionFee } = this.props.transaction;
+        let isValid = this.state.password.length > 0;
+        let isLoading = this.props.isCreatingTransaction;
         let renderDataRow = (title, value) =>{
             return (
                 <div className="SendConfirmationModal__row">
@@ -79,8 +80,9 @@ export class SendConfirmationModal extends React.Component {
                     </div>
 
                     <GradientButton title="Confirm & Send"
+                                    disabled={isLoading || isValid === false}
                                     onClick={this.handleSendClick}
-                                    loading={this.props.isCreatingTransaction}
+                                    loading={isLoading}
                     />
                 </div>
             </Modal>
