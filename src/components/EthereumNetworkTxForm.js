@@ -253,7 +253,17 @@ export class EthereumNetworkTxForm extends React.Component {
                 </a>
             </React.Fragment>
         );
+
         let isValid = this.isValid();
+        let toError = this.state.invalidAddress ? "Invalid address" : null;
+        let amountError = null;
+
+        if(this.state.insufficientFunds){
+            amountError = "Insufficient funds";
+        }
+        else if(this.state.invalidDecimalPlaces){
+            amountError = "Invalid denomination";
+        }
 
         return (
             <div className="EthereumNetworkTxForm">
@@ -264,10 +274,12 @@ export class EthereumNetworkTxForm extends React.Component {
                         <option value={TokenTypes.ETHEREUM}>{EthereumTitle}</option>
                     </select>
                 </FormInputContainer>
-                <FormInputContainer title="To">
+                <FormInputContainer title="To"
+                                    error={toError}>
                     <input className="BottomBorderInput" value={this.state.to} onChange={this.handleChange} name="to"/>
                 </FormInputContainer>
-                <FormInputContainer title="Amount">
+                <FormInputContainer title="Amount"
+                                    error={amountError}>
                     <input className="BottomBorderInput" type="number" value={this.state.amount}
                            onChange={this.handleChange} name="amount"/>
                 </FormInputContainer>

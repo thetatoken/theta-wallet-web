@@ -11,6 +11,9 @@ export default class FormInputContainer extends React.Component {
                 <div className="FormInputContainer__input-container">
                     {this.props.children}
                 </div>
+                <div className="FormInputContainer__error">
+                    {this.props.error}
+                </div>
             </div>
         )
     }
