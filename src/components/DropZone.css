@@ -27,7 +27,7 @@
     transform: translateX(-50%);
     box-sizing:border-box;
     z-index: 0;
-    border: 8px dashed rgba(112,119, 163, 0.50);
+    border: 6px dashed rgba(112,119, 163, 0.50);
     border-radius: 30px;
     align-self: center;
 }
