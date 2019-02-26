@@ -6,6 +6,8 @@
 }
 
 .FormInputContainer__title{
+    display: flex;
+    flex-direction: row;
     font-size: 18px;
     font-weight: normal;
     line-height: 21px;

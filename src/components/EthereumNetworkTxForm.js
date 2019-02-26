@@ -35,7 +35,7 @@ export class EthereumNetworkTxForm extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleGasDetailsClick = this.handleGasDetailsClick.bind(this);
         this.handleSendClick = this.handleSendClick.bind(this);
-        this.handleSendEntireBalanceClick = this.handleSendEntireBalanceClick.bind(this);
+        this.handleEntireBalanceClick = this.handleEntireBalanceClick.bind(this);
     }
 
     handleChange(event) {
@@ -151,7 +151,7 @@ export class EthereumNetworkTxForm extends React.Component {
         }
     }
 
-    async calculateSendEntireEtherBalance() {
+    async calculateEntireEtherBalance() {
         let transactionFee = await this.updateTransactionFee();
         let balance = this.props.balancesByType[TokenTypes.ETHEREUM];
 
@@ -166,7 +166,7 @@ export class EthereumNetworkTxForm extends React.Component {
         }
     }
 
-    async handleSendEntireBalanceClick() {
+    async handleEntireBalanceClick() {
         if (this.state.tokenType === TokenTypes.ERC20_THETA) {
             let balance = this.props.balancesByType[TokenTypes.ERC20_THETA];
 
@@ -177,11 +177,13 @@ export class EthereumNetworkTxForm extends React.Component {
         else if (this.state.tokenType === TokenTypes.ETHEREUM) {
             let balance = this.props.balancesByType[TokenTypes.ETHEREUM];
 
-            this.setState({
-                amount: balance
-            }, () => {
-                this.calculateSendEntireEtherBalance()
-            });
+            if(parseFloat(balance) !== 0.0){
+                this.setState({
+                    amount: balance
+                }, () => {
+                    this.calculateEntireEtherBalance()
+                });
+            }
         }
     }
 
@@ -205,18 +207,19 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     async validateAmount() {
+        let amountFloat = parseFloat(this.state.amount);
         let erc20ThetaBalance = this.props.balancesByType[TokenTypes.ERC20_THETA];
         let ethereumBalance = this.props.balancesByType[TokenTypes.ETHEREUM];
         let balance = null;
 
         if (this.state.tokenType === TokenTypes.ERC20_THETA) {
             balance = erc20ThetaBalance;
-        } else if (this.state.tokenType === TokenTypes.Ethereum) {
+        } else if (this.state.tokenType === TokenTypes.ETHEREUM) {
             balance = ethereumBalance;
         }
 
         this.setState({
-            insufficientFunds: parseFloat(this.state.amount) > parseFloat(balance),
+            insufficientFunds: (amountFloat > parseFloat(balance) || amountFloat < 0.0),
             invalidDecimalPlaces: !hasValidDecimalPlaces(this.state.amount, 18)
         }, () => {
             this.updateTransactionFee();
@@ -242,6 +245,7 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     render() {
+        let hasToAddress = (this.state.to !== null && this.state.to !== '' && this.state.invalidAddress === false);
         let ERC20ThetaTitle = `ERC20 Theta (${ this.props.balancesByType[TokenTypes.ERC20_THETA] })`;
         let EthereumTitle = `Ethereum (${ this.props.balancesByType[TokenTypes.ETHEREUM] })`;
         let transactionFeeValueContent = (
@@ -251,6 +255,18 @@ export class EthereumNetworkTxForm extends React.Component {
                    onClick={this.handleGasDetailsClick}>
                     {this.state.showGasDetails ? "Hide Gas Details" : "Show Gas Details"}
                 </a>
+            </React.Fragment>
+        );
+        let amountTitleContent = (
+            <React.Fragment>
+                <span>Amount</span>
+                {
+                    hasToAddress &&
+                    <a className="EthereumNetworkTxForm__entire-balance"
+                       onClick={this.handleEntireBalanceClick}>
+                        Entire Balance
+                    </a>
+                }
             </React.Fragment>
         );
 
@@ -278,15 +294,11 @@ export class EthereumNetworkTxForm extends React.Component {
                                     error={toError}>
                     <input className="BottomBorderInput" value={this.state.to} onChange={this.handleChange} name="to"/>
                 </FormInputContainer>
-                <FormInputContainer title="Amount"
+                <FormInputContainer title={amountTitleContent}
                                     error={amountError}>
                     <input className="BottomBorderInput" type="number" value={this.state.amount}
                            onChange={this.handleChange} name="amount"/>
                 </FormInputContainer>
-                <a className="EthereumNetworkTxForm__send-entire-balance"
-                   onClick={this.handleSendEntireBalanceClick}>
-                    Send Entire Balance
-                </a>
 
                 <div className="EthereumNetworkTxForm__fee-container">
                     <div className="">

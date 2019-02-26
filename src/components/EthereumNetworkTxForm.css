@@ -10,19 +10,20 @@
     width: 100%;
 }
 
-.EthereumNetworkTxForm__send-entire-balance{
+.EthereumNetworkTxForm__entire-balance{
     display: flex;
     align-self: flex-start;
     text-align: left;
     color: white;
     font-size: 13px;
     cursor: pointer;
+    margin-left: 12px;
 }
 
 .EthereumNetworkTxForm__fee-container{
     display: flex;
     flex-direction: column;
-    margin-top: 40px;
+    margin-top: 20px;
     height: 105px;
     margin-bottom: 20px;
 }
