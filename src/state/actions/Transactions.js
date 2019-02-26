@@ -11,6 +11,7 @@ import {
 import Wallet from "../../services/Wallet";
 import TokenTypes from "../../constants/TokenTypes";
 import Timeout from 'await-timeout';
+import {hideModals} from "./Modals";
 
 export function fetchERC20Transactions() {
     let address = Wallet.getWalletAddress();
@@ -70,6 +71,9 @@ export async function createTransactionAsync(dispatch, txData, password) {
         let opts = {
             onSuccess: function (dispatch, response) {
                 //TODO show success alert
+
+                //Hide the send modals
+                dispatch(hideModals());
             },
             onError: function (dispatch, response) {
                 //TODO show failure alert

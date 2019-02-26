@@ -5,6 +5,7 @@ import Modal from '../components/Modal'
 import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet'
 import {createTransaction} from "../state/actions/Transactions";
+import {tokenTypeToTokenName} from "../constants/TokenTypes";
 
 export class SendConfirmationModal extends React.Component {
     constructor(){
@@ -45,9 +46,6 @@ export class SendConfirmationModal extends React.Component {
             );
         };
 
-        console.log("this.props.isCreatingTransaction == ");
-        console.log(this.props.isCreatingTransaction);
-
         return (
             <Modal>
                 <div className="SendConfirmationModal">
@@ -57,12 +55,12 @@ export class SendConfirmationModal extends React.Component {
 
                     <div className="SendConfirmationModal__amount-title">You are sending</div>
                     <div className="SendConfirmationModal__amount">{ amount }</div>
-                    <div className="SendConfirmationModal__token-name">{ tokenType }</div>
+                    <div className="SendConfirmationModal__token-name">{ tokenTypeToTokenName(tokenType) }</div>
                     <div className="SendConfirmationModal__to-title">To recipient</div>
                     <div className="SendConfirmationModal__to">{ to }</div>
 
                     <div className="SendConfirmationModal__rows">
-                        { renderDataRow("From", "MY ADDRESS HERE") }
+                        { renderDataRow("From", this.props.walletAddress) }
                         { renderDataRow("Transaction Type", "Asset Transfer") }
                         { renderDataRow("Gas Limit", gas) }
                         { renderDataRow("Gas Price", gasPrice) }

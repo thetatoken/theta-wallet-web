@@ -2,17 +2,18 @@ import React from "react";
 import './WalletTokenList.css';
 import WalletTokenListItem from './WalletTokenListItem'
 import TokenTypes from '../constants/TokenTypes'
+import {tokenTypeToTokenName} from '../constants/TokenTypes'
 
 const tokens = [
     {
         type: TokenTypes.ERC20_THETA,
-        name: "ERC20 Theta",
+        name: tokenTypeToTokenName(TokenTypes.ERC20_THETA),
         iconUrl: `/img/tokens/${TokenTypes.ERC20_THETA}_large@2x.png`,
         href: "/wallet/tokens/" + TokenTypes.ERC20_THETA
     },
     {
         type: TokenTypes.ETHEREUM,
-        name: "Ethereum",
+        name: tokenTypeToTokenName(TokenTypes.ETHEREUM),
         iconUrl: `/img/tokens/${TokenTypes.ETHEREUM}_large@2x.png`,
         href: "/wallet/tokens/" + TokenTypes.ETHEREUM
     }];
