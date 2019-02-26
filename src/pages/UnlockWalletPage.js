@@ -8,6 +8,7 @@ import { WalletUnlockStrategy } from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
 import {unlockWallet} from "../state/actions/Wallet";
+import DropZone from '../components/DropZone'
 
 const classNames = require('classnames');
 
@@ -204,6 +205,8 @@ class UnlockWalletViaKeystoreFile extends React.Component {
         this.fileInput = React.createRef();
         this.passwordInput = React.createRef();
 
+        this.droppedFile = null;
+
 
         this.state = {
             password: "",
@@ -213,6 +216,7 @@ class UnlockWalletViaKeystoreFile extends React.Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleUnlockClick = this.handleUnlockClick.bind(this);
+        this.handleKeystoreFileDrop = this.handleKeystoreFileDrop.bind(this);
     }
 
     isValid(){
@@ -223,8 +227,10 @@ class UnlockWalletViaKeystoreFile extends React.Component {
 
     keystoreFile(){
         let fileInput = this.fileInput.current;
+        let fileFromInput = (fileInput ? fileInput.files[0] : null);
 
-        return (fileInput ? fileInput.files[0] : null);
+        //If a dropped file is available, use it
+        return (this.droppedFile ?  this.droppedFile : fileFromInput);
     }
 
     handleChange(event){
@@ -234,6 +240,9 @@ class UnlockWalletViaKeystoreFile extends React.Component {
         this.setState({[name]: value});
 
         if(name === "file"){
+            //Clear the dropped file
+            this.droppedFile = null;
+
             this.passwordInput.current.focus();
         }
     }
@@ -242,6 +251,13 @@ class UnlockWalletViaKeystoreFile extends React.Component {
         if (e.key === 'Enter') {
             this.handleUnlockClick();
         }
+    }
+
+    handleKeystoreFileDrop(file){
+        this.droppedFile = file;
+        this.passwordInput.current.focus();
+
+        this.setState({droppedFile: true});
     }
 
     unlockWallet(keystore){
@@ -283,6 +299,9 @@ class UnlockWalletViaKeystoreFile extends React.Component {
 
         return (
             <div className="UnlockWalletViaKeystoreFile">
+                <DropZone title="Drop keystore here"
+                          icon="/img/icons/theta-file@2x.png"
+                          onDrop={this.handleKeystoreFileDrop}/>
                 <div className="UnlockWalletViaKeystoreFile__title">
                     Please select your keystore file
                 </div>
