@@ -30,10 +30,10 @@ function pendingTransactionToLocalTransaction(pendingTransaction, hash){
     }
 
     return {
-        from: pendingTransaction.sender,
-        to: pendingTransaction.receiver,
-        hash: hash,
         type: type,
+        from: pendingTransaction.from,
+        to: pendingTransaction.to,
+        hash: hash,
         token_symbol: tokenSymbol,
         dec_value: pendingTransaction.amount,
         time_stamp: "" + (new Date().getTime() / 1000), //Server returns as a string

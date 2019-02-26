@@ -6,6 +6,10 @@ import ERC20Badge from './ERC20Badge'
 import TokenTypes from "../constants/TokenTypes";
 
 var truncate = function (fullStr, strLen, separator) {
+    if(!fullStr){
+        return fullStr;
+    }
+
     if (fullStr.length <= strLen) return fullStr;
 
     separator = separator || '...';
