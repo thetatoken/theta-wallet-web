@@ -23,7 +23,7 @@ class UnlockWalletViaPrivateKey extends React.Component {
     }
 
     isValid(){
-        return this.state.privateKey.length > 0;
+        return this.state.privateKey.length > 0 && this.state.password.length > 0;
     }
 
     handleChange(event){
@@ -99,7 +99,7 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
     }
 
     isValid(){
-        return this.state.mnemonic.length > 0;
+        return this.state.mnemonic.length > 0 && this.state.password.length > 0;
     }
 
     handleChange(event){
