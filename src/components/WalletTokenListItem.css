@@ -70,11 +70,11 @@
 }
 
 .WalletTokenListItem--is-active{
-    background-color: rgba(59,66,99, 0.25);
+    background-color: #242b45;
 }
 
 .WalletTokenListItem:hover{
-    background-color: rgba(59,66,99, 0.25);
+    background-color: #242b45;
 }
 
 .WalletTokenListItem--is-active .WalletTokenListItem__active-indicator{

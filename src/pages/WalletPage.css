@@ -6,18 +6,13 @@
 
 .WalletPage__master-view{
     width: 362px;
-    background-color: rgba(59, 66, 99, 0.25);
-    /*margin-right: 15px;*/
-    border-right: 1px solid rgba(75, 81, 110, 0.5);
-
 }
-
 
 .WalletPage__detail-view{
     display: flex;
     flex-direction: column;
     flex: 1;
-    background-color: rgba(59, 66, 99, 0.25);
+    background-color: #242b45;
     padding-left: 32px;
     padding-right: 32px;
     overflow-y: auto;
