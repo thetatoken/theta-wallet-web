@@ -3,7 +3,7 @@
     flex-direction: row;
     align-items: center;
     height: 70px;
-    background-color: rgba(59, 66, 99, 0.2);
+    background-color: rgba(59, 66, 99, 0.25);
     padding-left: 29px;
     padding-right: 29px;
 }
