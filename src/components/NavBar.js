@@ -3,6 +3,7 @@ import './NavBar.css';
 import Wallet from "../services/Wallet";
 import { store } from '../state';
 import {logout} from "../state/actions/Wallet";
+import {copyToClipboard} from "../utils/Utils";
 
 const classNames = require('classnames');
 
@@ -11,10 +12,17 @@ class NavBar extends React.Component {
         super();
 
         this.logout = this.logout.bind(this);
+        this.copyAddress = this.copyAddress.bind(this);
     }
 
     logout(){
         store.dispatch(logout());
+    }
+
+    copyAddress(){
+        let address = Wallet.getWalletAddress();
+
+        copyToClipboard(address);
     }
 
     renderAccountIfNeeded(){
@@ -30,7 +38,9 @@ class NavBar extends React.Component {
                         <div className="NavBar__wallet-address">
                             {address}
                         </div>
-                        <a className="NavBar__wallet-copy-address-icon">
+                        <a className="NavBar__wallet-copy-address-icon"
+                           onClick={this.copyAddress}
+                        >
                             <img src="/img/icons/copy@2x.png"/>
                         </a>
                     </div>
