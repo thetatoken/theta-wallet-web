@@ -9,6 +9,7 @@ import {fetchERC20Transactions, fetchETHTransactions} from "../state/actions/Tra
 import {getERC20Transactions, getEthereumTransactions} from "../state/selectors/Transactions";
 import EmptyState from "../components/EmptyState";
 import TokenTypes from "../constants/TokenTypes";
+import MDSpinner from "react-md-spinner";
 
 export class WalletPage extends React.Component {
     fetchTransactions(tokenType){
@@ -54,6 +55,11 @@ export class WalletPage extends React.Component {
                     />
 
                     {
+                        this.props.isLoadingTransactions &&
+                        <MDSpinner singleColor="#ffffff" className="WalletPage__detail-view-spinner"/>
+                    }
+
+                    {
                         this.props.transactions.length > 0 &&
                         <TransactionList transactions={this.props.transactions}/>
                     }
@@ -74,12 +80,15 @@ const mapStateToProps = (state, ownProps) => {
     let tokenType = ownProps.match.params.tokenType;
     let localTransactionsByID = (state.transactions.localTransactionsByID || {});
     let transactions = [];
+    let isLoadingTransactions = false;
 
     if(tokenType === TokenTypes.ERC20_THETA){
         transactions = getERC20Transactions(state);
+        isLoadingTransactions = state.transactions.isFetchingERC20Transactions;
     }
     else if(tokenType === TokenTypes.ETHEREUM){
         transactions = getEthereumTransactions(state);
+        isLoadingTransactions = state.transactions.isFetchingETHTransactions;
     }
 
     return {
@@ -88,7 +97,7 @@ const mapStateToProps = (state, ownProps) => {
 
         transactions: transactions,
 
-        isLoading: false
+        isLoadingTransactions: isLoadingTransactions
     };
 };
 

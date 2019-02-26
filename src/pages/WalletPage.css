@@ -18,3 +18,9 @@
     overflow-y: auto;
     position: relative;
 }
+
+.WalletPage__detail-view-spinner{
+    align-self: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
