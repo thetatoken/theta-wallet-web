@@ -72,6 +72,9 @@ export default class Ethereum {
                 return null;
             }
         } catch (exception) {
+            console.log("getGasPrice :: exception!!!!!!!");
+            console.log(exception);
+
             return null;
         }
     }

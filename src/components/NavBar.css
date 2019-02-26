@@ -7,6 +7,7 @@
     padding-right: 20px;
     background-color: #1C243B;
     height: 100px;
+    flex-shrink: 0;
 }
 
 .NavBar__logo{

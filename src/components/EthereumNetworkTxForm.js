@@ -63,7 +63,14 @@ export class EthereumNetworkTxForm extends React.Component {
             this.setState(Object.assign(defaults, {tokenType: value}));
         }
         else {
+            if (name === "amount") {
+                console.log("AMOUNT!!!!!!!!");
+                value = value.replace(/[^0-9.]/g, '');
+            }
+
             this.setState({[name]: value}, () => {
+                console.log("SET STATE FINISHED...");
+
                 this.validate();
 
                 this.updateTransactionFee();
@@ -95,7 +102,11 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     async updateGasPrice() {
+        console.log("updateGasPrice :: before gasPrice == ");
+
         let gasPrice = await Ethereum.getGasPrice();
+
+        console.log("updateGasPrice :: gasPrice == " + gasPrice);
 
         this.setState({gasPrice: gasPrice});
 
@@ -119,6 +130,12 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     isValid() {
+        // console.log("this.state.to.length == " + this.state.to.length);
+        // console.log("this.state.amount.length == " + this.state.amount.length);
+        // console.log("this.state.invalidAddress == " + this.state.invalidAddress);
+        // console.log("this.state.insufficientFunds == " + this.state.insufficientFunds);
+        // console.log("this.state.invalidDecimalPlaces == " + this.state.invalidDecimalPlaces);
+
         return (
             this.state.to.length > 0 &&
             this.state.amount.length > 0 &&
@@ -128,9 +145,17 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     async updateTransactionFee() {
+        console.log("updateTransactionFee!!!!!!!!");
+
         if (this.isValid()) {
+            console.log("updateTransactionFee :: isValid == true!!!!!!!!");
+
             let gasPrice = this.state.gasPrice;
             let gasLimit = await this.updateGasLimit();
+
+            console.log("updateTransactionFee :: gasPrice == " + gasPrice);
+            console.log("updateTransactionFee :: gasLimit == " + gasLimit);
+
 
             if (gasPrice != null && gasLimit != null) {
                 let transactionFee = await Ethereum.getTransactionFee(this.state.gasPrice, gasLimit);
@@ -145,6 +170,8 @@ export class EthereumNetworkTxForm extends React.Component {
             }
         }
         else {
+            console.log("updateTransactionFee :: isValid == false!!!!!!!!!!");
+
             this.setState({transactionFee: null});
 
             return null;
@@ -177,7 +204,7 @@ export class EthereumNetworkTxForm extends React.Component {
         else if (this.state.tokenType === TokenTypes.ETHEREUM) {
             let balance = this.props.balancesByType[TokenTypes.ETHEREUM];
 
-            if(parseFloat(balance) !== 0.0){
+            if (parseFloat(balance) !== 0.0) {
                 this.setState({
                     amount: balance
                 }, () => {
@@ -239,6 +266,8 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     componentDidMount() {
+        console.log("componentDidMount!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
         this.updateGasPrice();
     }
 
@@ -272,10 +301,10 @@ export class EthereumNetworkTxForm extends React.Component {
         let toError = this.state.invalidAddress ? "Invalid address" : null;
         let amountError = null;
 
-        if(this.state.insufficientFunds){
+        if (this.state.insufficientFunds) {
             amountError = "Insufficient funds";
         }
-        else if(this.state.invalidDecimalPlaces){
+        else if (this.state.invalidDecimalPlaces) {
             amountError = "Invalid denomination";
         }
 
@@ -290,12 +319,16 @@ export class EthereumNetworkTxForm extends React.Component {
                 </FormInputContainer>
                 <FormInputContainer title="To"
                                     error={toError}>
-                    <input className="BottomBorderInput" value={this.state.to} onChange={this.handleChange} name="to"/>
+                    <input className="BottomBorderInput"
+                           name="to"
+                           value={this.state.to}
+                           onChange={this.handleChange}/>
                 </FormInputContainer>
                 <FormInputContainer title={amountTitleContent}
                                     error={amountError}>
-                    <input className="BottomBorderInput" type="number" value={this.state.amount}
-                           onChange={this.handleChange} name="amount"/>
+                    <input className="BottomBorderInput" type="text" value={this.state.amount}
+                           name="amount"
+                           onChange={this.handleChange}/>
                 </FormInputContainer>
 
                 <div className="EthereumNetworkTxForm__fee-container">
@@ -307,7 +340,8 @@ export class EthereumNetworkTxForm extends React.Component {
                     {
                         (this.state.showGasDetails &&
                             <div className="EthereumNetworkTxForm__gas-details-container">
-                                <ValueWithTitle title="Gas Price" value={this.state.gasPrice ? this.state.gasPrice + " Gwei" : '--'}/>
+                                <ValueWithTitle title="Gas Price"
+                                                value={this.state.gasPrice ? this.state.gasPrice + " Gwei" : '--'}/>
                                 <ValueWithTitle title="Gas Limit" value={this.state.gasLimit || '--'}/>
                             </div>
                         )
