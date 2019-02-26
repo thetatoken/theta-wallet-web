@@ -120,7 +120,11 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
 
                 return Object.assign({}, state, {
                     //Remove the local transaction from the state since it is in the blockchain now
-                    localTransactionsByID: _.omit(state.localTransactionsByID, transaction.hash)
+                    localTransactionsByID: _.omit(state.localTransactionsByID, transaction.hash),
+
+                    //Apend this tx to the list
+                    transactionsByHash: Object.assign({}, state.transactionsByHash,  {[transaction.hash]: transaction}),
+                    transactionsByType: Object.assign({}, state.transactionsByType, {[transaction.type] : [...state.transactionsByType[transaction.type], transaction]})
                 });
             }
 

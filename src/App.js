@@ -9,6 +9,7 @@ import {showModal} from "./state/actions/Modals";
 import ModalTypes from "./constants/ModalTypes";
 import {store} from "./state";
 import Router from "./services/Router";
+import Transactions from './services/Transactions'
 
 
 class WalletTabBar extends Component {
@@ -83,6 +84,9 @@ export class App extends Component {
 export class WalletApp extends Component {
     componentDidMount(){
         Router.setHistory(this.props.history);
+
+        //Start polling local Txs
+        Transactions.pollLocalTransactions();
     }
 
     render() {

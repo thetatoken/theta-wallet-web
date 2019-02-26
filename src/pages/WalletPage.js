@@ -12,6 +12,14 @@ import TokenTypes from "../constants/TokenTypes";
 import MDSpinner from "react-md-spinner";
 
 export class WalletPage extends React.Component {
+    constructor(){
+        super();
+
+        this.pollWalletBalancesIntervalId = null;
+
+        this.fetchBalances = this.fetchBalances.bind(this);
+    }
+
     fetchTransactions(tokenType){
         if(tokenType === TokenTypes.ERC20_THETA){
             this.props.dispatch(fetchERC20Transactions());
@@ -21,12 +29,32 @@ export class WalletPage extends React.Component {
         }
     }
 
+    fetchBalances(){
+        this.props.dispatch(fetchWalletBalances());
+    }
+
+    startPollingWalletBalances(){
+        //Fetch it immediately
+        this.fetchBalances();
+
+        this.pollWalletBalancesIntervalId = setInterval(this.fetchBalances, 15000);
+    }
+
+    stopPollingWalletBalances(){
+        if(this.pollWalletBalancesIntervalId){
+            clearInterval(this.pollWalletBalancesIntervalId);
+        }
+    }
+
     componentDidMount(){
         let tokenType = this.props.match.params.tokenType;
 
-        this.props.dispatch(fetchWalletBalances());
-
+        this.startPollingWalletBalances();
         this.fetchTransactions(tokenType);
+    }
+
+    componentWillUnmount(){
+        this.stopPollingWalletBalances();
     }
 
     componentWillReceiveProps(nextProps){
