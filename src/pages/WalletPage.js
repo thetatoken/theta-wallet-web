@@ -65,7 +65,7 @@ export class WalletPage extends React.Component {
                     }
 
                     {
-                        this.props.transactions.length === 0 &&
+                        (this.props.transactions.length === 0 && this.props.isLoadingTransactions === false) &&
                         <EmptyState icon="/img/icons/empty-transactions@2x.png"
                                     title="No Transactions"
                         />
