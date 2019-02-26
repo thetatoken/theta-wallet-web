@@ -8,6 +8,9 @@ import ValueWithTitle from '../components/ValueWithTitle'
 import GradientButton from './buttons/GradientButton';
 import {hasValidDecimalPlaces} from '../utils/Utils'
 import {BigNumber} from 'bignumber.js';
+import {store} from "../state";
+import {showModal} from "../state/actions/Modals";
+import ModalTypes from "../constants/ModalTypes";
 
 export class EthereumNetworkTxForm extends React.Component {
     constructor() {
@@ -73,7 +76,22 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     handleSendClick() {
+        store.dispatch(showModal({
+            type: ModalTypes.SEND_CONFIRMATION,
+            props: {
+                transaction: {
+                    tokenType: this.state.tokenType,
 
+                    to: this.state.to,
+                    amount: this.state.amount,
+
+                    gas: this.state.gasLimit,
+                    gasPrice: this.state.gasPrice,
+
+                    transactionFee: this.state.transactionFee
+                }
+            }
+        }));
     }
 
     async updateGasPrice() {
@@ -261,13 +279,13 @@ export class EthereumNetworkTxForm extends React.Component {
                 <div className="EthereumNetworkTxForm__fee-container">
                     <div className="">
                         <ValueWithTitle title={transactionFeeValueContent}
-                                        value={this.state.transactionFee || '--'}/>
+                                        value={this.state.transactionFee ? this.state.transactionFee + " ETH" : '--'}/>
                     </div>
 
                     {
                         (this.state.showGasDetails &&
                             <div className="EthereumNetworkTxForm__gas-details-container">
-                                <ValueWithTitle title="Gas Price" value={this.state.gasPrice || '--'}/>
+                                <ValueWithTitle title="Gas Price" value={this.state.gasPrice ? this.state.gasPrice + " Gwei" : '--'}/>
                                 <ValueWithTitle title="Gas Limit" value={this.state.gasLimit || '--'}/>
                             </div>
                         )

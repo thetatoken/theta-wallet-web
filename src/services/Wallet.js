@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import _ from "lodash";
 import Ethereum from './Ethereum'
+import TokenTypes from "../constants/TokenTypes";
 
 const MnemonicPath = "m/44'/500'/0'/0/0";
 
@@ -12,33 +13,32 @@ export const WalletUnlockStrategy = {
 
 export default class Wallet {
     static _wallet = null;
+    static _keystore = null;
 
     static setWallet(wallet){
         this._wallet = wallet;
+
+        if(wallet === null){
+            //Also clear the encrypted keystore
+            Wallet.setKeystore(null);
+        }
     }
 
     static getWallet(){
         return this._wallet;
     }
 
+    static setKeystore(keystore){
+        this._keystore = keystore;
+    }
+
+    static getKeystore(){
+        return this._keystore;
+    }
+
     static getWalletAddress(){
         return _.get(this._wallet, ['address'], null);
     }
-
-    static async signTransaction(transactionData){
-
-    }
-
-
-
-
-
-
-
-
-    //
-    //NEW
-    //
 
     static unlocked(){
         return (this._wallet !== null);
@@ -98,7 +98,12 @@ export default class Wallet {
 
         try{
             if(strategy === WalletUnlockStrategy.KEYSTORE_FILE){
-                wallet = Wallet.decryptFromKeystore(JSON.parse(keystore), password);
+                if(typeof keystore === 'string' || keystore instanceof String){
+                    //Parse the keystore file
+                    keystore = JSON.parse(keystore);
+                }
+
+                wallet = Wallet.decryptFromKeystore(keystore, password);
             }
             else if(strategy === WalletUnlockStrategy.MNEMONIC_PHRASE){
                 wallet = Wallet.walletFromMnemonic(mnemonic);
@@ -109,12 +114,54 @@ export default class Wallet {
 
             if(wallet){
                 Wallet.setWallet(wallet);
+
+                if(keystore === null || keystore === undefined){
+                    //The user is restoring a wallet, let's encrypt their keystore using their session password
+                    keystore = Wallet.encryptToKeystore(wallet.privateKey, password);
+                }
+                Wallet.setKeystore(keystore);
             }
 
             return wallet;
         }
         catch (e) {
             //TODO throw the caught error?
+            return null;
+        }
+    }
+
+    static signTransaction(txData, password){
+        try {
+            let { tokenType } = txData;
+            let keystore = Wallet.getKeystore();
+            let wallet = Wallet.decryptFromKeystore(keystore, password);
+
+            console.log("signTransaction :: txData == ");
+            console.log(txData);
+            console.log("signTransaction :: keystore == ");
+            console.log(keystore);
+            console.log("signTransaction :: password == ");
+            console.log(password);
+            console.log("signTransaction :: wallet == ");
+            console.log(wallet);
+
+            if(wallet){
+                //User had the correct password
+                if(tokenType === TokenTypes.ETHEREUM || tokenType === TokenTypes.ERC20_THETA){
+                    console.log("signTransaction :: IS AN ETHEREUM NETWORK TX!!!");
+
+                    //Ethereum Network
+                    return Ethereum.signTransaction(txData, wallet.privateKey);
+                }
+                else{
+                    //Sign a Theta TX!
+                }
+            }
+            else{
+                return null;
+            }
+        }
+        catch (e) {
             return null;
         }
     }

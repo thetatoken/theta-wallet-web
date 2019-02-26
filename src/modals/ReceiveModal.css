@@ -2,8 +2,8 @@
     display: flex;
     flex-direction: column;
     background-color: #242F4B;
-    width: 450px;
-    height: 500px;
+    width: 500px;
+    min-height: 540px;
     padding: 20px;
     box-sizing: border-box;
 }

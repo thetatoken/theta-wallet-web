@@ -1,0 +1,112 @@
+.SendConfirmationModal{
+    display: flex;
+    flex-direction: column;
+    background-color: #242F4B;
+    width: 500px;
+    min-height: 540px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.SendConfirmationModal__title{
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.SendConfirmationModal__amount-title{
+    font-size: 13px;
+    font-weight: 600;
+    color: #92A2D6;
+    text-align: center;
+    line-height: 24px;
+    text-transform: uppercase;
+}
+
+.SendConfirmationModal__amount{
+    font-size: 41px;
+    font-weight: 300;
+    color: white;
+    line-height: 50px;
+}
+
+.SendConfirmationModal__token-name{
+    font-size: 13px;
+    font-weight: normal;
+    color: white;
+    text-align: center;
+    line-height: 16px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+}
+
+.SendConfirmationModal__to-title{
+    font-size: 13px;
+    font-weight: 600;
+    color: #92A2D6;
+    text-align: center;
+    line-height: 24px;
+    text-transform: uppercase;
+}
+
+.SendConfirmationModal__to{
+    font-size: 17px;
+    font-weight: normal;
+    color: white;
+    text-align: center;
+    line-height: 20px;
+}
+
+.SendConfirmationModal__rows{
+    display: flex;
+    flex-direction: column;
+    margin-top: 35px;
+    border-top: 1px solid #687399;
+}
+
+.SendConfirmationModal__row{
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 24px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #687399;
+}
+
+.SendConfirmationModal__row-title{
+    font-size: 13px;
+    font-weight: 600;
+    color: #92A2D6;
+    text-align: left;
+    line-height: 22px;
+    text-transform: uppercase;
+}
+
+.SendConfirmationModal__row-value{
+    font-size: 15px;
+    font-weight: normal;
+    color: white;
+    text-align: left;
+    line-height: 22px;
+}
+
+.SendConfirmationModal__password-container{
+    display: flex;
+    flex-direction: column;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.SendConfirmationModal__password-title{
+    font-size: 14px;
+    font-weight: normal;
+    color: white;
+    line-height: 16px;
+    margin-bottom: 5px;
+    text-align: center;
+}

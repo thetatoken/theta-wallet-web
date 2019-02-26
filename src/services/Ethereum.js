@@ -24,7 +24,7 @@ export default class Ethereum {
         }
     }
 
-    static async unsignedTransaction(txData) {
+    static unsignedTransaction(txData) {
         let { tokenType, from, to, amount, gas, gasPrice} = txData;
         let amountWei = web3.utils.toWei(amount);
         let gasePriceGwei = web3.utils.toWei(gasPrice.toString(), 'Gwei');
@@ -52,7 +52,7 @@ export default class Ethereum {
 
     static async estimateGas(txData) {
         try {
-            let genericRawTx = this.unsignedTransaction(txData);
+            let genericRawTx = Ethereum.unsignedTransaction(txData);
             let estimatedGas = await web3.eth.estimateGas(genericRawTx);
 
             return estimatedGas;
@@ -82,6 +82,35 @@ export default class Ethereum {
         }
         catch (e) {
             return false;
+        }
+    }
+
+    static async signTransaction(txData, privateKey){
+        try {
+            let unsignedTx = Ethereum.unsignedTransaction(txData);
+
+            console.log("signTransaction :: unsignedTx === ");
+            console.log(unsignedTx);
+
+            console.log("signTransaction :: privateKey === ");
+            console.log(privateKey);
+
+            let signedTx = await web3.eth.accounts.signTransaction(unsignedTx, privateKey);
+
+            console.log("signTransaction :: signedTx == " );
+            console.log(signedTx);
+
+            if(signedTx){
+                return signedTx.rawTransaction;
+            }
+            else{
+                return null;
+            }
+        } catch (exception) {
+            console.log("CAUGHT EXCEPTION");
+            console.log(exception);
+
+            return null;
         }
     }
 }

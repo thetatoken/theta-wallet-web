@@ -8,10 +8,12 @@ import ModalTypes from "../constants/ModalTypes";
 import ReceiveModal from "../modals/ReceiveModal";
 import SendModal from "../modals/SendModal";
 import PrivateKeyModal from "../modals/PrivateKeyModal";
+import SendConfirmationModal from "../modals/SendConfirmationModal";
 
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
     [ModalTypes.SEND]: SendModal,
+    [ModalTypes.SEND_CONFIRMATION]: SendConfirmationModal,
     [ModalTypes.PRIVATE_KEY]: PrivateKeyModal
 };
 
@@ -68,8 +70,7 @@ class Modals extends React.Component {
         return (
             <div>
                 <ModalContainer modal={modal1}
-                                closeModal={this.closeModal}
-                />
+                                closeModal={this.closeModal}/>
                 <ModalContainer modal={modal2}
                                 closeModal={this.closeModal}/>
             </div>

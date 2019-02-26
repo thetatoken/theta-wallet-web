@@ -10,7 +10,7 @@ import {
 } from "../types/Transactions";
 import Wallet from "../../services/Wallet";
 import TokenTypes from "../../constants/TokenTypes";
-
+import Timeout from 'await-timeout';
 
 export function fetchERC20Transactions() {
     let address = Wallet.getWalletAddress();
@@ -43,16 +43,28 @@ function errorToHumanError(error){
     }
 }
 
-export async function createTransactionAsync(dispatch, transactionData) {
-    let metadata = {transactionData: transactionData};
+export async function createTransactionAsync(dispatch, txData, password) {
+    let metadata = {txData: txData};
 
-    //Signing may take time because of the bridge, better to start the request early
+    console.log("createTransactionAsync :: txData ==");
+    console.log(txData);
+
+    console.log("createTransactionAsync :: password ==");
+    console.log(password);
+
+    //The decryption can take some time, so start the event early
     dispatch({
         type: CREATE_TRANSACTION_START,
         metadata: metadata
     });
 
-    let signedTransaction = await Wallet.signTransaction(transactionData);
+    //Let the spinners start, so we will delay the decryption/signing a bit
+    await Timeout.set(1000);
+
+    let signedTransaction = await Wallet.signTransaction(txData, password);
+
+    console.log("createTransactionAsync :: signedTransaction ==");
+    console.log(signedTransaction);
 
     if (signedTransaction) {
         let opts = {
@@ -82,9 +94,9 @@ export async function createTransactionAsync(dispatch, transactionData) {
     }
 }
 
-export function createTransaction(transactionData) {
+export function createTransaction(txData, password) {
     return function (dispatch, getState) {
-        createTransactionAsync(dispatch, transactionData).then(function (thunk) {
+        createTransactionAsync(dispatch, txData, password).then(function (thunk) {
             if (thunk) {
                 dispatch(thunk);
             }
