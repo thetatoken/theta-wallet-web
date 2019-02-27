@@ -126,10 +126,24 @@
     text-align: center;
     transition: all 0.2s ease-in-out;
     margin-bottom: 20px;
+    position: relative;
 }
 
 .UnlockWalletViaKeystoreFile__file-input--has-file{
     border: 1px solid #1BDED0;
+}
+
+.UnlockWalletViaKeystoreFile__file-input--has-file::after{
+    content: '';
+    display: block;
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 12px;
+    background-image: url("/img/icons/checkmark-green@2x.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px 20px;
 }
 
 .UnlockWalletViaKeystoreFile__file-input:hover{
