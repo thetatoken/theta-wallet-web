@@ -27,6 +27,7 @@ export class EthereumNetworkTxForm extends React.Component {
 
             invalidAddress: false,
             insufficientFunds: false,
+            invalidAmount: false,
             invalidDecimalPlaces: false,
 
             showGasDetails: false,
@@ -54,6 +55,7 @@ export class EthereumNetworkTxForm extends React.Component {
 
                 invalidAddress: false,
                 invalidDecimalPlaces: false,
+                invalidAmount: false,
                 insufficientFunds: false,
             };
 
@@ -128,7 +130,8 @@ export class EthereumNetworkTxForm extends React.Component {
             this.state.amount.length > 0 &&
             this.state.invalidAddress === false &&
             this.state.insufficientFunds === false &&
-            this.state.invalidDecimalPlaces === false);
+            this.state.invalidDecimalPlaces === false &&
+            this.state.invalidAmount === false);
     }
 
     async updateTransactionFee() {
@@ -222,8 +225,11 @@ export class EthereumNetworkTxForm extends React.Component {
             balance = ethereumBalance;
         }
 
+        console.log("amountFloat === 0.0 === " + (amountFloat === 0.0));
+
         this.setState({
-            insufficientFunds: (amountFloat > parseFloat(balance) || amountFloat < 0.0),
+            insufficientFunds: (amountFloat > parseFloat(balance)),
+            invalidAmount: (amountFloat === 0.0 || amountFloat < 0.0),
             invalidDecimalPlaces: !hasValidDecimalPlaces(this.state.amount, 18)
         }, () => {
             this.updateTransactionFee();
@@ -281,6 +287,9 @@ export class EthereumNetworkTxForm extends React.Component {
         }
         else if (this.state.invalidDecimalPlaces) {
             amountError = "Invalid denomination";
+        }
+        else if (this.state.invalidAmount) {
+            amountError = "Invalid amount";
         }
 
         return (
