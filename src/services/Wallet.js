@@ -91,7 +91,7 @@ export default class Wallet {
                 wallet = Wallet.decryptFromKeystore(keystore, password);
             }
             else if(strategy === WalletUnlockStrategy.MNEMONIC_PHRASE){
-                wallet = Wallet.walletFromMnemonic(mnemonic);
+                wallet = Wallet.walletFromMnemonic(mnemonic.toString());
             }
             else if(strategy === WalletUnlockStrategy.PRIVATE_KEY){
                 wallet = Wallet.walletFromPrivateKey(privateKey);
