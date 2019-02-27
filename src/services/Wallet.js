@@ -98,7 +98,8 @@ export default class Wallet {
             }
 
             if(wallet){
-                Wallet.setWallet(wallet);
+                //Only store the address in memory
+                Wallet.setWallet({address: wallet.address});
 
                 if(keystore === null || keystore === undefined){
                     //The user is restoring a wallet, let's encrypt their keystore using their session password
