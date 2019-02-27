@@ -296,6 +296,7 @@ export class EthereumNetworkTxForm extends React.Component {
                                     error={toError}>
                     <input className="BottomBorderInput"
                            name="to"
+                           placeholder="Enter address"
                            value={this.state.to}
                            onChange={this.handleChange}/>
                 </FormInputContainer>
@@ -303,6 +304,7 @@ export class EthereumNetworkTxForm extends React.Component {
                                     error={amountError}>
                     <input className="BottomBorderInput" type="text" value={this.state.amount}
                            name="amount"
+                           placeholder="Enter amount to send"
                            onChange={this.handleChange}/>
                 </FormInputContainer>
 

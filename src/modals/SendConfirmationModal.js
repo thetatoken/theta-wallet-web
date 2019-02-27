@@ -64,7 +64,7 @@ export class SendConfirmationModal extends React.Component {
                         { renderDataRow("From", this.props.walletAddress) }
                         { renderDataRow("Transaction Type", "Asset Transfer") }
                         { renderDataRow("Gas Limit", gas) }
-                        { renderDataRow("Gas Price", gasPrice) }
+                        { renderDataRow("Gas Price", gasPrice + " Gwei") }
                         { renderDataRow("Transaction Fee", transactionFee + " ETH") }
                     </div>
 

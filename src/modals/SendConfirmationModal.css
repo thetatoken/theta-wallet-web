@@ -14,6 +14,7 @@
     text-align: center;
     color: white;
     margin-bottom: 20px;
+    display: none;
 }
 
 .SendConfirmationModal__amount-title{
@@ -39,7 +40,7 @@
     text-align: center;
     line-height: 16px;
     text-transform: uppercase;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .SendConfirmationModal__to-title{
@@ -52,7 +53,7 @@
 }
 
 .SendConfirmationModal__to{
-    font-size: 17px;
+    font-size: 16px;
     font-weight: normal;
     color: white;
     text-align: center;
@@ -62,7 +63,7 @@
 .SendConfirmationModal__rows{
     display: flex;
     flex-direction: column;
-    margin-top: 35px;
+    margin-top: 25px;
     border-top: 1px solid #687399;
 }
 
@@ -73,8 +74,8 @@
     justify-content: space-between;
     align-items: center;
     min-height: 24px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
     border-bottom: 1px solid #687399;
 }
 
@@ -88,7 +89,7 @@
 }
 
 .SendConfirmationModal__row-value{
-    font-size: 15px;
+    font-size: 14px;
     font-weight: normal;
     color: white;
     text-align: left;
@@ -98,8 +99,8 @@
 .SendConfirmationModal__password-container{
     display: flex;
     flex-direction: column;
-    padding-top: 40px;
-    padding-bottom: 40px;
+    padding-top: 30px;
+    padding-bottom: 30px;
 }
 
 .SendConfirmationModal__password-title{

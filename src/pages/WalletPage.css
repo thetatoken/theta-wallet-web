@@ -25,3 +25,9 @@
     margin-bottom: 15px;
     flex-shrink: 0;
 }
+
+@media only screen and (max-width: 1000px) {
+    .WalletPage__master-view{
+        width: 300px;
+    }
+}
