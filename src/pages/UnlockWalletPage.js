@@ -255,9 +255,11 @@ class UnlockWalletViaKeystoreFile extends React.Component {
 
     handleKeystoreFileDrop(file){
         this.droppedFile = file;
-        this.passwordInput.current.focus();
 
-        this.setState({droppedFile: true});
+        this.setState({droppedFile: true}, () => {
+            //To prevent lost focusing, focus after rendering
+            this.passwordInput.current.focus();
+        });
     }
 
     unlockWallet(keystore){
