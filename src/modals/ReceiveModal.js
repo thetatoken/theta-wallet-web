@@ -4,6 +4,8 @@ import Modal from '../components/Modal'
 import Wallet from '../services/Wallet'
 import GhostButton from '../components/buttons/GhostButton'
 import {copyToClipboard} from "../utils/Utils";
+import Alerts from '../services/Alerts'
+
 
 export default class ReceiveModal extends React.Component {
     constructor(){
@@ -16,6 +18,8 @@ export default class ReceiveModal extends React.Component {
         let address = Wallet.getWalletAddress();
 
         copyToClipboard(address);
+
+        Alerts.showSuccess("Your address has been copied");
     }
 
     render() {

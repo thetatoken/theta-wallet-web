@@ -4,6 +4,7 @@ import Wallet from "../services/Wallet";
 import { store } from '../state';
 import {logout} from "../state/actions/Wallet";
 import {copyToClipboard} from "../utils/Utils";
+import Alerts from "../services/Alerts";
 
 const classNames = require('classnames');
 
@@ -23,6 +24,8 @@ class NavBar extends React.Component {
         let address = Wallet.getWalletAddress();
 
         copyToClipboard(address);
+
+        Alerts.showSuccess("Your address has been copied");
     }
 
     renderAccountIfNeeded(){
