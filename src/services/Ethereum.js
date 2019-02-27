@@ -72,9 +72,6 @@ export default class Ethereum {
                 return null;
             }
         } catch (exception) {
-            console.log("getGasPrice :: exception!!!!!!!");
-            console.log(exception);
-
             return null;
         }
     }
@@ -89,31 +86,14 @@ export default class Ethereum {
     }
 
     static async signTransaction(txData, privateKey){
-        try {
-            let unsignedTx = Ethereum.unsignedTransaction(txData);
+        let unsignedTx = Ethereum.unsignedTransaction(txData);
+        let signedTx = await web3.eth.accounts.signTransaction(unsignedTx, privateKey);
 
-            console.log("signTransaction :: unsignedTx === ");
-            console.log(unsignedTx);
-
-            console.log("signTransaction :: privateKey === ");
-            console.log(privateKey);
-
-            let signedTx = await web3.eth.accounts.signTransaction(unsignedTx, privateKey);
-
-            console.log("signTransaction :: signedTx == " );
-            console.log(signedTx);
-
-            if(signedTx){
-                return signedTx.rawTransaction;
-            }
-            else{
-                return null;
-            }
-        } catch (exception) {
-            console.log("CAUGHT EXCEPTION");
-            console.log(exception);
-
-            return null;
+        if(signedTx){
+            return signedTx.rawTransaction;
+        }
+        else{
+            throw new Error("Failed to sign transaction.");
         }
     }
 }

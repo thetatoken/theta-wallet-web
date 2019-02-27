@@ -4,7 +4,7 @@
     align-items: center;
     background-color: #242F4B;
     padding: 12px;
-    min-width: 480px;
+    min-width: 500px;
     box-sizing: border-box;
     min-height: 60px;
     box-shadow: 0px 0px 56px 2px rgba(0,0,0,0.2);
@@ -26,7 +26,6 @@
 }
 
 .Alert__close-button{
-    margin-left: 20px;
     border: none;
     background-color: transparent;
     cursor: pointer;

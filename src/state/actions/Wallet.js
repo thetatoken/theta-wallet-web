@@ -1,10 +1,11 @@
 import Api from '../../services/Api'
 import { reduxFetch } from'./Api'
 import {FETCH_WALLET_BALANCES, SET_GAS_PRICE, SET_WALLET_ADDRESS, SET_WALLET_NAME, RESET} from "../types/Wallet";
-import Wallet from '../../services/Wallet'
+import Wallet, {WalletUnlockStrategy} from '../../services/Wallet'
 import TemporaryState from "../../services/TemporaryState";
 import {resetTransactionsState} from './Transactions'
 import Router from "../../services/Router";
+import Alerts from '../../services/Alerts'
 
 export function fetchWalletBalances(){
     let address = Wallet.getWalletAddress();
@@ -98,7 +99,14 @@ export function clearWallet(){
 
 export function unlockWallet(strategy, password, data){
     return async function(dispatch, getState){
-        let wallet = Wallet.unlockWallet(strategy, password, data);
+        let wallet = null;
+
+        try {
+            wallet = Wallet.unlockWallet(strategy, password, data);
+        }
+        catch (e) {
+            Alerts.showError(e.message);
+        }
 
         if(wallet){
             dispatch(setWalletAddress(wallet.address));

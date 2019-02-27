@@ -12,6 +12,7 @@ import Wallet from "../../services/Wallet";
 import TokenTypes from "../../constants/TokenTypes";
 import Timeout from 'await-timeout';
 import {hideModals} from "./Modals";
+import Alerts from "../../services/Alerts";
 
 export function fetchERC20Transactions() {
     let address = Wallet.getWalletAddress();
@@ -62,37 +63,40 @@ export async function createTransactionAsync(dispatch, txData, password) {
     //Let the spinners start, so we will delay the decryption/signing a bit
     await Timeout.set(1000);
 
-    let signedTransaction = await Wallet.signTransaction(txData, password);
 
-    console.log("createTransactionAsync :: signedTransaction ==");
-    console.log(signedTransaction);
+    try {
+        let signedTransaction = await Wallet.signTransaction(txData, password);
 
-    if (signedTransaction) {
-        let opts = {
-            onSuccess: function (dispatch, response) {
-                //TODO show success alert
+        if (signedTransaction) {
+            let opts = {
+                onSuccess: function (dispatch, response) {
+                    //Show success alert
+                    Alerts.showSuccess("Your transaction is now being processed.");
 
-                //Hide the send modals
-                dispatch(hideModals());
-            },
-            onError: function (dispatch, response) {
-                //TODO show failure alert
-            }
-        };
+                    //Hide the send modals
+                    dispatch(hideModals());
+                },
+                onError: function (dispatch, response) {
+                    Alerts.showError(response.body.message);
+                }
+            };
 
-        //Call API to create the transaction
-        let result = reduxFetch(CREATE_TRANSACTION, function () {
-            return Api.createTransaction({data: signedTransaction});
-        }, metadata, opts);
+            //Call API to create the transaction
+            let result = reduxFetch(CREATE_TRANSACTION, function () {
+                return Api.createTransaction({data: signedTransaction});
+            }, metadata, opts);
 
-        return Promise.resolve(result);
-    } else {
+            return Promise.resolve(result);
+        }
+    }
+    catch (e) {
         //Signing failed so end the request
         dispatch({
             type: CREATE_TRANSACTION_END
         });
 
-        //TODO show invalid alert
+        //Display error
+        Alerts.showError(e.message);
 
         return Promise.resolve(null);
     }

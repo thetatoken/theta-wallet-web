@@ -53,32 +53,17 @@ export default class Wallet {
     static decryptFromKeystore(keystoreJsonV3, password){
         let web3 = Ethereum.getWeb3();
 
-        try{
-            return web3.eth.accounts.decrypt(keystoreJsonV3, password);
-        }
-        catch (e) {
-            return null;
-        }
+        return web3.eth.accounts.decrypt(keystoreJsonV3, password);
     }
 
     static walletFromMnemonic(mnemonic){
-        try {
-            return ethers.Wallet.fromMnemonic(mnemonic, MnemonicPath);
-        } catch (exception) {
-            console.log("exception == ");
-            console.log(exception);
-            return null;
-        }
+        return ethers.Wallet.fromMnemonic(mnemonic, MnemonicPath);
     }
 
     static walletFromPrivateKey(privateKey){
         let web3 = Ethereum.getWeb3();
 
-        try {
-            return web3.eth.accounts.privateKeyToAccount(privateKey);
-        } catch (exception) {
-            return null;
-        }
+        return web3.eth.accounts.privateKeyToAccount(privateKey);
     }
 
     static createWallet(password){
@@ -125,44 +110,39 @@ export default class Wallet {
             return wallet;
         }
         catch (e) {
-            //TODO throw the caught error?
-            return null;
+            let message = null;
+
+            if(strategy === WalletUnlockStrategy.KEYSTORE_FILE){
+                message = "Wrong password OR invalid keystore";
+            }
+            else if(strategy === WalletUnlockStrategy.MNEMONIC_PHRASE){
+                message = "No wallet found for this mnemonic phrase.";
+            }
+            else if(strategy === WalletUnlockStrategy.PRIVATE_KEY){
+                message = "No wallet found for this private key.";
+            }
+
+            throw new Error(message);
         }
     }
 
     static signTransaction(txData, password){
-        try {
-            let { tokenType } = txData;
-            let keystore = Wallet.getKeystore();
-            let wallet = Wallet.decryptFromKeystore(keystore, password);
+        let { tokenType } = txData;
+        let keystore = Wallet.getKeystore();
+        let wallet = Wallet.decryptFromKeystore(keystore, password);
 
-            console.log("signTransaction :: txData == ");
-            console.log(txData);
-            console.log("signTransaction :: keystore == ");
-            console.log(keystore);
-            console.log("signTransaction :: password == ");
-            console.log(password);
-            console.log("signTransaction :: wallet == ");
-            console.log(wallet);
-
-            if(wallet){
-                //User had the correct password
-                if(tokenType === TokenTypes.ETHEREUM || tokenType === TokenTypes.ERC20_THETA){
-                    console.log("signTransaction :: IS AN ETHEREUM NETWORK TX!!!");
-
-                    //Ethereum Network
-                    return Ethereum.signTransaction(txData, wallet.privateKey);
-                }
-                else{
-                    //Sign a Theta TX!
-                }
+        if(wallet){
+            //User had the correct password
+            if(tokenType === TokenTypes.ETHEREUM || tokenType === TokenTypes.ERC20_THETA){
+                //Ethereum Network
+                return Ethereum.signTransaction(txData, wallet.privateKey);
             }
             else{
-                return null;
+                //Sign a Theta TX!
             }
         }
-        catch (e) {
-            return null;
+        else{
+            throw new Error('Wrong password.  Your transaction could not be signed.');
         }
     }
 }

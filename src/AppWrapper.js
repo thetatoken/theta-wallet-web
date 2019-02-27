@@ -10,10 +10,10 @@ import Alert from './components/Alert'
 // optional cofiguration
 const options = {
     // you can also just use 'bottom center'
-    position: 'bottom center',
+    position: 'top center',
     timeout: 5000,
     offset: '30px',
-    transition: 'fade'
+    transition: 'scale'
 };
 
 class AppWrapper extends Component {
