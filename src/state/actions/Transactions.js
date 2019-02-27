@@ -48,12 +48,6 @@ function errorToHumanError(error){
 export async function createTransactionAsync(dispatch, txData, password) {
     let metadata = {txData: txData};
 
-    console.log("createTransactionAsync :: txData ==");
-    console.log(txData);
-
-    console.log("createTransactionAsync :: password ==");
-    console.log(password);
-
     //The decryption can take some time, so start the event early
     dispatch({
         type: CREATE_TRANSACTION_START,

@@ -8,18 +8,10 @@ const getLocalTransactionsByID = (state) => state.transactions.localTransactions
 const getWalletAddress = (state) => Wallet.getWalletAddress();
 
 function transformTransaction(walletAddress, transaction) {
-    console.log("transformTransaction :: transaction == ");
-    console.log(transaction);
-
     return Object.assign({}, transaction, {bound: (walletAddress === transaction.to ? "inbound" : "outbound")});
 }
 
 function getTransactions(walletAddress, type, transactionsByType, localTransactionsByID) {
-    console.log("getTransactions :: transactionsByType == ");
-    console.log(transactionsByType);
-    console.log("transactionsByType[type] == ");
-    console.log(transactionsByType[type]);
-
     walletAddress = (walletAddress ? walletAddress.toLowerCase() : null);
 
     //Merge these transactions and sort by timestamp

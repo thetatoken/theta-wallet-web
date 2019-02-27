@@ -66,12 +66,6 @@ export class WalletPage extends React.Component {
     }
 
     render() {
-        console.log("THIS.match == ");
-        console.log(this.props.match);
-
-        console.log("transactions == ");
-        console.log(this.props.transactions);
-
         return (
             <div className="WalletPage">
                 <div className="WalletPage__master-view">
