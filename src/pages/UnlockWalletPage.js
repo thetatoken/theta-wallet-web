@@ -227,10 +227,10 @@ class UnlockWalletViaKeystoreFile extends React.Component {
 
     keystoreFile(){
         let fileInput = this.fileInput.current;
-        let fileFromInput = (fileInput ? fileInput.files[0] : null);
+        let fileFromInput = (fileInput && fileInput.files.length > 0 ? fileInput.files[0] : null);
 
         //If a dropped file is available, use it
-        return (this.droppedFile ?  this.droppedFile : fileFromInput);
+        return (this.droppedFile ? this.droppedFile : fileFromInput);
     }
 
     handleChange(event){
