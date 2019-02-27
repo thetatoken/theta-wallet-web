@@ -1,0 +1,52 @@
+.UnsupportedDevice{
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background-color: #1C243B;
+    position: absolute;
+    z-index: 1000000000;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.UnsupportedDevice__content{
+    display: flex;
+    flex-direction: column;
+    max-width: 374px;
+}
+
+.UnsupportedDevice__logo{
+    height: 34px;
+    align-self: center;
+}
+
+.UnsupportedDevice__title{
+    font-size: 23px;
+    font-weight: 100;
+    line-height: 36px;
+    margin-top: 32px;
+    text-align: center;
+    color: white;
+    margin-bottom: 22px;
+}
+
+.UnsupportedDevice__app-store-badge{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 22px;
+    cursor: pointer;
+}
+
+.UnsupportedDevice__app-store-badge img{
+    height: 54px;
+    align-self: center;
+}
+
+@media only screen and (max-width: 800px) {
+    .UnsupportedDevice{
+        display: flex;
+    }
+}

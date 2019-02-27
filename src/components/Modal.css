@@ -20,3 +20,22 @@
 .Modal:focus {
     outline: none;
 }
+
+.Modal__close-button{
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    height: 48px;
+    width: 48px;
+    transition: all 0.2s ease-in-out;
+    border-radius: 24px;
+    cursor: pointer;
+    background: #242F4B;
+    pointer-events: none;
+}
+
+.Modal__close-button img{
+    width: 48px;
+    height: 48px;
+}

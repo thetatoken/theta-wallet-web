@@ -10,6 +10,7 @@ import ModalTypes from "./constants/ModalTypes";
 import {store} from "./state";
 import Router from "./services/Router";
 import Transactions from './services/Transactions'
+import UnsupportedDevice from './components/UnsupportedDevice'
 
 
 class WalletTabBar extends Component {
@@ -76,6 +77,7 @@ export class App extends Component {
                 <NavBar centered={true}/>
                 <Pages/>
                 <Modals/>
+                <UnsupportedDevice/>
             </div>
         );
     }
@@ -96,6 +98,7 @@ export class WalletApp extends Component {
                 <WalletTabBar/>
                 <WalletPages/>
                 <Modals/>
+                <UnsupportedDevice/>
             </div>
         );
     }
