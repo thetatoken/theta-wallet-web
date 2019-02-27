@@ -63,7 +63,7 @@
 .SendConfirmationModal__rows{
     display: flex;
     flex-direction: column;
-    margin-top: 25px;
+    margin-top: 20px;
     border-top: 1px solid #687399;
 }
 
@@ -99,7 +99,7 @@
 .SendConfirmationModal__password-container{
     display: flex;
     flex-direction: column;
-    padding-top: 30px;
+    padding-top: 25px;
     padding-bottom: 30px;
 }
 
@@ -110,4 +110,10 @@
     line-height: 16px;
     margin-bottom: 5px;
     text-align: center;
+}
+
+@media only screen and (max-height: 650px) {
+    .SendConfirmationModal{
+        transform: scale(0.8);
+    }
 }
