@@ -321,7 +321,7 @@ class UnlockWalletViaKeystoreFile extends React.Component {
                            name="file"
                            ref={this.fileInput}
                            onChange={this.handleChange}/>
-                    { ((keystoreFile === null) ? "Upload Keystore File" : "Keystore File Uploaded") }
+                    { ((keystoreFile === null) ? "Choose Keystore File" : "Keystore File Set") }
                 </label>
 
                 <input className="UnlockWalletViaKeystoreFile__password-input"
