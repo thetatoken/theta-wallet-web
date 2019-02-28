@@ -22,9 +22,9 @@
 }
 
 .TransactionStatus--is-inbound .TransactionStatus__dot{
-    background-color: #24D13B;
+    background-color: #10EDBD;
 }
 
 .TransactionStatus--is-inbound .TransactionStatus__text{
-    color: #24D13B;
+    color: #10EDBD;
 }

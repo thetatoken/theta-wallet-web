@@ -9,27 +9,27 @@
 .CreateWalletPage__wrapper{
     display: flex;
     flex-direction: column;
-    max-width: 400px;
+    max-width: 430px;
     width: 100%;
     height: 550px;
 }
 
 .CreateWalletPage__title{
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 300;
     text-align: center;
-    line-height: 33px;
-    min-height: 33px;
+    line-height: 28px;
+    min-height: 28px;
     color: white;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .CreateWalletPage__subtitle{
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: normal;
     text-align: center;
-    color: white;
-    margin-top: 20px;
+    color: #8A8FB5;
+    margin-top: 16px;
 }
 
 .CreateWalletPage__subtitle a{
@@ -49,7 +49,7 @@
     flex-direction: column;
     width: 100%;
     background-color: #242F4B;
-    min-height: 420px;
+    min-height: 435px;
 }
 
 .ChoosePasswordCard__content{
@@ -58,6 +58,10 @@
     flex: 1;
     padding: 17px;
     padding-top: 0;
+    width: 100%;
+    margin-left: auto;
+    max-width: 360px;
+    margin-right: auto;
 }
 
 .ChoosePasswordCard__header{
@@ -67,7 +71,7 @@
     justify-content: center;
     height: 80px;
     /*border-bottom: 1px solid rgba(75, 81, 110, 0.5);*/
-    margin-bottom: 17px;
+    /*margin-bottom: 17px;*/
 }
 
 .ChoosePasswordCard__footer{
@@ -75,16 +79,17 @@
 }
 
 .ChoosePasswordCard__title{
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     text-align: center;
     line-height: 26px;
     color: white;
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .ChoosePasswordCard__subtitle{
-    font-size: 15px;
+    font-size: 14px;
     font-weight: normal;
     text-align: center;
     line-height: 20px;
@@ -112,16 +117,16 @@
 }
 
 .ChoosePasswordCard__password-input:last-of-type{
-    margin-bottom: 6px;
+    margin-bottom: 2px;
 }
 
 .ChoosePasswordCard__error{
     font-size: 15px;
     font-weight: 600;
     text-align: left;
-    line-height: 24px;
+    line-height: 20px;
     color: #ff1d25;
-    min-height: 24px;
+    min-height: 20px;
 }
 
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
@@ -146,10 +151,10 @@
 }
 
 .ChoosePasswordCard__message{
-    font-size: 12px;
+    font-size: 13px;
     font-weight: normal;
     text-align: left;
-    line-height: 20px;
+    line-height: 16px;
     color: #92A2D6;
     margin-left: 8px;
     -webkit-user-select: none; /* webkit (safari, chrome) browsers */
@@ -172,7 +177,7 @@
     flex-direction: column;
     width: 100%;
     background-color: #242F4B;
-    min-height: 420px;
+    min-height: 435px;
 }
 
 .MnemonicWarningCard__content{
@@ -181,6 +186,10 @@
     flex: 1;
     padding: 17px;
     padding-top: 0;
+    margin-left: auto;
+    width: 100%;
+    max-width: 360px;
+    margin-right: auto;
 }
 
 .MnemonicWarningCard__header{
@@ -275,7 +284,7 @@
     flex-direction: column;
     width: 100%;
     background-color: #242F4B;
-    min-height: 420px;
+    min-height: 435px;
 }
 
 .MnemonicCard__content{
@@ -284,6 +293,10 @@
     flex: 1;
     padding: 17px;
     padding-top: 0;
+    margin-left: auto;
+    width: 100%;
+    max-width: 360px;
+    margin-right: auto;
 }
 
 .MnemonicCard__header{
@@ -372,7 +385,7 @@
     flex-direction: column;
     width: 100%;
     background-color: #242F4B;
-    min-height: 420px;
+    min-height: 435px;
 }
 
 .WalletCreationCompleteCard__content{
@@ -381,6 +394,10 @@
     flex: 1;
     padding: 17px;
     padding-top: 0;
+    margin-left: auto;
+    width: 100%;
+    max-width: 360px;
+    margin-right: auto;
 }
 
 .WalletCreationCompleteCard__header{

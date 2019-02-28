@@ -3,6 +3,8 @@ import _ from "lodash";
 import Ethereum from './Ethereum'
 import TokenTypes from "../constants/TokenTypes";
 
+const ethUtil = require('ethereumjs-util');
+
 const MnemonicPath = "m/44'/500'/0'/0/0";
 
 export const WalletUnlockStrategy = {
@@ -94,6 +96,15 @@ export default class Wallet {
                 wallet = Wallet.walletFromMnemonic(mnemonic.toString());
             }
             else if(strategy === WalletUnlockStrategy.PRIVATE_KEY){
+                let privateKeyBuffer = ethUtil.toBuffer(privateKey);
+                console.log("privateKeyBuffer == ");
+                console.log(privateKeyBuffer);
+                console.log("ethUtil.isValidPrivate(privateKeyBuffer) == " + ethUtil.isValidPrivate(privateKeyBuffer));
+
+                if(!ethUtil.isValidPrivate(privateKeyBuffer)){
+                    throw new Error("Private key does not satisfy the curve requirements (ie. it is invalid)");
+                }
+
                 wallet = Wallet.walletFromPrivateKey(privateKey);
             }
 
@@ -114,7 +125,7 @@ export default class Wallet {
             let message = null;
 
             if(strategy === WalletUnlockStrategy.KEYSTORE_FILE){
-                message = "Wrong password OR invalid keystore";
+                message = "Wrong password OR invalid keystore.";
             }
             else if(strategy === WalletUnlockStrategy.MNEMONIC_PHRASE){
                 message = "No wallet found for this mnemonic phrase.";
