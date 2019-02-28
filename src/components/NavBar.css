@@ -18,6 +18,10 @@
     justify-content: center;
 }
 
+.NavBar--is-centered .NavBar__logo{
+    height: 28px;
+}
+
 .NavBar__account{
     display: flex;
     flex-direction: column;

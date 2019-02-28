@@ -7,7 +7,8 @@ class TabBar extends React.Component {
     render() {
         let className = classNames("TabBar", {
             [this.props.className]: true,
-            "TabBar--is-centered": this.props.centered
+            "TabBar--is-centered": this.props.centered,
+            "TabBar--is-condensed" : this.props.condensed
         });
 
         return (

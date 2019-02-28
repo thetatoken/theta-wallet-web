@@ -93,6 +93,10 @@ class UnlockWalletViaPrivateKey extends React.Component {
                        onKeyPress={this.handleKeyPress}
                 />
 
+                <div className="UnlockWalletCard__warning">
+                    This is not the recommended way to unlock your wallet. Learn more
+                </div>
+
                 <div className="UnlockWalletViaPrivateKey__footer">
                     <GradientButton title="Unlock Wallet"
                                     loading={this.state.loading}
@@ -185,6 +189,9 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
                        onChange={this.handleChange}
                        onKeyPress={this.handleKeyPress}
                 />
+                <div className="UnlockWalletCard__warning">
+                    This is not the recommended way to unlock your wallet. Learn more
+                </div>
 
                 <div className="UnlockWalletViaMnemonicPhrase__footer">
                     <GradientButton title="Unlock Wallet"
@@ -364,6 +371,7 @@ class UnlockWalletCard extends React.Component {
                 <div className="UnlockWalletCard__content">
                     <div className="UnlockWalletCard__header">
                         <TabBar centered={true}
+                                condensed={true}
                                 className="UnlockWalletCard__tab-bar">
                             <TabBarItem
                                 title="Keystore File"

@@ -8,27 +8,27 @@
 .UnlockWalletPage__wrapper{
     display: flex;
     flex-direction: column;
-    max-width: 580px;
+    max-width: 480px;
     width: 100%;
     height: 550px;
 }
 
 .UnlockWalletPage__title{
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 300;
     text-align: center;
-    line-height: 33px;
-    min-height: 33px;
+    line-height: 28px;
+    min-height: 28px;
     color: white;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .UnlockWalletPage__subtitle{
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: normal;
     text-align: center;
-    color: white;
-    margin-top: 20px;
+    color: #8A8FB5;
+    margin-top: 16px;
 }
 
 .UnlockWalletPage__subtitle a{
@@ -41,7 +41,7 @@
     flex-direction: column;
     width: 100%;
     background-color: #242F4B;
-    min-height: 420px;
+    min-height: 435px;
 }
 
 .UnlockWalletCard__content{
@@ -57,7 +57,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 70px;
+    height: 50px;
     margin-bottom: 17px;
 }
 
@@ -84,8 +84,20 @@
 
 .UnlockWalletCard__tab-bar{
     width: calc(100% + 34px);
+    background-color: transparent;
 }
 
+.UnlockWalletCard__warning{
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 16px;
+    margin-top: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #ED1E5C;
+    max-width: 220px;
+    align-self: center;
+}
 
 
 
@@ -116,21 +128,24 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: 45px;
-    border: 1px dashed #687399;
+    height: 50px;
+    border: 1px dashed #697399;
     border-radius: 4px;
     padding-left: 16px;
     padding-right: 16px;
     cursor: pointer;
-    color: white;
     text-align: center;
     transition: all 0.2s ease-in-out;
     margin-bottom: 20px;
     position: relative;
+    box-sizing: border-box;
+    font-size: 17px;
+    color: #92A2D6;
 }
 
 .UnlockWalletViaKeystoreFile__file-input--has-file{
     border: 1px solid #1BDED0;
+    color: #1BDED0;
 }
 
 .UnlockWalletViaKeystoreFile__file-input--has-file::after{
@@ -155,12 +170,12 @@
 }
 
 .UnlockWalletViaKeystoreFile__title{
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 19px;
+    font-weight: 300;
     text-align: center;
-    line-height: 26px;
+    line-height: 22px;
     color: white;
-    margin-bottom: 17px;
+    margin-bottom: 15px;
 }
 
 .UnlockWalletViaKeystoreFile__password-input{
@@ -171,7 +186,7 @@
     border: none;
     outline: none;
     font-size: 17px;
-    width: calc(100% - 24px);
+    box-sizing: border-box;
     padding-left: 12px;
     padding-right: 12px;
     margin-bottom: 20px;
@@ -205,12 +220,12 @@
 }
 
 .UnlockWalletViaMnemonicPhrase__title{
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 19px;
+    font-weight: 300;
     text-align: center;
-    line-height: 26px;
+    line-height: 22px;
     color: white;
-    margin-bottom: 17px;
+    margin-bottom: 15px;
 }
 
 .UnlockWalletViaMnemonicPhrase__mnemonic{
@@ -226,12 +241,13 @@
 }
 
 .UnlockWalletViaMnemonicPhrase__mnemonic-instructions{
-    font-size: 12px;
-    color: white;
+    font-size: 13px;
+    font-weight: normal;
     line-height: 16px;
     margin-top: 6px;
     margin-bottom: 20px;
     text-align: center;
+    color: #92A2D6;
 }
 
 .UnlockWalletViaMnemonicPhrase__password-input{
@@ -242,11 +258,11 @@
     border: none;
     outline: none;
     font-size: 17px;
-    width: calc(100% - 24px);
     padding-left: 12px;
     padding-right: 12px;
     margin-bottom: 20px;
     font-family: 'AlwynNew', "Helvetica Neue", -apple-system, sans-serif;
+    box-sizing: border-box;
 }
 
 
@@ -275,12 +291,12 @@
 }
 
 .UnlockWalletViaPrivateKey__title{
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 19px;
+    font-weight: 300;
     text-align: center;
-    line-height: 26px;
+    line-height: 22px;
     color: white;
-    margin-bottom: 17px;
+    margin-bottom: 15px;
 }
 
 .UnlockWalletViaPrivateKey__private-key{
@@ -296,12 +312,13 @@
 }
 
 .UnlockWalletViaPrivateKey__private-key-instructions{
-    font-size: 12px;
-    color: white;
+    font-size: 13px;
+    font-weight: normal;
     line-height: 16px;
     margin-top: 6px;
     margin-bottom: 20px;
     text-align: center;
+    color: #92A2D6;
 }
 
 .UnlockWalletViaPrivateKey__password-input{
@@ -312,7 +329,7 @@
     border: none;
     outline: none;
     font-size: 17px;
-    width: calc(100% - 24px);
+    box-sizing: border-box;
     padding-left: 12px;
     padding-right: 12px;
     margin-bottom: 20px;
