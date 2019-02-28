@@ -88,15 +88,16 @@
 }
 
 .UnlockWalletCard__warning{
+    display: flex;
+    align-self: center;
+    flex: 1;
+    align-items: center;
     font-size: 13px;
     font-weight: 600;
     line-height: 16px;
-    margin-top: 6px;
-    margin-bottom: 20px;
     text-align: center;
     color: #ED1E5C;
     max-width: 220px;
-    align-self: center;
 }
 
 
@@ -189,7 +190,6 @@
     box-sizing: border-box;
     padding-left: 12px;
     padding-right: 12px;
-    margin-bottom: 20px;
     font-family: 'AlwynNew', "Helvetica Neue", -apple-system, sans-serif;
 }
 
@@ -260,7 +260,6 @@
     font-size: 17px;
     padding-left: 12px;
     padding-right: 12px;
-    margin-bottom: 20px;
     font-family: 'AlwynNew', "Helvetica Neue", -apple-system, sans-serif;
     box-sizing: border-box;
 }
@@ -332,6 +331,5 @@
     box-sizing: border-box;
     padding-left: 12px;
     padding-right: 12px;
-    margin-bottom: 20px;
     font-family: 'AlwynNew', "Helvetica Neue", -apple-system, sans-serif;
 }
