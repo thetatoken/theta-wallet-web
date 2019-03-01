@@ -7,6 +7,7 @@ import OnboardingPage from './pages/OnboardingPage'
 import CreateWalletPage from './pages/CreateWalletPage'
 import UnlockWalletPage from './pages/UnlockWalletPage'
 import Wallet from './services/Wallet'
+import OfflinePage from "./pages/OfflinePage";
 
 export class Pages extends React.Component {
     render() {
@@ -23,6 +24,8 @@ export class Pages extends React.Component {
                     <Redirect from='/unlock' to='/unlock/keystore-file' exact={true}/>
                     <Route path="/unlock/:unlockStrategy" component={UnlockWalletPage}/>
                 </Switch>
+
+                <Route path="/offline" component={OfflinePage}/>
             </div>
         );
     }
@@ -40,6 +43,7 @@ export class WalletPages extends React.Component {
                     <Redirect from='/wallet' to='/wallet/tokens/erc20' exact={true}/>
                     <Redirect from='/wallet/tokens' to='/wallet/tokens/erc20' exact={true}/>
                     <Route path="/wallet/tokens/:tokenType" component={WalletPage}/>
+                    <Route path="/offline" component={OfflinePage}/>
                 </Switch>
             </div>
         );

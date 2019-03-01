@@ -6,6 +6,8 @@ import TemporaryState from "../../services/TemporaryState";
 import {resetTransactionsState} from './Transactions'
 import Router from "../../services/Router";
 import Alerts from '../../services/Alerts'
+import {onLine} from "../../utils/Utils";
+
 
 export function fetchWalletBalances(){
     let address = Wallet.getWalletAddress();
@@ -110,9 +112,15 @@ export function unlockWallet(strategy, password, data){
 
         if(wallet){
             dispatch(setWalletAddress(wallet.address));
-
-            //Navigate to the wallet
-            Router.push('/wallet');
+            
+            if(onLine()){
+                //Navigate to the wallet
+                Router.push('/wallet');
+            }
+            else{
+                //Navigate to the offline until they enable their network again
+                Router.push('/offline');
+            }
         }
     };
 }

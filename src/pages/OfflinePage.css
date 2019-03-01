@@ -1,0 +1,90 @@
+.OfflinePage{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+//justify-content: center;
+    flex: 1;
+}
+
+.OfflinePage__wrapper{
+    display: flex;
+    flex-direction: column;
+    max-width: 430px;
+    width: 100%;
+    height: 550px;
+}
+
+.OfflinePage__title{
+    font-size: 24px;
+    font-weight: 300;
+    text-align: center;
+    line-height: 28px;
+    min-height: 28px;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.OfflineCard{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #242F4B;
+    min-height: 435px;
+}
+
+.OfflineCard__content{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 17px;
+    padding-top: 0;
+    margin-left: auto;
+    width: 100%;
+    max-width: 360px;
+    margin-right: auto;
+}
+
+.OfflineCard__header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    margin-bottom: 17px;
+}
+
+.OfflineCard__footer{
+    margin-top: auto;
+}
+
+.OfflineCard__title{
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 20px;
+    color: #92A2D6;
+    text-transform: uppercase;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.OfflineCard__message{
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 20px;
+    color: #92A2D6;
+}
+
+.OfflineCard__body{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+}
+
+.OfflineCard__icon{
+    height: 116px;
+    width: auto;
+    align-self: center;
+}

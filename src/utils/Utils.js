@@ -61,4 +61,17 @@ export function copyToClipboard(str){
         document.getSelection().removeAllRanges();    // Unselect everything on the HTML document
         document.getSelection().addRange(selected);   // Restore the original selection
     }
-};
+}
+
+export function onLine(){
+    let online = true;
+
+    try {
+        online = window.navigator.onLine;
+    }
+    catch (e) {
+        online = true;
+    }
+
+    return online;
+}
