@@ -4,6 +4,7 @@ import PageHeader from "../components/PageHeader";
 import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet'
 import {downloadFile} from "../utils/Utils";
+import Alerts from '../services/Alerts'
 
 class ExportKeystoreContent extends React.Component {
     constructor(){
@@ -49,11 +50,21 @@ class ExportKeystoreContent extends React.Component {
     }
 
     exportKeystore(){
-        let keystore = Wallet.exportKeystore(this.state.currentPassword, this.state.password);
+        try {
+            let keystore = Wallet.exportKeystore(this.state.currentPassword, this.state.password);
 
-        downloadFile(keystore.address + '.keystore', JSON.stringify(keystore));
+            downloadFile(keystore.address + '.keystore', JSON.stringify(keystore));
 
-        this.setState(this.defaultState);
+            this.setState(this.defaultState);
+        }
+        catch (e) {
+            this.setState({
+                loading: false
+            });
+
+            Alerts.showError(e.message);
+        }
+
     }
 
     prepareForExport(){
