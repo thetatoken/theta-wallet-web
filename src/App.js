@@ -11,6 +11,7 @@ import {store} from "./state";
 import Router from "./services/Router";
 import Transactions from './services/Transactions'
 import UnsupportedDevice from './components/UnsupportedDevice'
+import Wallet from "./services/Wallet";
 
 
 class WalletTabBar extends Component {
@@ -72,9 +73,11 @@ export class App extends Component {
     }
 
     render() {
+        let address = Wallet.getWalletAddress();
+
         return (
             <div className="App">
-                <NavBar centered={true}/>
+                <NavBar centered={address === null}/>
                 <Pages/>
                 <Modals/>
                 <UnsupportedDevice/>

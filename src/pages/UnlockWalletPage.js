@@ -94,7 +94,7 @@ class UnlockWalletViaPrivateKey extends React.Component {
                 />
 
                 <div className="UnlockWalletCard__warning">
-                    This is not the recommended way to unlock your wallet. Learn more
+                    Before you enter your private key, we recommend you disconnect your device from the internet. You will be able to reconnect once your wallet is unlocked.
                 </div>
 
                 <div className="UnlockWalletViaPrivateKey__footer">
@@ -190,7 +190,7 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
                        onKeyPress={this.handleKeyPress}
                 />
                 <div className="UnlockWalletCard__warning">
-                    This is not the recommended way to unlock your wallet. Learn more
+                    Before you enter your private key, we recommend you disconnect your device from the internet. You will be able to reconnect once your wallet is unlocked.
                 </div>
 
                 <div className="UnlockWalletViaMnemonicPhrase__footer">
