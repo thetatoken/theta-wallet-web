@@ -30,6 +30,7 @@ class GradientButton extends React.Component {
         if (this.props.href) {
             content = (
                 <Link to={this.props.href}
+                      style={this.props.style}
                       className={className}
                       onClick={this.props.onClick}>
                     {innerContent}
@@ -39,6 +40,7 @@ class GradientButton extends React.Component {
         else {
             content = (
                 <a className={className}
+                   style={this.props.style}
                    onClick={this.props.onClick}>
                     {innerContent}
                 </a>

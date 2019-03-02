@@ -37,16 +37,6 @@ export const walletReducer = (state = INITIAL_STATE, action) => {
                 address: action.address
             });
         }
-        case actionTypes.SET_WALLET_NAME: {
-            return Object.assign({}, state, {
-                name: action.name
-            });
-        }
-        case actionTypes.SET_GAS_PRICE:{
-            return Object.assign({}, state, {
-                gasPrice: action.gasPrice
-            });
-        }
 
         //Reset all state (useful when recovering a wallet which may have another wallet's state stored in memory))
         case actionTypes.RESET:{

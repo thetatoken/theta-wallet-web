@@ -2,6 +2,8 @@ import { ethers } from 'ethers';
 import _ from "lodash";
 import Ethereum from './Ethereum'
 import TokenTypes from "../constants/TokenTypes";
+import {downloadFile} from "../utils/Utils";
+import Alerts from "./Alerts";
 
 const ethUtil = require('ethereumjs-util');
 
@@ -155,6 +157,20 @@ export default class Wallet {
         }
         else{
             throw new Error('Wrong password.  Your transaction could not be signed.');
+        }
+    }
+
+    static exportKeystore(currentPassword, newPassword){
+        let keystore = Wallet.getKeystore();
+        let wallet = Wallet.decryptFromKeystore(keystore, currentPassword);
+
+        if(wallet){
+            let keystore = Wallet.encryptToKeystore(wallet.privateKey, newPassword);
+
+            return keystore;
+        }
+        else{
+            throw new Error('Wrong password.  Your keystore could not be exported.');
         }
     }
 }

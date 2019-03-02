@@ -14,3 +14,28 @@
     overflow-y: auto;
     position: relative;
 }
+
+.SettingsSection{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.SettingsSection__title{
+    font-size: 24px;
+    font-weight: 100;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.SettingsSection__content{
+    max-width: 400px;
+}
+
+.InputTitle{
+    font-size: 16px;
+    font-weight: normal;
+    color: #7A88B5;
+    margin-bottom: 6px;
+
+}

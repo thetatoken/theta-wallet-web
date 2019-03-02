@@ -7,8 +7,6 @@ export const FETCH_WALLET_BALANCES_FAILURE = `${FETCH_WALLET_BALANCES}/FAILURE`;
 export const FETCH_WALLET_BALANCES_SUCCESS = `${FETCH_WALLET_BALANCES}/SUCCESS`;
 
 export const SET_WALLET_ADDRESS = `${name}/SET_WALLET_ADDRESS`;
-export const SET_WALLET_NAME = `${name}/SET_WALLET_NAME`;
-export const SET_GAS_PRICE = `${name}/SET_GAS_PRICE`;
 
 export const UNLOCK = `${name}/UNLOCK`;
 

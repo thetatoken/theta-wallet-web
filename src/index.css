@@ -64,3 +64,49 @@ a{
   color: #2AE8F0;
   text-decoration: none;
 }
+
+.RoundedInput{
+
+}
+
+.RoundedInput{
+  background-color: #404C6E;
+  height: 50px;
+  color: white;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  font-size: 17px;
+  width: 100%;
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-bottom: 20px;
+  font-family: 'AlwynNew', "Helvetica Neue", -apple-system, sans-serif;
+  box-sizing: border-box;
+}
+
+.RoundedInput:last-of-type{
+  margin-bottom: 2px;
+}
+
+.RoundedInput::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #92A2D6;
+  opacity: 1; /* Firefox */
+}
+
+.RoundedInput:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #92A2D6;
+}
+
+.RoundedInput::-ms-input-placeholder { /* Microsoft Edge */
+  color: #92A2D6;
+}
+
+.InputError{
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  line-height: 20px;
+  color: #ff1d25;
+  min-height: 20px;
+}
