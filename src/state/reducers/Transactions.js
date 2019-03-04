@@ -66,17 +66,17 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
         }
 
         //ETH Transactions
-        case actionTypes.FETCH_TRANSACTIONS_ETH_START:{
+        case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_START:{
             return Object.assign({}, state, {
                 isFetchingETHTransactions: true
             });
         }
-        case actionTypes.FETCH_TRANSACTIONS_ETH_END:{
+        case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_END:{
             return Object.assign({}, state, {
                 isFetchingETHTransactions: false
             });
         }
-        case actionTypes.FETCH_TRANSACTIONS_ETH_SUCCESS:{
+        case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_SUCCESS:{
             let body = action.response.body;
             let transactions = body.transactions;
 

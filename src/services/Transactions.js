@@ -1,5 +1,5 @@
 import {store} from "../state";
-import {fetchETHTransaction} from '../state/actions/Transactions'
+import {fetchEthereumTransaction} from '../state/actions/Transactions'
 
 export default class Transactions {
 
@@ -12,7 +12,7 @@ export default class Transactions {
             for(let i = 0; i < localTransactionHashes.length; i++){
                 let hash = localTransactionHashes[i];
 
-                store.dispatch(fetchETHTransaction(hash));
+                store.dispatch(fetchEthereumTransaction(hash));
             }
         }
 

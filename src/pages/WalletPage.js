@@ -5,7 +5,7 @@ import WalletTokenList from '../components/WalletTokenList'
 import PageHeader from '../components/PageHeader'
 import TransactionList from '../components/TransactionList'
 import {fetchWalletBalances} from "../state/actions/Wallet";
-import {fetchERC20Transactions, fetchETHTransactions} from "../state/actions/Transactions";
+import {fetchERC20Transactions, fetchEthereumTransactions} from "../state/actions/Transactions";
 import {getERC20Transactions, getEthereumTransactions} from "../state/selectors/Transactions";
 import EmptyState from "../components/EmptyState";
 import TokenTypes from "../constants/TokenTypes";
@@ -25,7 +25,7 @@ export class WalletPage extends React.Component {
             this.props.dispatch(fetchERC20Transactions());
         }
         else if(tokenType === TokenTypes.ETHEREUM){
-            this.props.dispatch(fetchETHTransactions());
+            this.props.dispatch(fetchEthereumTransactions());
         }
     }
 

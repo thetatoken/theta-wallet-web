@@ -4,7 +4,7 @@ import {
     CREATE_TRANSACTION, CREATE_TRANSACTION_END,
     CREATE_TRANSACTION_START,
     FETCH_TRANSACTIONS_ERC20,
-    FETCH_TRANSACTIONS_ETH,
+    FETCH_TRANSACTIONS_ETHEREUM,
     FETCH_TRANSACTION,
     RESET
 } from "../types/Transactions";
@@ -22,15 +22,15 @@ export function fetchERC20Transactions() {
     });
 }
 
-export function fetchETHTransactions() {
+export function fetchEthereumTransactions() {
     let address = Wallet.getWalletAddress();
 
-    return reduxFetch(FETCH_TRANSACTIONS_ETH, function () {
+    return reduxFetch(FETCH_TRANSACTIONS_ETHEREUM, function () {
         return Api.fetchTransactions(address, {type: TokenTypes.ETHEREUM});
     });
 }
 
-export function fetchETHTransaction(txHash) {
+export function fetchEthereumTransaction(txHash) {
     return reduxFetch(FETCH_TRANSACTION, function () {
         return Api.fetchTransaction(txHash, {network: TokenTypes.ETHEREUM});
     });
