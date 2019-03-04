@@ -1,4 +1,4 @@
-.TransactionListItem{
+.EthereumTransactionListItem{
     display: flex;
     flex-direction: column;
     border-bottom: 1px solid #4B516E;
@@ -10,15 +10,15 @@
     transition: background-color, 0.3s, ease-in-out;
 }
 
-.TransactionListItem *{
+.EthereumTransactionListItem *{
     cursor: pointer;
 }
 
-.TransactionListItem:hover{
+.EthereumTransactionListItem:hover{
     background-color: rgba(0,0,0,0.05);
 }
 
-.TransactionListItem__top-container{
+.EthereumTransactionListItem__top-container{
     display: flex;
     flex: 1;
     flex-direction: row;
@@ -28,7 +28,7 @@
     height: 22px;
 }
 
-.TransactionListItem__middle-container{
+.EthereumTransactionListItem__middle-container{
     display: flex;
     flex: 2;
     flex-direction: row;
@@ -39,7 +39,7 @@
     padding-bottom: 8px;
 }
 
-.TransactionListItem__bottom-container{
+.EthereumTransactionListItem__bottom-container{
     display: flex;
     flex: 1;
     flex-direction: row;
@@ -49,14 +49,14 @@
     height: 22px;
 }
 
-.TransactionListItem__address-container{
+.EthereumTransactionListItem__address-container{
     display: flex;
     flex: 1;
     flex-direction: row;
     align-items: center;
 }
 
-.TransactionListItem__address-prefix{
+.EthereumTransactionListItem__address-prefix{
     font-size: 16px;
     font-weight: 600;
     line-height: 16px;
@@ -65,7 +65,7 @@
     height: 16px;
 }
 
-.TransactionListItem__address{
+.EthereumTransactionListItem__address{
     font-size: 18px;
     font-weight: 100;
     line-height: 18px;
@@ -75,13 +75,13 @@
     text-overflow: ellipsis;
 }
 
-.TransactionListItem__amount-container{
+.EthereumTransactionListItem__amount-container{
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.TransactionListItem__amount{
+.EthereumTransactionListItem__amount{
     font-size: 28px;
     font-weight: 100;
     line-height: 28px;
@@ -91,7 +91,7 @@
     margin-left: 15px;
 }
 
-.TransactionListItem__date{
+.EthereumTransactionListItem__date{
     font-size: 14px;
     font-weight: 300;
     line-height: 14px;
@@ -99,14 +99,14 @@
     height: 14px;
 }
 
-.TransactionListItem__token-container{
+.EthereumTransactionListItem__token-container{
     display: flex;
     flex-direction: row;
     align-items: center;
     height: 19px;
 }
 
-.TransactionListItem__token-symbol{
+.EthereumTransactionListItem__token-symbol{
     font-size: 15px;
     font-weight: 300;
     line-height: 15px;
@@ -114,14 +114,14 @@
     height: 15px;
 }
 
-.TransactionListItem__token-icon{
+.EthereumTransactionListItem__token-icon{
     height: 18px;
     width: 18px;
     margin-left: 5px;
 }
 
 @media only screen and (max-width: 1000px) {
-    .TransactionListItem__amount{
+    .EthereumTransactionListItem__amount{
         font-size: 20px;
     }
 }
