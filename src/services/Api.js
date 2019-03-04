@@ -90,9 +90,9 @@ export default class Api {
     //Wallet
     //
 
-    static fetchWallet(address) {
+    static fetchWallet(address, queryParams) {
         let path = `/wallet/${ address }`;
-        return GET(path);
+        return GET(path, null, queryParams);
     }
 
     //
@@ -113,5 +113,15 @@ export default class Api {
         let path = `/tx/${ address }/list`;
         return GET(path, null, queryParams);
     }
+
+    //
+    //Sequence
+    //
+
+    static fetchSequence(address, queryParams) {
+        let path = `/sequence/${ address }`;
+        return GET(path, null, queryParams);
+    }
+
 }
 

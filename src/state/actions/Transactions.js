@@ -6,10 +6,11 @@ import {
     FETCH_TRANSACTIONS_ERC20,
     FETCH_TRANSACTIONS_ETHEREUM,
     FETCH_TRANSACTION,
-    RESET
+    RESET, FETCH_TRANSACTIONS_THETA
 } from "../types/Transactions";
 import Wallet from "../../services/Wallet";
 import TokenTypes from "../../constants/TokenTypes";
+import Networks from "../../constants/Networks";
 import Timeout from 'await-timeout';
 import {hideModals} from "./Modals";
 import Alerts from "../../services/Alerts";
@@ -30,9 +31,23 @@ export function fetchEthereumTransactions() {
     });
 }
 
+export function fetchThetaTransactions() {
+    let address = Wallet.getWalletAddress();
+
+    return reduxFetch(FETCH_TRANSACTIONS_THETA, function () {
+        return Api.fetchTransactions(address, {network: Networks.THETA_TESTNET});
+    });
+}
+
 export function fetchEthereumTransaction(txHash) {
     return reduxFetch(FETCH_TRANSACTION, function () {
-        return Api.fetchTransaction(txHash, {network: TokenTypes.ETHEREUM});
+        return Api.fetchTransaction(txHash, {network: Networks.ETHEREUM});
+    });
+}
+
+export function fetchThetaTransaction(txHash) {
+    return reduxFetch(FETCH_TRANSACTION, function () {
+        return Api.fetchTransaction(txHash, {network: Networks.THETA_TESTNET});
     });
 }
 
