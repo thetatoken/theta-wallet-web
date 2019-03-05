@@ -10,3 +10,12 @@
     font-size: 13px;
     cursor: pointer;
 }
+
+.WalletTokenList__ethereum-balances-warning{
+    display: block;
+    margin-top: 12px;
+    margin-left: 21px;
+    font-size: 13px;
+    color: #ED1E5C;
+    max-width: 290px;
+}

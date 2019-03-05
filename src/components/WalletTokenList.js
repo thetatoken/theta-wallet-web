@@ -73,6 +73,12 @@ class WalletTokenList extends React.Component {
                     { (this.state.showEthereumTokens ? 'Hide Ethereum Tokens' : 'Show Ethereum Tokens') }
                 </a>}
 
+                {
+                    this.state.showEthereumTokens &&
+                    <div className="WalletTokenList__ethereum-balances-warning">
+                        Ethereum based tokens will be removed in a future version of this wallet.
+                    </div>
+                }
             </div>
         );
     }

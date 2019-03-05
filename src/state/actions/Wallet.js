@@ -8,6 +8,7 @@ import Router from "../../services/Router";
 import Alerts from '../../services/Alerts'
 import {onLine} from "../../utils/Utils";
 import Networks from "../../constants/Networks";
+import Config from "../../Config";
 
 
 export function fetchWalletEthereumBalances(){
@@ -22,7 +23,7 @@ export function fetchWalletBalances(){
     let address = Wallet.getWalletAddress();
 
     return reduxFetch(FETCH_WALLET_BALANCES, function(){
-        return Api.fetchWallet(address, {network: Networks.THETA_MAINNET});
+        return Api.fetchWallet(address, {network: Config.thetaNetwork});
     });
 }
 

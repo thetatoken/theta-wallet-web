@@ -12,7 +12,7 @@ import {BigNumber} from 'bignumber.js';
 import {store} from "../state";
 import {showModal} from "../state/actions/Modals";
 import ModalTypes from "../constants/ModalTypes";
-import Networks from "../constants/Networks";
+import Config from "../Config";
 
 const TRANSACTION_FEE = 0.000001;
 
@@ -73,7 +73,7 @@ export class ThetaNetworkTxForm extends React.Component {
         store.dispatch(showModal({
             type: ModalTypes.SEND_CONFIRMATION,
             props: {
-                network: Networks.THETA_MAINNET,
+                network: Config.thetaNetwork,
                 transaction: {
                     tokenType: this.state.tokenType,
 

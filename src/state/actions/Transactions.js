@@ -14,6 +14,7 @@ import Networks from "../../constants/Networks";
 import Timeout from 'await-timeout';
 import {hideModals} from "./Modals";
 import Alerts from "../../services/Alerts";
+import Config from '../../Config'
 
 export function fetchERC20Transactions() {
     let address = Wallet.getWalletAddress();
@@ -35,7 +36,7 @@ export function fetchThetaTransactions() {
     let address = Wallet.getWalletAddress();
 
     return reduxFetch(FETCH_TRANSACTIONS_THETA, function () {
-        return Api.fetchTransactions(address, {network: Networks.THETA_MAINNET});
+        return Api.fetchTransactions(address, {network: Config.thetaNetwork});
     });
 }
 
@@ -47,7 +48,7 @@ export function fetchEthereumTransaction(txHash) {
 
 export function fetchThetaTransaction(txHash) {
     return reduxFetch(FETCH_TRANSACTION, function () {
-        return Api.fetchTransaction(txHash, {network: Networks.THETA_MAINNET});
+        return Api.fetchTransaction(txHash, {network: Config.thetaNetwork});
     });
 }
 
