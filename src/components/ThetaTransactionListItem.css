@@ -1,6 +1,7 @@
 .ThetaTransactionListItem{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     border-bottom: 1px solid #4B516E;
     padding-top: 15px;
     padding-bottom: 15px;
@@ -13,6 +14,7 @@
 .ThetaTransactionListItem__left-container{
     display: flex;
     flex-direction: column;
+    flex: 1;
 }
 
 .ThetaTransactionListItem__right-container{
@@ -89,6 +91,9 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-left: 15px;
 }
 
 .ThetaTransactionListItem__amount{
@@ -98,7 +103,11 @@
     height: 28px;
     color: white;
     text-align: right;
-    margin-left: 15px;
+}
+
+.ThetaTransactionListItem__amount-icon{
+    height: 26px;
+    margin-right: 6px;
 }
 
 .ThetaTransactionListItem__date{

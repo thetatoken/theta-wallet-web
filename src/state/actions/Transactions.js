@@ -60,7 +60,7 @@ function errorToHumanError(error){
     }
 }
 
-export async function createTransactionAsync(dispatch, txData, password) {
+export async function createTransactionAsync(dispatch, network, txData, password) {
     let metadata = {txData: txData};
 
     //The decryption can take some time, so start the event early
@@ -72,11 +72,8 @@ export async function createTransactionAsync(dispatch, txData, password) {
     //Let the spinners start, so we will delay the decryption/signing a bit
     await Timeout.set(1000);
 
-
     try {
-        let signedTransaction = await Wallet.signTransaction(txData, password);
-
-        return;
+        let signedTransaction = await Wallet.signTransaction(network, txData, password);
 
         if (signedTransaction) {
             let opts = {
@@ -94,7 +91,7 @@ export async function createTransactionAsync(dispatch, txData, password) {
 
             //Call API to create the transaction
             let result = reduxFetch(CREATE_TRANSACTION, function () {
-                return Api.createTransaction({data: signedTransaction});
+                return Api.createTransaction({data: signedTransaction}, {network: network});
             }, metadata, opts);
 
             return Promise.resolve(result);
@@ -113,9 +110,9 @@ export async function createTransactionAsync(dispatch, txData, password) {
     }
 }
 
-export function createTransaction(txData, password) {
+export function createTransaction(network, txData, password) {
     return function (dispatch, getState) {
-        createTransactionAsync(dispatch, txData, password).then(function (thunk) {
+        createTransactionAsync(dispatch, network, txData, password).then(function (thunk) {
             if (thunk) {
                 dispatch(thunk);
             }

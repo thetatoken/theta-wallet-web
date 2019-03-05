@@ -99,9 +99,9 @@ export default class Api {
     //Transactions
     //
 
-    static createTransaction(body) {
+    static createTransaction(body, queryParams) {
         let path = `/tx`;
-        return POST(path, null, null, body);
+        return POST(path, null, queryParams, body);
     }
 
     static fetchTransaction(transactionID, queryParams) {

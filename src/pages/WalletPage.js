@@ -41,6 +41,7 @@ export class WalletPage extends React.Component {
     fetchBalances(){
         if(isThetaNetworkLive){
             this.props.dispatch(fetchWalletBalances());
+            this.props.dispatch(fetchWalletEthereumBalances());
         }
         else{
             this.props.dispatch(fetchWalletEthereumBalances());
@@ -132,7 +133,8 @@ const mapStateToProps = (state, ownProps) => {
     }
 
     return {
-        balancesByType: state.wallet.balancesByType,
+        balancesByType: Object.assign({}, state.wallet.balancesByType, state.wallet.ethereumBalancesByType),
+
         localTransactionsAmount: Object.keys(localTransactionsByHash).length,
 
         transactions: transactions,

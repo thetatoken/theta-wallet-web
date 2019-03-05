@@ -28,7 +28,7 @@ export class SendConfirmationModal extends React.Component {
     }
 
     handleSendClick(){
-        this.props.dispatch(createTransaction(this.props.transaction, this.state.password));
+        this.props.dispatch(createTransaction(this.props.network, this.props.transaction, this.state.password));
     }
 
     render() {

@@ -44,8 +44,18 @@ class ThetaTransactionListItem extends React.Component {
                 </div>
 
                 <div className="ThetaTransactionListItem__right-container">
-                    <div className="ThetaTransactionListItem__amount">{thetaAmount}</div>
-                    <div className="ThetaTransactionListItem__amount">{tfuelAmount}</div>
+                    <div className="ThetaTransactionListItem__amount-container">
+                        <img className="ThetaTransactionListItem__amount-icon"
+                             src="/img/tokens/theta_large@2x.png"
+                        />
+                        <div className="ThetaTransactionListItem__amount">{thetaAmount}</div>
+                    </div>
+                    <div className="ThetaTransactionListItem__amount-container">
+                        <img className="ThetaTransactionListItem__amount-icon"
+                             src="/img/tokens/tfuel_large@2x.png"
+                        />
+                        <div className="ThetaTransactionListItem__amount">{tfuelAmount}</div>
+                    </div>
                 </div>
             </a>
         );

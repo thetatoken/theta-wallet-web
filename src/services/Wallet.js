@@ -5,7 +5,7 @@ import TokenTypes from "../constants/TokenTypes";
 import {downloadFile} from "../utils/Utils";
 import Alerts from "./Alerts";
 import Theta from "./Theta";
-import Networks from "../constants/Networks";
+import Networks, {isEthereumNetwork, isThetaNetwork} from "../constants/Networks";
 import Api from './Api'
 
 const ethUtil = require('ethereumjs-util');
@@ -143,26 +143,22 @@ export default class Wallet {
         }
     }
 
-    static async signTransaction(txData, password){
-        let { tokenType } = txData;
+    static async signTransaction(network, txData, password){
         let keystore = Wallet.getKeystore();
         let wallet = Wallet.decryptFromKeystore(keystore, password);
         let address = Wallet.getWalletAddress();
 
         if(wallet){
             //User had the correct password
-            if(tokenType === TokenTypes.ETHEREUM || tokenType === TokenTypes.ERC20_THETA){
+            if(isEthereumNetwork(network)){
                 //Ethereum Network
                 return Ethereum.signTransaction(txData, wallet.privateKey);
             }
-            else if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
+            else if(isThetaNetwork(network)){
                 //Theta Network
-                let response = await Api.fetchSequence(address, {network: Networks.THETA_MAINNET});
+                let response = await Api.fetchSequence(address, {network: network});
                 let responseJSON = await response.json();
                 let sequence = parseInt(responseJSON['sequence']) + 1;
-
-                console.log("response ===");
-                console.log(response);
 
                 return Theta.signTransaction(txData, sequence, wallet.privateKey);
             }

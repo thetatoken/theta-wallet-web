@@ -33,10 +33,26 @@ const EthereumNetworkTokens = [
         href: "/wallet/tokens/" + TokenTypes.ETHEREUM
     }];
 
-const tokens = (isThetaNetworkLive ? ThetaNetworkTokens : EthereumNetworkTokens);
+const liveTokens = (isThetaNetworkLive ? ThetaNetworkTokens : EthereumNetworkTokens);
+const allTokens =  (isThetaNetworkLive ? ThetaNetworkTokens.concat(EthereumNetworkTokens) : EthereumNetworkTokens);
 
 class WalletTokenList extends React.Component {
+    constructor(){
+        super();
+
+        this.state = {
+          showEthereumTokens: false
+        };
+
+        this.toggleEthereumTokens = this.toggleEthereumTokens.bind(this);
+    }
+
+    toggleEthereumTokens(){
+        this.setState({showEthereumTokens: !this.state.showEthereumTokens});
+    }
+
     render() {
+        let tokens = (this.state.showEthereumTokens ? allTokens : liveTokens);
         let balancesByType = this.props.balancesByType;
         var content = tokens.map(function (token) {
             let balance = balancesByType[token.type];
@@ -50,6 +66,13 @@ class WalletTokenList extends React.Component {
         return (
             <div className="WalletTokenList">
                 {content}
+
+                {isThetaNetworkLive &&
+                <a className="WalletTokenList__ethereum-balances-toggle"
+                   onClick={this.toggleEthereumTokens}>
+                    { (this.state.showEthereumTokens ? 'Hide Ethereum Tokens' : 'Show Ethereum Tokens') }
+                </a>}
+
             </div>
         );
     }
