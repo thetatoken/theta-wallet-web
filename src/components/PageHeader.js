@@ -15,6 +15,7 @@ class PageHeader extends React.Component {
                 <div className="PageHeader__title">
                     {this.props.title}
                 </div>
+                {this.props.children}
             </div>
         );
     }

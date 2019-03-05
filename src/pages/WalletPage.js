@@ -6,16 +6,14 @@ import PageHeader from '../components/PageHeader'
 import TransactionList from '../components/TransactionList'
 import {fetchWalletBalances, fetchWalletEthereumBalances} from "../state/actions/Wallet";
 import {fetchERC20Transactions, fetchEthereumTransactions, fetchThetaTransactions} from "../state/actions/Transactions";
-import {
-    getERC20Transactions,
-    getEthereumTransactions,
-    getThetaNetworkTransactions,
-    getTransactions
-} from "../state/selectors/Transactions";
+import {getERC20Transactions, getEthereumTransactions, getThetaNetworkTransactions} from "../state/selectors/Transactions";
 import EmptyState from "../components/EmptyState";
 import TokenTypes from "../constants/TokenTypes";
 import MDSpinner from "react-md-spinner";
 import {isThetaNetworkLive} from "../Config";
+import GhostButton from "../components/buttons/GhostButton";
+import {showModal} from "../state/actions/Modals";
+import ModalTypes from "../constants/ModalTypes";
 
 export class WalletPage extends React.Component {
     constructor(){
@@ -24,6 +22,8 @@ export class WalletPage extends React.Component {
         this.pollWalletBalancesIntervalId = null;
 
         this.fetchBalances = this.fetchBalances.bind(this);
+        this.handleSendClick = this.handleSendClick.bind(this);
+        this.handleReceiveClick = this.handleReceiveClick.bind(this);
     }
 
     fetchTransactions(tokenType){
@@ -61,6 +61,21 @@ export class WalletPage extends React.Component {
         }
     }
 
+    handleSendClick(){
+        this.props.dispatch(showModal({
+            type: ModalTypes.SEND,
+            props: {
+                tokenType: this.props.match.params.tokenType
+            }
+        }));
+    }
+
+    handleReceiveClick(){
+        this.props.dispatch(showModal({
+            type: ModalTypes.RECEIVE,
+        }));
+    }
+
     componentDidMount(){
         let tokenType = this.props.match.params.tokenType;
 
@@ -88,8 +103,17 @@ export class WalletPage extends React.Component {
                 </div>
                 <div className="WalletPage__detail-view">
                     <PageHeader title="Transactions"
-                                sticky={true}
-                    />
+                                sticky={true}>
+                        <div className="WalletPage__header-buttons">
+                            <GhostButton title="Send"
+                                         iconUrl="/img/icons/send@2x.png"
+                                         onClick={this.handleSendClick}/>
+                            <GhostButton title="Receive"
+                                         iconUrl="/img/icons/receive@2x.png"
+                                         style={{marginLeft: 12}}
+                                         onClick={this.handleReceiveClick}/>
+                        </div>
+                    </PageHeader>
 
                     {
                         this.props.isLoadingTransactions &&

@@ -14,11 +14,11 @@ import ModalTypes from "../constants/ModalTypes";
 import Networks from "../constants/Networks";
 
 export class EthereumNetworkTxForm extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
-            tokenType: TokenTypes.ERC20_THETA,
+            tokenType: (props.defaultTokenType || TokenTypes.ERC20_THETA),
             to: '',
             amount: '',
 

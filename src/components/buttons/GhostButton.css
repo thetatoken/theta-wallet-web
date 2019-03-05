@@ -2,12 +2,13 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    height: 45px;
+    height: 40px;
     border: 1px solid #687399;
     border-radius: 4px;
     padding-left: 16px;
     padding-right: 16px;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 .GhostButton:hover{
@@ -15,12 +16,12 @@
 }
 
 .GhostButton__icon{
-    height: 30px;
+    height: 22px;
     margin-right: 8px;
 }
 
 .GhostButton__title{
-    font-size: 16px;
+    font-size: 15px;
     font-weight: normal;
     color: white;
     cursor: pointer;

@@ -26,6 +26,14 @@
     flex-shrink: 0;
 }
 
+.WalletPage__header-buttons{
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: flex-end;
+    margin-left: 12px;
+}
+
 @media only screen and (max-width: 1000px) {
     .WalletPage__master-view{
         width: 300px;

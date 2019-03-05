@@ -12,6 +12,7 @@ class GhostButton extends React.Component {
                href={this.props.href}
                target={this.props.target}
                onClick={this.props.onClick}
+               style={this.props.style}
             >
                 {icon}
                 <div className="GhostButton__title">

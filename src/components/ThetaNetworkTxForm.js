@@ -17,11 +17,11 @@ import Config from "../Config";
 const TRANSACTION_FEE = 0.000001;
 
 export class ThetaNetworkTxForm extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
-            tokenType: TokenTypes.THETA,
+            tokenType: (props.defaultTokenType || TokenTypes.THETA),
             to: '',
             amount: '',
 
