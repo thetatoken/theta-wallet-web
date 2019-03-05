@@ -1,7 +1,8 @@
 import React from 'react'
+import './ThetaNetworkTxForm.css';
 import './EthereumNetworkTxForm.css';
 import {connect} from 'react-redux'
-import Ethereum from '../services/Ethereum'
+import Theta from '../services/Theta'
 import TokenTypes from "../constants/TokenTypes";
 import FormInputContainer from '../components/FormInputContainer'
 import ValueWithTitle from '../components/ValueWithTitle'
@@ -13,29 +14,26 @@ import {showModal} from "../state/actions/Modals";
 import ModalTypes from "../constants/ModalTypes";
 import Networks from "../constants/Networks";
 
-export class EthereumNetworkTxForm extends React.Component {
+const TRANSACTION_FEE = 0.000001;
+
+export class ThetaNetworkTxForm extends React.Component {
     constructor() {
         super();
 
         this.state = {
-            tokenType: TokenTypes.ERC20_THETA,
+            tokenType: TokenTypes.THETA,
             to: '',
             amount: '',
 
-            transactionFee: null,
-            gasPrice: null,
-            gasLimit: null,
+            transactionFee: Theta.getTransactionFee(),
 
             invalidAddress: false,
             insufficientFunds: false,
             invalidAmount: false,
             invalidDecimalPlaces: false,
-
-            showGasDetails: false,
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleGasDetailsClick = this.handleGasDetailsClick.bind(this);
         this.handleSendClick = this.handleSendClick.bind(this);
         this.handleEntireBalanceClick = this.handleEntireBalanceClick.bind(this);
     }
@@ -50,18 +48,13 @@ export class EthereumNetworkTxForm extends React.Component {
                 to: '',
                 amount: '',
 
-                transactionFee: null,
-                gasPrice: null,
-                gasLimit: null,
+                transactionFee: TRANSACTION_FEE,
 
                 invalidAddress: false,
                 invalidDecimalPlaces: false,
                 invalidAmount: false,
                 insufficientFunds: false,
             };
-
-            //Refresh the gas price since the user may have adjusted
-            this.updateGasPrice();
 
             this.setState(Object.assign(defaults, {tokenType: value}));
         }
@@ -72,58 +65,25 @@ export class EthereumNetworkTxForm extends React.Component {
 
             this.setState({[name]: value}, () => {
                 this.validate();
-
-                this.updateTransactionFee();
             });
         }
-    }
-
-    handleGasDetailsClick() {
-        this.setState({showGasDetails: !this.state.showGasDetails});
     }
 
     handleSendClick() {
         store.dispatch(showModal({
             type: ModalTypes.SEND_CONFIRMATION,
             props: {
-                network: Networks.ETHEREUM,
+                network: Networks.THETA_MAINNET,
                 transaction: {
                     tokenType: this.state.tokenType,
 
                     to: this.state.to,
                     amount: this.state.amount,
 
-                    gas: this.state.gasLimit,
-                    gasPrice: this.state.gasPrice,
-
                     transactionFee: this.state.transactionFee
                 }
             }
         }));
-    }
-
-    async updateGasPrice() {
-        let gasPrice = await Ethereum.getGasPrice();
-
-        this.setState({gasPrice: gasPrice});
-
-        return gasPrice;
-    }
-
-    async updateGasLimit() {
-        let txData = {
-            tokenType: this.state.tokenType,
-            to: this.state.to,
-            from: this.props.walletAddress,
-            amount: this.state.amount,
-            gasPrice: this.state.gasPrice,
-        };
-
-        let gas = await Ethereum.estimateGas(txData);
-
-        this.setState({gasLimit: gas});
-
-        return gas;
     }
 
     isValid() {
@@ -136,32 +96,8 @@ export class EthereumNetworkTxForm extends React.Component {
             this.state.invalidAmount === false);
     }
 
-    async updateTransactionFee() {
-        if (this.isValid()) {
-            let gasPrice = this.state.gasPrice;
-            let gasLimit = await this.updateGasLimit();
-
-            if (gasPrice != null && gasLimit != null) {
-                let transactionFee = await Ethereum.getTransactionFee(this.state.gasPrice, gasLimit);
-
-                this.setState({transactionFee: transactionFee});
-
-                return transactionFee;
-            } else {
-                this.setState({transactionFee: null});
-
-                return null;
-            }
-        }
-        else {
-            this.setState({transactionFee: null});
-
-            return null;
-        }
-    }
-
-    async calculateEntireEtherBalance() {
-        let transactionFee = await this.updateTransactionFee();
+    async calculateEntireTFuelBalance() {
+        let transactionFee = this.state.transactionFee;
         let balance = this.props.balancesByType[TokenTypes.ETHEREUM];
 
         if (transactionFee) {
@@ -176,21 +112,21 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     async handleEntireBalanceClick() {
-        if (this.state.tokenType === TokenTypes.ERC20_THETA) {
-            let balance = this.props.balancesByType[TokenTypes.ERC20_THETA];
+        if (this.state.tokenType === TokenTypes.THETA) {
+            let balance = this.props.balancesByType[TokenTypes.THETA];
 
             this.setState({
                 amount: balance
             });
         }
-        else if (this.state.tokenType === TokenTypes.ETHEREUM) {
-            let balance = this.props.balancesByType[TokenTypes.ETHEREUM];
+        else if (this.state.tokenType === TokenTypes.THETA_FUEL) {
+            let balance = this.props.balancesByType[TokenTypes.THETA_FUEL];
 
             if (parseFloat(balance) !== 0.0) {
                 this.setState({
                     amount: balance
                 }, () => {
-                    this.calculateEntireEtherBalance()
+                    this.calculateEntireTFuelBalance()
                 });
             }
         }
@@ -207,24 +143,21 @@ export class EthereumNetworkTxForm extends React.Component {
     }
 
     async validateAddress() {
-        let isAddress = Ethereum.isAddress(this.state.to);
+        let isAddress = Theta.isAddress(this.state.to);
 
-        this.setState({invalidAddress: (isAddress === false)},
-            () => {
-                this.updateTransactionFee();
-            });
+        this.setState({invalidAddress: (isAddress === false)});
     }
 
     async validateAmount() {
         let amountFloat = parseFloat(this.state.amount);
-        let erc20ThetaBalance = this.props.balancesByType[TokenTypes.ERC20_THETA];
-        let ethereumBalance = this.props.balancesByType[TokenTypes.ETHEREUM];
+        let thetaBalance = this.props.balancesByType[TokenTypes.THETA];
+        let tfuelBalance = this.props.balancesByType[TokenTypes.THETA_FUEL];
         let balance = null;
 
-        if (this.state.tokenType === TokenTypes.ERC20_THETA) {
-            balance = erc20ThetaBalance;
-        } else if (this.state.tokenType === TokenTypes.ETHEREUM) {
-            balance = ethereumBalance;
+        if (this.state.tokenType === TokenTypes.THETA) {
+            balance = thetaBalance;
+        } else if (this.state.tokenType === TokenTypes.THETA_FUEL) {
+            balance = tfuelBalance;
         }
 
         console.log("amountFloat === 0.0 === " + (amountFloat === 0.0));
@@ -233,8 +166,6 @@ export class EthereumNetworkTxForm extends React.Component {
             insufficientFunds: (amountFloat > parseFloat(balance)),
             invalidAmount: (amountFloat === 0.0 || amountFloat < 0.0),
             invalidDecimalPlaces: !hasValidDecimalPlaces(this.state.amount, 18)
-        }, () => {
-            this.updateTransactionFee();
         });
     }
 
@@ -245,26 +176,16 @@ export class EthereumNetworkTxForm extends React.Component {
 
         if (this.state.amount !== prevState.amount || this.state.gasPrice !== prevState.gasPrice) {
             this.validateAmount();
-
-            this.updateTransactionFee();
         }
-    }
-
-    componentDidMount() {
-        this.updateGasPrice();
     }
 
     render() {
         let hasToAddress = (this.state.to !== null && this.state.to !== '' && this.state.invalidAddress === false);
-        let ERC20ThetaTitle = `ERC20 Theta (${ this.props.balancesByType[TokenTypes.ERC20_THETA] })`;
-        let EthereumTitle = `Ethereum (${ this.props.balancesByType[TokenTypes.ETHEREUM] })`;
+        let thetaTitle = `Theta (${ this.props.balancesByType[TokenTypes.THETA] })`;
+        let tfuelTitle = `TFuel (${ this.props.balancesByType[TokenTypes.THETA_FUEL] })`;
         let transactionFeeValueContent = (
             <React.Fragment>
                 <span>Transaction Fee</span>
-                <a className="TxForm__toggle-gas-details"
-                   onClick={this.handleGasDetailsClick}>
-                    {this.state.showGasDetails ? "Hide Gas Details" : "Show Gas Details"}
-                </a>
             </React.Fragment>
         );
         let amountTitleContent = (
@@ -299,8 +220,8 @@ export class EthereumNetworkTxForm extends React.Component {
                 <FormInputContainer title="Token">
                     <select className="BottomBorderInput" value={this.state.tokenType} onChange={this.handleChange}
                             name="tokenType">
-                        <option value={TokenTypes.ERC20_THETA}>{ERC20ThetaTitle}</option>
-                        <option value={TokenTypes.ETHEREUM}>{EthereumTitle}</option>
+                        <option value={TokenTypes.THETA}>{thetaTitle}</option>
+                        <option value={TokenTypes.THETA_FUEL}>{tfuelTitle}</option>
                     </select>
                 </FormInputContainer>
                 <FormInputContainer title="To"
@@ -322,18 +243,8 @@ export class EthereumNetworkTxForm extends React.Component {
                 <div className="TxForm__fee-container">
                     <div className="">
                         <ValueWithTitle title={transactionFeeValueContent}
-                                        value={this.state.transactionFee ? this.state.transactionFee + " ETH" : '--'}/>
+                                        value={this.state.transactionFee + " TFuel"}/>
                     </div>
-
-                    {
-                        (this.state.showGasDetails &&
-                            <div className="TxForm__gas-details-container">
-                                <ValueWithTitle title="Gas Price"
-                                                value={this.state.gasPrice ? this.state.gasPrice + " Gwei" : '--'}/>
-                                <ValueWithTitle title="Gas Limit" value={this.state.gasLimit || '--'}/>
-                            </div>
-                        )
-                    }
                 </div>
                 <GradientButton title="Send"
                                 disabled={isValid === false}
@@ -346,9 +257,9 @@ export class EthereumNetworkTxForm extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        balancesByType: state.wallet.ethereumBalancesByType,
+        balancesByType: state.wallet.balancesByType,
         walletAddress: state.wallet.address,
     };
 };
 
-export default connect(mapStateToProps)(EthereumNetworkTxForm);
+export default connect(mapStateToProps)(ThetaNetworkTxForm);

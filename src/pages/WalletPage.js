@@ -4,12 +4,18 @@ import {connect} from 'react-redux'
 import WalletTokenList from '../components/WalletTokenList'
 import PageHeader from '../components/PageHeader'
 import TransactionList from '../components/TransactionList'
-import {fetchWalletBalances} from "../state/actions/Wallet";
-import {fetchERC20Transactions, fetchEthereumTransactions} from "../state/actions/Transactions";
-import {getERC20Transactions, getEthereumTransactions} from "../state/selectors/Transactions";
+import {fetchWalletBalances, fetchWalletEthereumBalances} from "../state/actions/Wallet";
+import {fetchERC20Transactions, fetchEthereumTransactions, fetchThetaTransactions} from "../state/actions/Transactions";
+import {
+    getERC20Transactions,
+    getEthereumTransactions,
+    getThetaNetworkTransactions,
+    getTransactions
+} from "../state/selectors/Transactions";
 import EmptyState from "../components/EmptyState";
 import TokenTypes from "../constants/TokenTypes";
 import MDSpinner from "react-md-spinner";
+import {isThetaNetworkLive} from "../Config";
 
 export class WalletPage extends React.Component {
     constructor(){
@@ -27,10 +33,18 @@ export class WalletPage extends React.Component {
         else if(tokenType === TokenTypes.ETHEREUM){
             this.props.dispatch(fetchEthereumTransactions());
         }
+        else if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
+            this.props.dispatch(fetchThetaTransactions());
+        }
     }
 
     fetchBalances(){
-        this.props.dispatch(fetchWalletBalances());
+        if(isThetaNetworkLive){
+            this.props.dispatch(fetchWalletBalances());
+        }
+        else{
+            this.props.dispatch(fetchWalletEthereumBalances());
+        }
     }
 
     startPollingWalletBalances(){
@@ -100,7 +114,7 @@ export class WalletPage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
     let tokenType = ownProps.match.params.tokenType;
-    let localTransactionsByID = (state.transactions.localTransactionsByID || {});
+    let localTransactionsByHash = (state.transactions.localTransactionsByHash || {});
     let transactions = [];
     let isLoadingTransactions = false;
 
@@ -110,12 +124,16 @@ const mapStateToProps = (state, ownProps) => {
     }
     else if(tokenType === TokenTypes.ETHEREUM){
         transactions = getEthereumTransactions(state);
-        isLoadingTransactions = state.transactions.isFetchingETHTransactions;
+        isLoadingTransactions = state.transactions.isFetchingEthereumTransactions;
+    }
+    else if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
+        transactions = getThetaNetworkTransactions(state);
+        isLoadingTransactions = state.transactions.isFetchingTransactions;
     }
 
     return {
         balancesByType: state.wallet.balancesByType,
-        localTransactionsAmount: Object.keys(localTransactionsByID).length,
+        localTransactionsAmount: Object.keys(localTransactionsByHash).length,
 
         transactions: transactions,
 

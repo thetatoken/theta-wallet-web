@@ -2,20 +2,26 @@ import React from "react";
 import './ThetaTransactionListItem.css';
 import moment from 'moment';
 import TransactionStatus from './TransactionStatus'
-import ERC20Badge from './ERC20Badge'
 import {truncate} from "../utils/Utils";
+import _ from 'lodash';
 
 class ThetaTransactionListItem extends React.Component {
     render() {
         let { transaction } = this.props;
-        let {from, to, token_symbol, token_decimal, dec_value, type, time_stamp, bound, hash, is_local} = transaction;
+        let {inputs, outputs, timestamp, bound, hash, is_local} = transaction;
+        let input = inputs[0];
+        let output = outputs[0];
+        let from = input.address;
+        let to = output.address;
         let isReceived = (bound === "inbound");
-        let iconUrl = `/img/tokens/${type}_small@2x.png`;
-        let explorerUrl = `https://etherscan.io/tx/${transaction.hash}`;
+        let explorerUrl = `https://explorer.thetatoken.org/txs/${hash}`;
 
         //Truncate the addresses to help reduce the run ons
         from = truncate(from, 23, '...');
         to = truncate(to, 23, '...');
+
+        let thetaAmount = _.get(output, ['coins', 'theta']);
+        let tfuelAmount = _.get(output, ['coins', 'tfuel']);
 
         return (
             <a className="ThetaTransactionListItem"
@@ -33,13 +39,13 @@ class ThetaTransactionListItem extends React.Component {
                         </div>
                     </div>
                     <div className="ThetaTransactionListItem__bottom-container">
-                        <div className="ThetaTransactionListItem__date">{moment.unix(time_stamp).fromNow()}</div>
+                        <div className="ThetaTransactionListItem__date">{moment.unix(timestamp).fromNow()}</div>
                     </div>
                 </div>
 
                 <div className="ThetaTransactionListItem__right-container">
-                    <div className="ThetaTransactionListItem__amount">{dec_value}</div>
-                    <div className="ThetaTransactionListItem__amount">{dec_value}</div>
+                    <div className="ThetaTransactionListItem__amount">{thetaAmount}</div>
+                    <div className="ThetaTransactionListItem__amount">{tfuelAmount}</div>
                 </div>
             </a>
         );

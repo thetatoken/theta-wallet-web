@@ -1,16 +1,16 @@
-.EthereumNetworkTxForm{
+.TxForm{
 
 }
 
-.EthereumNetworkTxForm input{
+.TxForm input{
     width: 100%;
 }
 
-.EthereumNetworkTxForm select{
+.TxForm select{
     width: 100%;
 }
 
-.EthereumNetworkTxForm__entire-balance{
+.TxForm__entire-balance{
     display: flex;
     align-self: flex-start;
     text-align: left;
@@ -20,7 +20,7 @@
     margin-left: 12px;
 }
 
-.EthereumNetworkTxForm__fee-container{
+.TxForm__fee-container{
     display: flex;
     flex-direction: column;
     margin-top: 20px;
@@ -28,19 +28,19 @@
     margin-bottom: 20px;
 }
 
-.EthereumNetworkTxForm__tx-fee-container{
+.TxForm__tx-fee-container{
     display: flex;
     flex-direction: column;
 }
 
-.EthereumNetworkTxForm__gas-details-container{
+.TxForm__gas-details-container{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     margin-top: 20px;
 }
 
-.EthereumNetworkTxForm__toggle-gas-details{
+.TxForm__toggle-gas-details{
     font-size: 13px;
     color: white;
     margin-left: 12px;

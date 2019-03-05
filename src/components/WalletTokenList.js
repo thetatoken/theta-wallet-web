@@ -3,8 +3,23 @@ import './WalletTokenList.css';
 import WalletTokenListItem from './WalletTokenListItem'
 import TokenTypes from '../constants/TokenTypes'
 import {tokenTypeToTokenName} from '../constants/TokenTypes'
+import {isThetaNetworkLive} from '../Config'
 
-const tokens = [
+const ThetaNetworkTokens = [
+    {
+        type: TokenTypes.THETA,
+        name: tokenTypeToTokenName(TokenTypes.THETA),
+        iconUrl: `/img/tokens/${TokenTypes.THETA}_large@2x.png`,
+        href: "/wallet/tokens/" + TokenTypes.THETA
+    },
+    {
+        type: TokenTypes.THETA_FUEL,
+        name: tokenTypeToTokenName(TokenTypes.THETA_FUEL),
+        iconUrl: `/img/tokens/${TokenTypes.THETA_FUEL}_large@2x.png`,
+        href: "/wallet/tokens/" + TokenTypes.THETA_FUEL
+    }];
+
+const EthereumNetworkTokens = [
     {
         type: TokenTypes.ERC20_THETA,
         name: tokenTypeToTokenName(TokenTypes.ERC20_THETA),
@@ -18,10 +33,12 @@ const tokens = [
         href: "/wallet/tokens/" + TokenTypes.ETHEREUM
     }];
 
+const tokens = (isThetaNetworkLive ? ThetaNetworkTokens : EthereumNetworkTokens);
+
 class WalletTokenList extends React.Component {
     render() {
         let balancesByType = this.props.balancesByType;
-        var content = tokens.map(function(token){
+        var content = tokens.map(function (token) {
             let balance = balancesByType[token.type];
 
             return <WalletTokenListItem token={token}

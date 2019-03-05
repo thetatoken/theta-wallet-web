@@ -1,12 +1,9 @@
 import React from 'react'
 import './SendModal.css';
-import _ from 'lodash';
-import {connect} from 'react-redux'
 import Modal from '../components/Modal'
-import Wallet from '../services/Wallet'
-import GhostButton from '../components/buttons/GhostButton'
-import TokenTypes from "../constants/TokenTypes";
+import Networks from "../constants/Networks";
 import EthereumNetworkTxForm from '../components/EthereumNetworkTxForm'
+import ThetaNetworkTxForm from '../components/ThetaNetworkTxForm'
 
 export default class SendModal extends React.Component {
     render() {
@@ -16,7 +13,8 @@ export default class SendModal extends React.Component {
                     <div className="SendModal__title">
                         Send
                     </div>
-                    <EthereumNetworkTxForm />
+                    <ThetaNetworkTxForm />
+                    
                 </div>
             </Modal>
         )

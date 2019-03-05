@@ -1,19 +1,28 @@
 import Api from '../../services/Api'
 import { reduxFetch } from'./Api'
-import {FETCH_WALLET_BALANCES, SET_WALLET_ADDRESS, RESET} from "../types/Wallet";
-import Wallet, {WalletUnlockStrategy} from '../../services/Wallet'
+import {FETCH_WALLET_BALANCES, FETCH_WALLET_ETHEREUM_BALANCES, SET_WALLET_ADDRESS, RESET} from "../types/Wallet";
+import Wallet from '../../services/Wallet'
 import TemporaryState from "../../services/TemporaryState";
 import {resetTransactionsState} from './Transactions'
 import Router from "../../services/Router";
 import Alerts from '../../services/Alerts'
-import {onLine, downloadFile} from "../../utils/Utils";
+import {onLine} from "../../utils/Utils";
+import Networks from "../../constants/Networks";
 
+
+export function fetchWalletEthereumBalances(){
+    let address = Wallet.getWalletAddress();
+
+    return reduxFetch(FETCH_WALLET_ETHEREUM_BALANCES, function(){
+        return Api.fetchWallet(address, {network: Networks.ETHEREUM});
+    });
+}
 
 export function fetchWalletBalances(){
     let address = Wallet.getWalletAddress();
 
     return reduxFetch(FETCH_WALLET_BALANCES, function(){
-        return Api.fetchWallet(address);
+        return Api.fetchWallet(address, {network: Networks.THETA_MAINNET});
     });
 }
 

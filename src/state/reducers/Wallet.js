@@ -3,16 +3,42 @@ import { zipMap } from "../../utils/Utils";
 
 const INITIAL_STATE = {
     isFetchingBalances : false,
+    isFetchingEthereumBalances : false,
 
     address: null,
     name: null,
+
+    //Theta
     balances: [],
     balancesByType: {},
-    gasPrice: 0,
+
+    //Legacy
+    ethereumBalances:[],
+    ethereumBalancesByType: {},
 };
 
 export const walletReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
+        case actionTypes.FETCH_WALLET_ETHEREUM_BALANCES_START:{
+            return Object.assign({}, state, {
+                isFetchingEthereumBalances: true
+            });
+        }
+        case actionTypes.FETCH_WALLET_ETHEREUM_BALANCES_END:{
+            return Object.assign({}, state, {
+                isFetchingEthereumBalances: false
+            });
+        }
+        case actionTypes.FETCH_WALLET_ETHEREUM_BALANCES_SUCCESS:{
+            let body = action.response.body;
+            let balances = body.balances;
+
+            return Object.assign({}, state, {
+                ethereumBalances: balances,
+                ethereumBalancesByType: zipMap(balances.map(({ type }) => type), balances.map(({ value }) => value))
+            });
+        }
+
         case actionTypes.FETCH_WALLET_BALANCES_START:{
             return Object.assign({}, state, {
                 isFetchingBalances: true
@@ -32,6 +58,7 @@ export const walletReducer = (state = INITIAL_STATE, action) => {
                 balancesByType: zipMap(balances.map(({ type }) => type), balances.map(({ value }) => value))
             });
         }
+
         case actionTypes.SET_WALLET_ADDRESS:{
             return Object.assign({}, state, {
                 address: action.address

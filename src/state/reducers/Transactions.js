@@ -4,16 +4,23 @@ import _ from 'lodash';
 import TokenTypes from "../../constants/TokenTypes";
 
 const INITIAL_STATE = {
-    isFetchingERC20Transactions : false,
-    isFetchingETHTransactions : false,
+    isFetchingTransactions : false,
+
     isCreatingTransaction : false,
 
-    transactionsByType: {},
+    transactions: [],
     transactionsByHash: {},
 
     pendingTransaction: {},
 
-    localTransactionsByID: {}
+    localTransactionsByHash: {},
+
+    //Legacy
+    isFetchingERC20Transactions : false,
+    isFetchingEthereumTransactions : false,
+
+    ethereumNetworkTransactionsByHash: {},
+    ethereumNetworkTransactionsByType: {}
 };
 
 function pendingTransactionToLocalTransaction(pendingTransaction, hash){
@@ -60,20 +67,20 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
             let transactions = body.transactions;
 
             return Object.assign({}, state, {
-                transactionsByHash: Object.assign({}, state.transactionsByHash, zipMap(transactions.map(({ hash }) => hash), transactions)),
-                transactionsByType: Object.assign({}, state.transactionsByType, {"erc20" : transactions})
+                ethereumNetworkTransactionsByHash: Object.assign({}, state.ethereumNetworkTransactionsByHash, zipMap(transactions.map(({ hash }) => hash), transactions)),
+                ethereumNetworkTransactionsByType: Object.assign({}, state.ethereumNetworkTransactionsByType, {"erc20" : transactions})
             });
         }
 
         //ETH Transactions
         case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_START:{
             return Object.assign({}, state, {
-                isFetchingETHTransactions: true
+                isFetchingEthereumTransactions: true
             });
         }
         case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_END:{
             return Object.assign({}, state, {
-                isFetchingETHTransactions: false
+                isFetchingEthereumTransactions: false
             });
         }
         case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_SUCCESS:{
@@ -81,10 +88,33 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
             let transactions = body.transactions;
 
             return Object.assign({}, state, {
-                transactionsByHash: Object.assign({}, state.transactionsByHash, zipMap(transactions.map(({ hash }) => hash), transactions)),
-                transactionsByType: Object.assign({}, state.transactionsByType, {"ethereum" : transactions})
+                ethereumNetworkTransactionsByHash: Object.assign({}, state.ethereumNetworkTransactionsByHash, zipMap(transactions.map(({ hash }) => hash), transactions)),
+                ethereumNetworkTransactionsByType: Object.assign({}, state.ethereumNetworkTransactionsByType, {"ethereum" : transactions})
             });
         }
+
+        //Theta Transactions
+        case actionTypes.FETCH_TRANSACTIONS_THETA_START:{
+            return Object.assign({}, state, {
+                isFetchingTransactions: true
+            });
+        }
+        case actionTypes.FETCH_TRANSACTIONS_THETA_END:{
+            return Object.assign({}, state, {
+                isFetchingTransactions: false
+            });
+        }
+        case actionTypes.FETCH_TRANSACTIONS_THETA_SUCCESS:{
+            let body = action.response.body;
+            let transactions = body.transactions;
+
+            return Object.assign({}, state, {
+                transactionsByHash: Object.assign({}, state.transactionsByHash, zipMap(transactions.map(({ hash }) => hash), transactions)),
+                transactions: transactions
+            });
+        }
+
+
 
         //Create Transaction
         case actionTypes.CREATE_TRANSACTION_START:{
@@ -104,7 +134,7 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
             let localTransaction = pendingTransactionToLocalTransaction(state.pendingTransaction, hash);
 
             return Object.assign({}, state, {
-                localTransactionsByID: Object.assign({}, state.localTransactionsByID, {[hash]: localTransaction}),
+                localTransactionsByHash: Object.assign({}, state.localTransactionsByHash, {[hash]: localTransaction}),
                 pendingTransaction: null
             });
         }
@@ -120,7 +150,7 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
 
                 return Object.assign({}, state, {
                     //Remove the local transaction from the state since it is in the blockchain now
-                    localTransactionsByID: _.omit(state.localTransactionsByID, transaction.hash),
+                    localTransactionsByHash: _.omit(state.localTransactionsByHash, transaction.hash),
 
                     //Append this tx to the list
                     transactionsByHash: Object.assign({}, state.transactionsByHash,  {[transaction.hash]: transaction}),

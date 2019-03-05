@@ -151,8 +151,9 @@ export default class Wallet {
                 //Ethereum Network
                 return Ethereum.signTransaction(txData, wallet.privateKey);
             }
-            else{
-                //Sign a Theta TX!
+            else if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
+                //Theta Network
+                return Ethereum.signTransaction(txData, wallet.privateKey);
             }
         }
         else{

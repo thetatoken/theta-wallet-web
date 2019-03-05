@@ -6,6 +6,7 @@ import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet'
 import {createTransaction} from "../state/actions/Transactions";
 import {tokenTypeToTokenName} from "../constants/TokenTypes";
+import Networks, {isEthereumNetwork, isThetaNetwork} from "../constants/Networks";
 
 export class SendConfirmationModal extends React.Component {
     constructor(){
@@ -27,7 +28,7 @@ export class SendConfirmationModal extends React.Component {
     }
 
     handleSendClick(){
-        this.props.dispatch(createTransaction(this.props.transaction, this.state.password));
+        this.props.dispatch(createTransaction(this.props.network, this.props.transaction, this.state.password));
     }
 
     render() {
@@ -46,6 +47,27 @@ export class SendConfirmationModal extends React.Component {
                 </div>
             );
         };
+        let detailRows = null;
+
+        if(isEthereumNetwork(this.props.network)){
+            detailRows = (
+                <React.Fragment>
+                    { renderDataRow("From", this.props.walletAddress) }
+                    { renderDataRow("Transaction Type", "Asset Transfer") }
+                    { renderDataRow("Gas Limit", gas) }
+                    { renderDataRow("Gas Price", gasPrice + " Gwei") }
+                    { renderDataRow("Transaction Fee", transactionFee + " ETH") }
+                </React.Fragment>
+            );
+        }
+        else if(isThetaNetwork(this.props.network)){
+            detailRows = (
+                <React.Fragment>
+                    { renderDataRow("From", this.props.walletAddress) }
+                    { renderDataRow("Transaction Fee", transactionFee + " TFUEL") }
+                </React.Fragment>
+            );
+        }
 
         return (
             <Modal>
@@ -61,11 +83,7 @@ export class SendConfirmationModal extends React.Component {
                     <div className="SendConfirmationModal__to">{ to }</div>
 
                     <div className="SendConfirmationModal__rows">
-                        { renderDataRow("From", this.props.walletAddress) }
-                        { renderDataRow("Transaction Type", "Asset Transfer") }
-                        { renderDataRow("Gas Limit", gas) }
-                        { renderDataRow("Gas Price", gasPrice + " Gwei") }
-                        { renderDataRow("Transaction Fee", transactionFee + " ETH") }
+                        { detailRows }
                     </div>
 
                     <div className="SendConfirmationModal__password-container">
