@@ -8,7 +8,7 @@ import CreateWalletPage from './pages/CreateWalletPage'
 import UnlockWalletPage from './pages/UnlockWalletPage'
 import Wallet from './services/Wallet'
 import OfflinePage from "./pages/OfflinePage";
-import {isThetaNetworkLive} from "./Config";
+import Config from "./Config";
 
 export class Pages extends React.Component {
     render() {
@@ -41,8 +41,8 @@ export class WalletPages extends React.Component {
                         Wallet.unlocked() === false && <Redirect to='/unlock'/>
                     }
                     <Route path="/wallet/settings" component={SettingsPage}/>
-                    <Redirect from='/wallet' to={(isThetaNetworkLive ? '/wallet/tokens/theta' : '/wallet/tokens/erc20')} exact={true}/>
-                    <Redirect from='/wallet/tokens' to={(isThetaNetworkLive ? '/wallet/tokens/theta' : '/wallet/tokens/erc20')} exact={true}/>
+                    <Redirect from='/wallet' to={(Config.isThetaNetworkLive ? '/wallet/tokens/theta' : '/wallet/tokens/erc20')} exact={true}/>
+                    <Redirect from='/wallet/tokens' to={(Config.isThetaNetworkLive ? '/wallet/tokens/theta' : '/wallet/tokens/erc20')} exact={true}/>
                     <Route path="/wallet/tokens/:tokenType" component={WalletPage}/>
                     <Route path="/offline" component={OfflinePage}/>
                 </Switch>

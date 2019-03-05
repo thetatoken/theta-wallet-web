@@ -3,7 +3,7 @@ import './WalletTokenList.css';
 import WalletTokenListItem from './WalletTokenListItem'
 import TokenTypes from '../constants/TokenTypes'
 import {tokenTypeToTokenName} from '../constants/TokenTypes'
-import {isThetaNetworkLive} from '../Config'
+import Config from '../Config'
 
 const ThetaNetworkTokens = [
     {
@@ -33,8 +33,8 @@ const EthereumNetworkTokens = [
         href: "/wallet/tokens/" + TokenTypes.ETHEREUM
     }];
 
-const liveTokens = (isThetaNetworkLive ? ThetaNetworkTokens : EthereumNetworkTokens);
-const allTokens =  (isThetaNetworkLive ? ThetaNetworkTokens.concat(EthereumNetworkTokens) : EthereumNetworkTokens);
+const liveTokens = (Config.isThetaNetworkLive ? ThetaNetworkTokens : EthereumNetworkTokens);
+const allTokens =  (Config.isThetaNetworkLive ? ThetaNetworkTokens.concat(EthereumNetworkTokens) : EthereumNetworkTokens);
 
 class WalletTokenList extends React.Component {
     constructor(){
@@ -67,7 +67,7 @@ class WalletTokenList extends React.Component {
             <div className="WalletTokenList">
                 {content}
 
-                {isThetaNetworkLive &&
+                {Config.isThetaNetworkLive &&
                 <a className="WalletTokenList__ethereum-balances-toggle"
                    onClick={this.toggleEthereumTokens}>
                     { (this.state.showEthereumTokens ? 'Hide Ethereum Tokens' : 'Show Ethereum Tokens') }
