@@ -1,6 +1,7 @@
 import React from 'react'
 import './ThetaNetworkTxForm.css';
 import './EthereumNetworkTxForm.css';
+import _ from 'lodash'
 import {connect} from 'react-redux'
 import Theta from '../services/Theta'
 import TokenTypes from "../constants/TokenTypes";
@@ -36,6 +37,10 @@ export class ThetaNetworkTxForm extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSendClick = this.handleSendClick.bind(this);
         this.handleEntireBalanceClick = this.handleEntireBalanceClick.bind(this);
+    }
+
+    getBalanceOfTokenType(tokenType){
+        return _.get(this.props.balancesByType, tokenType, 0);
     }
 
     handleChange(event) {
@@ -100,12 +105,12 @@ export class ThetaNetworkTxForm extends React.Component {
 
     async calculateEntireTFuelBalance() {
         let transactionFee = this.state.transactionFee;
-        let balance = this.props.balancesByType[TokenTypes.ETHEREUM];
+        let balance = this.getBalanceOfTokenType(TokenTypes.THETA_FUEL);
 
         if (transactionFee) {
             let transactionFeeBN = new BigNumber(transactionFee);
-            let etherBalanceBN = new BigNumber(balance);
-            let amountToSendBN = etherBalanceBN.minus(transactionFeeBN);
+            let tfuelBalanceBN = new BigNumber(balance);
+            let amountToSendBN = tfuelBalanceBN.minus(transactionFeeBN);
 
             this.setState({
                 amount: amountToSendBN.toString()
@@ -115,14 +120,14 @@ export class ThetaNetworkTxForm extends React.Component {
 
     async handleEntireBalanceClick() {
         if (this.state.tokenType === TokenTypes.THETA) {
-            let balance = this.props.balancesByType[TokenTypes.THETA];
+            let balance = this.getBalanceOfTokenType(TokenTypes.THETA);
 
             this.setState({
                 amount: balance
             });
         }
         else if (this.state.tokenType === TokenTypes.THETA_FUEL) {
-            let balance = this.props.balancesByType[TokenTypes.THETA_FUEL];
+            let balance = this.getBalanceOfTokenType(TokenTypes.THETA_FUEL);
 
             if (parseFloat(balance) !== 0.0) {
                 this.setState({
@@ -152,8 +157,8 @@ export class ThetaNetworkTxForm extends React.Component {
 
     async validateAmount() {
         let amountFloat = parseFloat(this.state.amount);
-        let thetaBalance = this.props.balancesByType[TokenTypes.THETA];
-        let tfuelBalance = this.props.balancesByType[TokenTypes.THETA_FUEL];
+        let thetaBalance = this.getBalanceOfTokenType(TokenTypes.THETA);
+        let tfuelBalance = this.getBalanceOfTokenType(TokenTypes.THETA_FUEL);
         let balance = null;
 
         if (this.state.tokenType === TokenTypes.THETA) {
@@ -183,8 +188,9 @@ export class ThetaNetworkTxForm extends React.Component {
 
     render() {
         let hasToAddress = (this.state.to !== null && this.state.to !== '' && this.state.invalidAddress === false);
-        let thetaTitle = `Theta (${ this.props.balancesByType[TokenTypes.THETA] })`;
-        let tfuelTitle = `TFuel (${ this.props.balancesByType[TokenTypes.THETA_FUEL] })`;
+        let thetaTitle = `Theta (${ this.getBalanceOfTokenType(TokenTypes.THETA) })`;
+        let tfuelTitle = `TFuel (${ this.getBalanceOfTokenType(TokenTypes.THETA_FUEL)
+        })`;
         let transactionFeeValueContent = (
             <React.Fragment>
                 <span>Transaction Fee</span>

@@ -1,12 +1,14 @@
 import * as actionTypes from "../types/Transactions";
-import { zipMap } from "../../utils/Utils";
+import {zipMap} from "../../utils/Utils";
 import _ from 'lodash';
 import TokenTypes from "../../constants/TokenTypes";
+import {isEthereumNetwork, isThetaNetwork} from "../../constants/Networks";
+import {BigNumber} from "bignumber.js";
 
 const INITIAL_STATE = {
-    isFetchingTransactions : false,
+    isFetchingTransactions: false,
 
-    isCreatingTransaction : false,
+    isCreatingTransaction: false,
 
     transactions: [],
     transactionsByHash: {},
@@ -16,22 +18,57 @@ const INITIAL_STATE = {
     localTransactionsByHash: {},
 
     //Legacy
-    isFetchingERC20Transactions : false,
-    isFetchingEthereumTransactions : false,
+    isFetchingERC20Transactions: false,
+    isFetchingEthereumTransactions: false,
 
     ethereumNetworkTransactionsByHash: {},
     ethereumNetworkTransactionsByType: {}
 };
 
-function pendingTransactionToLocalTransaction(pendingTransaction, hash){
+function pendingThetaNetworkTransactionToLocalTransaction(network, pendingTransaction, hash) {
+    let { tokenType, from, to, amount, transactionFee} = pendingTransaction;
+
+    return {
+        hash: hash,//TODO this looks uppercase but it lowercase when creating the TX
+        timestamp: "" + (new Date().getTime() / 1000), //Server returns as a string,
+        fee: {
+            theta: "0",
+            tfuel: transactionFee
+        },
+        inputs: [
+            {
+                address: from,
+                coins: {
+                    theta: (tokenType === TokenTypes.THETA ? amount : 0),
+                    tfuel: (tokenType === TokenTypes.THETA_FUEL ? amount : 0) + transactionFee
+                }
+            }
+        ],
+        outputs: [
+            {
+                address: to,
+                coins: {
+                    theta: (tokenType === TokenTypes.THETA ? amount : 0),
+                    tfuel: (tokenType === TokenTypes.THETA_FUEL ? amount : 0)
+                }
+            }
+        ],
+
+        is_local: true,
+        bound: "outbound",
+        network: network
+    };
+}
+
+function pendingEthererumNetworkTransactionToLocalTransaction(network, pendingTransaction, hash) {
     let type = null;
     let tokenSymbol = null;
 
-    if(pendingTransaction.tokenType === TokenTypes.ERC20_THETA){
+    if (pendingTransaction.tokenType === TokenTypes.ERC20_THETA) {
         type = TokenTypes.ERC20_THETA;
         tokenSymbol = "THETA";
     }
-    else if(pendingTransaction.tokenType === TokenTypes.ETHEREUM){
+    else if (pendingTransaction.tokenType === TokenTypes.ETHEREUM) {
         type = TokenTypes.ETHEREUM;
         tokenSymbol = "ETH";
     }
@@ -45,93 +82,113 @@ function pendingTransactionToLocalTransaction(pendingTransaction, hash){
         dec_value: pendingTransaction.amount,
         time_stamp: "" + (new Date().getTime() / 1000), //Server returns as a string
         bound: "outbound",
-        is_local: true
+        is_local: true,
+        network: network
     };
+}
+
+function pendingTransactionToLocalTransaction(network, pendingTransaction, hash) {
+    if (isEthereumNetwork(network)) {
+        return pendingEthererumNetworkTransactionToLocalTransaction(network, pendingTransaction, hash);
+    }
+    else if (isThetaNetwork(network)) {
+        return pendingThetaNetworkTransactionToLocalTransaction(network, pendingTransaction, hash);
+    }
+    else {
+        //Unknown network
+        return null;
+    }
 }
 
 export const transactionsReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
         //ERC20 Transactions
-        case actionTypes.FETCH_TRANSACTIONS_ERC20_START:{
+        case actionTypes.FETCH_TRANSACTIONS_ERC20_START: {
             return Object.assign({}, state, {
                 isFetchingERC20Transactions: true
             });
         }
-        case actionTypes.FETCH_TRANSACTIONS_ERC20_END:{
+        case actionTypes.FETCH_TRANSACTIONS_ERC20_END: {
             return Object.assign({}, state, {
                 isFetchingERC20Transactions: false
             });
         }
-        case actionTypes.FETCH_TRANSACTIONS_ERC20_SUCCESS:{
+        case actionTypes.FETCH_TRANSACTIONS_ERC20_SUCCESS: {
             let body = action.response.body;
             let transactions = body.transactions;
 
             return Object.assign({}, state, {
-                ethereumNetworkTransactionsByHash: Object.assign({}, state.ethereumNetworkTransactionsByHash, zipMap(transactions.map(({ hash }) => hash), transactions)),
-                ethereumNetworkTransactionsByType: Object.assign({}, state.ethereumNetworkTransactionsByType, {"erc20" : transactions})
+                ethereumNetworkTransactionsByHash: Object.assign({}, state.ethereumNetworkTransactionsByHash, zipMap(transactions.map(({hash}) => hash), transactions)),
+                ethereumNetworkTransactionsByType: Object.assign({}, state.ethereumNetworkTransactionsByType, {"erc20": transactions})
             });
         }
 
         //ETH Transactions
-        case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_START:{
+        case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_START: {
             return Object.assign({}, state, {
                 isFetchingEthereumTransactions: true
             });
         }
-        case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_END:{
+        case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_END: {
             return Object.assign({}, state, {
                 isFetchingEthereumTransactions: false
             });
         }
-        case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_SUCCESS:{
+        case actionTypes.FETCH_TRANSACTIONS_ETHEREUM_SUCCESS: {
             let body = action.response.body;
             let transactions = body.transactions;
 
             return Object.assign({}, state, {
-                ethereumNetworkTransactionsByHash: Object.assign({}, state.ethereumNetworkTransactionsByHash, zipMap(transactions.map(({ hash }) => hash), transactions)),
-                ethereumNetworkTransactionsByType: Object.assign({}, state.ethereumNetworkTransactionsByType, {"ethereum" : transactions})
+                ethereumNetworkTransactionsByHash: Object.assign({}, state.ethereumNetworkTransactionsByHash, zipMap(transactions.map(({hash}) => hash), transactions)),
+                ethereumNetworkTransactionsByType: Object.assign({}, state.ethereumNetworkTransactionsByType, {"ethereum": transactions})
             });
         }
 
         //Theta Transactions
-        case actionTypes.FETCH_TRANSACTIONS_THETA_START:{
+        case actionTypes.FETCH_TRANSACTIONS_THETA_START: {
             return Object.assign({}, state, {
                 isFetchingTransactions: true
             });
         }
-        case actionTypes.FETCH_TRANSACTIONS_THETA_END:{
+        case actionTypes.FETCH_TRANSACTIONS_THETA_END: {
             return Object.assign({}, state, {
                 isFetchingTransactions: false
             });
         }
-        case actionTypes.FETCH_TRANSACTIONS_THETA_SUCCESS:{
+        case actionTypes.FETCH_TRANSACTIONS_THETA_SUCCESS: {
             let body = action.response.body;
             let transactions = body.transactions;
 
             return Object.assign({}, state, {
-                transactionsByHash: Object.assign({}, state.transactionsByHash, zipMap(transactions.map(({ hash }) => hash), transactions)),
+                transactionsByHash: Object.assign({}, state.transactionsByHash, zipMap(transactions.map(({hash}) => hash), transactions)),
                 transactions: transactions
             });
         }
 
-
-
         //Create Transaction
-        case actionTypes.CREATE_TRANSACTION_START:{
+        case actionTypes.CREATE_TRANSACTION_START: {
             return Object.assign({}, state, {
                 isCreatingTransaction: true,
                 pendingTransaction: action.metadata.txData
             });
         }
-        case actionTypes.CREATE_TRANSACTION_END:{
+        case actionTypes.CREATE_TRANSACTION_END: {
             return Object.assign({}, state, {
                 isCreatingTransaction: false
             });
         }
-        case actionTypes.CREATE_TRANSACTION_SUCCESS:{
+        case actionTypes.CREATE_TRANSACTION_SUCCESS: {
             let body = action.response.body;
             let hash = body.hash;
-            let localTransaction = pendingTransactionToLocalTransaction(state.pendingTransaction, hash);
+            let network = action.metadata.network;
+
+            console.log("CREATE_TRANSACTION_SUCCESS :: response == ");
+            console.log(action.response);
+
+            console.log("CREATE_TRANSACTION_SUCCESS :: action == ");
+            console.log(action);
+
+            let localTransaction = pendingTransactionToLocalTransaction(network, state.pendingTransaction, hash);
 
             return Object.assign({}, state, {
                 localTransactionsByHash: Object.assign({}, state.localTransactionsByHash, {[hash]: localTransaction}),
@@ -140,33 +197,51 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
         }
 
         //Fetch Transaction
-        case actionTypes.FETCH_TRANSACTION_SUCCESS:{
+        case actionTypes.FETCH_TRANSACTION_SUCCESS: {
+            let metadata = action.metadata;
             let body = action.response.body;
             let transactions = body.transactions;
             let transaction = null;
 
-            if(transactions.length > 0){
+            if (transactions.length > 0) {
                 transaction = transactions[0];
 
-                return Object.assign({}, state, {
-                    //Remove the local transaction from the state since it is in the blockchain now
-                    localTransactionsByHash: _.omit(state.localTransactionsByHash, transaction.hash),
+                if(isEthereumNetwork(metadata.network)){
+                    let transactionsByHash = Object.assign({}, state.ethereumNetworkTransactionsByHash, {[transaction.hash]: transaction});
+                    let ethereumTransactionsByType =  Object.assign({}, state.ethereumNetworkTransactionsByType, {[transaction.type]: [...state.ethereumNetworkTransactionsByType[transaction.type], transaction]});
 
-                    //Append this tx to the list
-                    transactionsByHash: Object.assign({}, state.transactionsByHash,  {[transaction.hash]: transaction}),
-                    transactionsByType: Object.assign({}, state.transactionsByType, {[transaction.type] : [...state.transactionsByType[transaction.type], transaction]})
-                });
+                    return Object.assign({}, state, {
+                        //Remove the local transaction from the state since it is in the blockchain now
+                        localTransactionsByHash: _.omit(state.localTransactionsByHash, transaction.hash),
+
+                        //Append this tx to the list
+                        ethereumNetworkTransactionsByHash: transactionsByHash,
+                        ethereumNetworkTransactionsByType: ethereumTransactionsByType
+                    });
+                }
+                else{
+                    let transactionsByHash = Object.assign({}, state.transactionsByHash, {[transaction.hash]: transaction});
+
+                    return Object.assign({}, state, {
+                        //Remove the local transaction from the state since it is in the blockchain now
+                        localTransactionsByHash: _.omit(state.localTransactionsByHash, transaction.hash),
+
+                        //Append this tx to the list
+                        transactionsByHash: transactionsByHash,
+                        transactions: Object.values(transactionsByHash)
+                    });
+                }
             }
 
             return state;
         }
 
         //Reset all state (useful when recovering a wallet which may have another wallet's state stored in memory))
-        case actionTypes.RESET:{
+        case actionTypes.RESET: {
             return INITIAL_STATE;
         }
 
-        default:{
+        default: {
             return state
         }
     }

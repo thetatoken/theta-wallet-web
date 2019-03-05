@@ -10,7 +10,7 @@ import {
 } from "../types/Transactions";
 import Wallet from "../../services/Wallet";
 import TokenTypes from "../../constants/TokenTypes";
-import Networks from "../../constants/Networks";
+import Networks, {isThetaNetwork} from "../../constants/Networks";
 import Timeout from 'await-timeout';
 import {hideModals} from "./Modals";
 import Alerts from "../../services/Alerts";
@@ -40,16 +40,10 @@ export function fetchThetaTransactions() {
     });
 }
 
-export function fetchEthereumTransaction(txHash) {
+export function fetchTransaction(network, txHash) {
     return reduxFetch(FETCH_TRANSACTION, function () {
-        return Api.fetchTransaction(txHash, {network: Networks.ETHEREUM});
-    });
-}
-
-export function fetchThetaTransaction(txHash) {
-    return reduxFetch(FETCH_TRANSACTION, function () {
-        return Api.fetchTransaction(txHash, {network: Config.thetaNetwork});
-    });
+        return Api.fetchTransaction(txHash, {network: network});
+    }, {network: network});
 }
 
 function errorToHumanError(error){
@@ -62,7 +56,10 @@ function errorToHumanError(error){
 }
 
 export async function createTransactionAsync(dispatch, network, txData, password) {
-    let metadata = {txData: txData};
+    let metadata = {
+        network: network,
+        txData: txData,
+    };
 
     //The decryption can take some time, so start the event early
     dispatch({

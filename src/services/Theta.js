@@ -56,6 +56,9 @@ export default class Theta {
         console.log("signTransaction :: signedTxRaw == ");
         console.log(signedTxRaw);
 
+        //Remove the '0x' until the RPC endpoint supports '0x' prefixes
+        signedTxRaw = signedTxRaw.substring(2);
+
         if(signedTxRaw){
             return signedTxRaw;
         }
