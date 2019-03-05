@@ -1,4 +1,7 @@
+import {BigNumber} from 'bignumber.js';
 import Ethereum from "./Ethereum";
+import ThetaJS from '../libs/thetajs.esm';
+import TokenTypes from "../constants/TokenTypes";
 
 export default class Theta {
 
@@ -7,20 +10,54 @@ export default class Theta {
         return 0.000001;
     }
 
-    static unsignedTransaction(txData) {
-        return {};
+    static getChainID(){
+        return "testnet";
+    }
+
+    static unsignedTransaction(txData, sequence) {
+        let { tokenType, from, to, amount, transactionFee} = txData;
+
+        const ten18 = (new BigNumber(10)).pow(18); // 10^18, 1 Theta = 10^18 ThetaWei, 1 Gamma = 10^ TFuelWei
+        const thetaWeiToSend = (tokenType === TokenTypes.THETA ? (new BigNumber(amount)).multipliedBy(ten18) : (new BigNumber(0)));
+        const tfuelWeiToSend = (tokenType === TokenTypes.THETA_FUEL ? (new BigNumber(amount)).multipliedBy(ten18) : (new BigNumber(0)));
+        const feeInTFuelWei  = (new BigNumber(transactionFee)).multipliedBy(ten18); // Any fee >= 10^12 TFuelWei should work, higher fee yields higher priority
+        const senderAddr =  from;
+        const receiverAddr = to;
+        const senderSequence = sequence;
+
+        let tx = new ThetaJS.SendTx(senderAddr, receiverAddr, thetaWeiToSend, tfuelWeiToSend, feeInTFuelWei, senderSequence);
+
+        return tx;
     }
 
     static isAddress(address){
         return Ethereum.isAddress(address);
     }
 
-    static async signTransaction(txData, privateKey){
-        let unsignedTx = Theta.unsignedTransaction(txData);
-        let signedTx = null;
+    static async signTransaction(txData, sequence, privateKey){
+        console.log("signTransaction :: txData == ");
+        console.log(txData);
 
-        if(signedTx){
-            return signedTx.rawTransaction;
+        console.log("signTransaction :: sequence == ");
+        console.log(sequence);
+
+        console.log("signTransaction :: privateKey == ");
+        console.log(privateKey);
+
+        let chainID = Theta.getChainID();
+        let unsignedTx = Theta.unsignedTransaction(txData, sequence);
+
+        console.log("signTransaction :: unsignedTx == ");
+        console.log(unsignedTx);
+
+        let signedRawTxBytes = ThetaJS.TxSigner.signAndSerializeTx(chainID, unsignedTx, privateKey);
+        let signedTxRaw = signedRawTxBytes.toString('hex');
+
+        console.log("signTransaction :: signedTxRaw == ");
+        console.log(signedTxRaw);
+
+        if(signedTxRaw){
+            return signedTxRaw;
         }
         else{
             throw new Error("Failed to sign transaction.");

@@ -9,10 +9,10 @@ class ThetaTransactionListItem extends React.Component {
     render() {
         let { transaction } = this.props;
         let {inputs, outputs, timestamp, bound, hash, is_local} = transaction;
-        let input = inputs[0];
-        let output = outputs[0];
-        let from = input.address;
-        let to = output.address;
+        let input = (inputs ? inputs[0] : null);
+        let output = (outputs ? outputs[0] : null);
+        let from = _.get(input, ['address']);
+        let to = _.get(output, ['address']);
         let isReceived = (bound === "inbound");
         let explorerUrl = `https://explorer.thetatoken.org/txs/${hash}`;
 

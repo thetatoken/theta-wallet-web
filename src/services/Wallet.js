@@ -4,6 +4,9 @@ import Ethereum from './Ethereum'
 import TokenTypes from "../constants/TokenTypes";
 import {downloadFile} from "../utils/Utils";
 import Alerts from "./Alerts";
+import Theta from "./Theta";
+import Networks from "../constants/Networks";
+import Api from './Api'
 
 const ethUtil = require('ethereumjs-util');
 
@@ -140,10 +143,11 @@ export default class Wallet {
         }
     }
 
-    static signTransaction(txData, password){
+    static async signTransaction(txData, password){
         let { tokenType } = txData;
         let keystore = Wallet.getKeystore();
         let wallet = Wallet.decryptFromKeystore(keystore, password);
+        let address = Wallet.getWalletAddress();
 
         if(wallet){
             //User had the correct password
@@ -153,7 +157,14 @@ export default class Wallet {
             }
             else if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
                 //Theta Network
-                return Ethereum.signTransaction(txData, wallet.privateKey);
+                let response = await Api.fetchSequence(address, {network: Networks.THETA_MAINNET});
+                let responseJSON = await response.json();
+                let sequence = parseInt(responseJSON['sequence']) + 1;
+
+                console.log("response ===");
+                console.log(response);
+
+                return Theta.signTransaction(txData, sequence, wallet.privateKey);
             }
         }
         else{

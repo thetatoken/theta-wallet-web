@@ -77,6 +77,8 @@ export class ThetaNetworkTxForm extends React.Component {
                 transaction: {
                     tokenType: this.state.tokenType,
 
+                    from: this.props.walletAddress,
+
                     to: this.state.to,
                     amount: this.state.amount,
 

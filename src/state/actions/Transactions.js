@@ -76,6 +76,8 @@ export async function createTransactionAsync(dispatch, txData, password) {
     try {
         let signedTransaction = await Wallet.signTransaction(txData, password);
 
+        return;
+
         if (signedTransaction) {
             let opts = {
                 onSuccess: function (dispatch, response) {
