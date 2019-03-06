@@ -118,7 +118,7 @@ class MnemonicWarningCard extends React.Component {
                             Warning!
                         </div>
                         <div className="MnemonicWarningCard__warning-body">
-                            We are about to show your nmemonic phrase. Please ensure no one can see your screen before you continue.
+                            We are about to show your Mnemonic phrase. Please ensure no one can see your screen before you continue.
                         </div>
                     </div>
 
