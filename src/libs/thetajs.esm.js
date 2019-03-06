@@ -153,8 +153,6 @@ class SendTx extends Tx{
         let ethTxWrapper = new EthereumTx(payload);
         let signedBytes = RLP.encode(ethTxWrapper.rlpInput()); // the signBytes conforms to the Ethereum raw tx format
 
-        console.log("SendTx :: signBytes :: txRawBytes = " + signedBytes);
-
         // Attach the original signature back to the inputs
         input.signature = originalSignature;
 
@@ -299,10 +297,6 @@ class TxSigner {
         let txHash = sha3(txRawBytes);
         let signature = sign(txHash, privateKey);
         tx.setSignature(signature);
-
-        console.log("signTx :: txRawBytes = " + txRawBytes);
-        console.log("signTx :: txHash = " + txHash);
-        console.log("signTx :: txSig = " + signature);
 
         return tx
     }

@@ -35,26 +35,10 @@ export default class Theta {
     }
 
     static async signTransaction(txData, sequence, privateKey){
-        console.log("signTransaction :: txData == ");
-        console.log(txData);
-
-        console.log("signTransaction :: sequence == ");
-        console.log(sequence);
-
-        console.log("signTransaction :: privateKey == ");
-        console.log(privateKey);
-
         let chainID = Theta.getChainID();
         let unsignedTx = Theta.unsignedTransaction(txData, sequence);
-
-        console.log("signTransaction :: unsignedTx == ");
-        console.log(unsignedTx);
-
         let signedRawTxBytes = ThetaJS.TxSigner.signAndSerializeTx(chainID, unsignedTx, privateKey);
         let signedTxRaw = signedRawTxBytes.toString('hex');
-
-        console.log("signTransaction :: signedTxRaw == ");
-        console.log(signedTxRaw);
 
         //Remove the '0x' until the RPC endpoint supports '0x' prefixes
         signedTxRaw = signedTxRaw.substring(2);

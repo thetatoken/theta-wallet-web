@@ -181,13 +181,6 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
             let body = action.response.body;
             let hash = body.hash;
             let network = action.metadata.network;
-
-            console.log("CREATE_TRANSACTION_SUCCESS :: response == ");
-            console.log(action.response);
-
-            console.log("CREATE_TRANSACTION_SUCCESS :: action == ");
-            console.log(action);
-
             let localTransaction = pendingTransactionToLocalTransaction(network, state.pendingTransaction, hash);
 
             return Object.assign({}, state, {

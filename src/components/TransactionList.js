@@ -6,9 +6,6 @@ import ThetaTransactionListItem from './ThetaTransactionListItem'
 class TransactionList extends React.Component {
     createList(){
         return this.props.transactions.map(function(transaction, index){
-            console.log("transaction === ");
-            console.log(transaction);
-
             if(transaction.timestamp){
                 //Ethereum Network
                 return <ThetaTransactionListItem key={ transaction.hash }

@@ -102,9 +102,6 @@ export default class Wallet {
             }
             else if(strategy === WalletUnlockStrategy.PRIVATE_KEY){
                 let privateKeyBuffer = ethUtil.toBuffer(privateKey);
-                console.log("privateKeyBuffer == ");
-                console.log(privateKeyBuffer);
-                console.log("ethUtil.isValidPrivate(privateKeyBuffer) == " + ethUtil.isValidPrivate(privateKeyBuffer));
 
                 if(!ethUtil.isValidPrivate(privateKeyBuffer)){
                     throw new Error("Private key does not satisfy the curve requirements (ie. it is invalid)");

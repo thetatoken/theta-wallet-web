@@ -42,7 +42,7 @@ class OfflinePage extends React.Component {
     }
 
     handleContinue(){
-        console.log("MOVE ON");
+
     }
 
     render() {

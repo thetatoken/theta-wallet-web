@@ -41,9 +41,6 @@ function getTransformedEthereumNetworkTransactions(walletAddress, type, transact
 function getTransformedTransactions(walletAddress, txs, localTransactionsByHash) {
     walletAddress = (walletAddress ? walletAddress.toLowerCase() : null);
 
-    console.log("getTransformedTransactions :: txs == ");
-    console.log(txs);
-
     //TODO actually transform the Theta txs
 
     //Merge these transactions and sort by timestamp

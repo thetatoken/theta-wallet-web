@@ -167,8 +167,6 @@ export class ThetaNetworkTxForm extends React.Component {
             balance = tfuelBalance;
         }
 
-        console.log("amountFloat === 0.0 === " + (amountFloat === 0.0));
-
         this.setState({
             insufficientFunds: (amountFloat > parseFloat(balance)),
             invalidAmount: (amountFloat === 0.0 || amountFloat < 0.0),

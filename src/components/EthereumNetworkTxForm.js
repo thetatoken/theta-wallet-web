@@ -227,8 +227,6 @@ export class EthereumNetworkTxForm extends React.Component {
             balance = ethereumBalance;
         }
 
-        console.log("amountFloat === 0.0 === " + (amountFloat === 0.0));
-
         this.setState({
             insufficientFunds: (amountFloat > parseFloat(balance)),
             invalidAmount: (amountFloat === 0.0 || amountFloat < 0.0),
