@@ -39,7 +39,9 @@ class ExportKeystoreContent extends React.Component {
     }
 
     isValid(){
-        return true;
+        return (this.state.password.length > 0 &&
+            this.state.passwordConfirmation.length > 0 &&
+            this.state.password === this.state.passwordConfirmation);
     }
 
     handleChange(event) {
