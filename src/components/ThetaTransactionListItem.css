@@ -106,8 +106,8 @@
 }
 
 .ThetaTransactionListItem__amount-icon{
-    height: 26px;
-    margin-right: 6px;
+    height: 20px;
+    margin-left: 6px;
 }
 
 .ThetaTransactionListItem__date{
