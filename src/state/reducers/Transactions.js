@@ -158,6 +158,11 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
         case actionTypes.FETCH_TRANSACTIONS_THETA_SUCCESS: {
             let body = action.response.body;
             let transactions = body.transactions;
+            
+            //The explorer may give us txs that are pending and have no data.  The UI can't show these because it has no data
+            transactions = _.filter(transactions, function(tx) {
+                return (tx['data'] != null && tx['status'] !== "pending");
+            });
 
             return Object.assign({}, state, {
                 transactionsByHash: Object.assign({}, state.transactionsByHash, zipMap(transactions.map(({hash}) => hash), transactions)),
@@ -193,8 +198,16 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
         case actionTypes.FETCH_TRANSACTION_SUCCESS: {
             let metadata = action.metadata;
             let body = action.response.body;
-            let transactions = body.transactions;
             let transaction = null;
+            let transactions = body.transactions;
+
+            if(isThetaNetwork(metadata.network)){
+                //The explorer may give us txs that are pending and have no data.  The UI can't show these because it has no data
+                transactions = _.filter(transactions, function(tx) {
+                    return (tx['data'] != null && tx['status'] !== "pending");
+                });
+            }
+
 
             if (transactions.length > 0) {
                 transaction = transactions[0];

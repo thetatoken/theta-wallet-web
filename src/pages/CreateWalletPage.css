@@ -161,6 +161,7 @@
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit (konqueror) browsers */
     -ms-user-select: none; /* IE10+ */
+    cursor: pointer;
 }
 
 
