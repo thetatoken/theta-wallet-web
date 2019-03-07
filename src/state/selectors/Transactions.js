@@ -10,7 +10,15 @@ const getEthereumNetworkTransactionsByType = (state) => state.transactions.ether
 
 const getWalletAddress = (state) => Wallet.getWalletAddress();
 
-function transformTransaction(walletAddress, transaction) {
+function transformThetaNetworkTransaction(walletAddress, transaction) {
+    let { outputs } = transaction;
+    let output = outputs[0];
+    let address = output['address'];
+
+    return Object.assign({}, transaction, {bound: (walletAddress === address ? "inbound" : "outbound")});
+}
+
+function transformEthereumNetworkTransaction(walletAddress, transaction) {
     return Object.assign({}, transaction, {bound: (walletAddress === transaction.to ? "inbound" : "outbound")});
 }
 
@@ -19,7 +27,7 @@ function getTransformedEthereumNetworkTransactions(walletAddress, type, transact
 
     //Merge these transactions and sort by timestamp
     let scopedTransactions = transactionsByType[type];
-    let txTransformer = _.partial(transformTransaction, walletAddress);
+    let txTransformer = _.partial(transformEthereumNetworkTransaction, walletAddress);
     let transactions = _(scopedTransactions)
         .sortBy(tx => parseInt(tx.time_stamp))
         .reverse()
@@ -44,7 +52,7 @@ function getTransformedTransactions(walletAddress, txs, localTransactionsByHash)
     //TODO actually transform the Theta txs
 
     //Merge these transactions and sort by timestamp
-    let txTransformer = _.partial(transformTransaction, walletAddress);
+    let txTransformer = _.partial(transformThetaNetworkTransaction, walletAddress);
     let transactions = _(txs)
         .sortBy(tx => parseInt(tx.timestamp))
         .reverse()
