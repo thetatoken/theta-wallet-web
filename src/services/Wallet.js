@@ -98,9 +98,18 @@ export default class Wallet {
                 wallet = Wallet.decryptFromKeystore(keystore, password);
             }
             else if(strategy === WalletUnlockStrategy.MNEMONIC_PHRASE){
+                mnemonic = mnemonic.toString();
+                mnemonic = _.trim(mnemonic);
+
                 wallet = Wallet.walletFromMnemonic(mnemonic.toString());
             }
             else if(strategy === WalletUnlockStrategy.PRIVATE_KEY){
+                privateKey = _.trim(privateKey);
+
+                if(privateKey.startsWith("0x") === false){
+                    privateKey = "0x" + privateKey;
+                }
+
                 let privateKeyBuffer = ethUtil.toBuffer(privateKey);
 
                 if(!ethUtil.isValidPrivate(privateKeyBuffer)){

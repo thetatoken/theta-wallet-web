@@ -1,7 +1,7 @@
 import Networks from './constants/Networks'
 
 const config = {
-    isThetaNetworkLive: true,
+    isThetaNetworkLive: false,
     thetaNetwork: Networks.THETA_TESTNET
 };
 
