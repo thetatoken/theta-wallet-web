@@ -1,8 +1,9 @@
 import Networks from './constants/Networks'
 
 const config = {
-    isThetaNetworkLive: false,
-    thetaNetwork: Networks.THETA_TESTNET
+    isThetaNetworkLive: true,
+    thetaNetwork: Networks.THETA_MAINNET,
+    thetaChainID: "mainnet"
 };
 
 export default config;

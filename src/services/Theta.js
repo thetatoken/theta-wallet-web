@@ -2,6 +2,7 @@ import {BigNumber} from 'bignumber.js';
 import Ethereum from "./Ethereum";
 import ThetaJS from '../libs/thetajs.esm';
 import TokenTypes from "../constants/TokenTypes";
+import Config from '../Config';
 
 export default class Theta {
 
@@ -11,7 +12,7 @@ export default class Theta {
     }
 
     static getChainID(){
-        return "testnet";
+        return Config.thetaChainID;
     }
 
     static unsignedTransaction(txData, sequence) {
