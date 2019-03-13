@@ -12,8 +12,16 @@ const getWalletAddress = (state) => Wallet.getWalletAddress();
 
 function transformThetaNetworkTransaction(walletAddress, transaction) {
     let { outputs } = transaction;
-    let output = outputs[0];
-    let address = output['address'];
+    let output = null;
+    let address = null;
+
+    if(_.isNil(outputs)){
+        //This tx is messed up, return null to prevent breaking the UI
+        return null;
+    }
+
+    output = outputs[0];
+    address = output['address'];
 
     return Object.assign({}, transaction, {bound: (walletAddress === address ? "inbound" : "outbound")});
 }
@@ -52,11 +60,13 @@ function getTransformedTransactions(walletAddress, txs, localTransactionsByHash)
     //TODO actually transform the Theta txs
 
     //Merge these transactions and sort by timestamp
+    let isNotNil = _.negate(_.isNil);//returns true if the obj is NOT nil
     let txTransformer = _.partial(transformThetaNetworkTransaction, walletAddress);
     let transactions = _(txs)
+        .map(txTransformer)
+        .filter(isNotNil)
         .sortBy(tx => parseInt(tx.timestamp))
         .reverse()
-        .map(txTransformer)
         .value();
     let transactionHashes = new Set(_.map(transactions, function(transaction){
         return transaction.hash;
