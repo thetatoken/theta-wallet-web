@@ -6,15 +6,19 @@ import {downloadFile} from "../utils/Utils";
 import Alerts from "./Alerts";
 import Theta from "./Theta";
 import Networks, {isEthereumNetwork, isThetaNetwork} from "../constants/Networks";
-import Api from './Api'
+import Api from './Api';
+import TrezorConnect from 'trezor-connect';
 
 const ethUtil = require('ethereumjs-util');
 
 const MnemonicPath = "m/44'/500'/0'/0/0";
 
+const ColdWalletPageNumPaths = 5;
+
 export const WalletUnlockStrategy = {
     KEYSTORE_FILE: 'keystore-file',
     MNEMONIC_PHRASE: 'mnemonic-phrase',
+    COLD_WALLET: 'cold-wallet',
     PRIVATE_KEY: 'private-key',
 };
 
@@ -73,6 +77,26 @@ export default class Wallet {
         return web3.eth.accounts.privateKeyToAccount(privateKey);
     }
 
+    static async walletFromTrezor(addressPage){
+        window.__TREZOR_CONNECT_SRC = 'https://localhost:8088/'; //TODO: for dev
+
+        TrezorConnect.manifest({
+            email: 'qinwei@sliver.com',
+            appUrl: 'https://wallet.thetatoken.org'
+        });
+
+        let baseDerivationPath = "m/44'/60'/0'/0/";
+        const result = await TrezorConnect.ethereumGetAddress({
+            bundle: [
+                { path: baseDerivationPath + addressPage * ColdWalletPageNumPaths, showOnTrezor: false },
+                { path: baseDerivationPath + addressPage * ColdWalletPageNumPaths + 1, showOnTrezor: false },
+                { path: baseDerivationPath + addressPage * ColdWalletPageNumPaths + 2, showOnTrezor: false },
+                { path: baseDerivationPath + addressPage * ColdWalletPageNumPaths + 3, showOnTrezor: false },
+                { path: baseDerivationPath + addressPage * ColdWalletPageNumPaths + 4, showOnTrezor: false }
+            ]});
+        return result;
+    }
+
     static createWallet(password){
         let mnemonic = ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
         let wallet = this.walletFromMnemonic(mnemonic);
@@ -84,9 +108,9 @@ export default class Wallet {
         };
     }
 
-    static unlockWallet(strategy, password, data){
+    static async unlockWallet(strategy, password, data){
         let wallet = null;
-        let { keystore, mnemonic, privateKey } = data;
+        let { keystore, mnemonic, privateKey, addressPage, hardware } = data;
 
         try{
             if(strategy === WalletUnlockStrategy.KEYSTORE_FILE){
@@ -118,15 +142,27 @@ export default class Wallet {
 
                 wallet = Wallet.walletFromPrivateKey(privateKey);
             }
+            else if(strategy === WalletUnlockStrategy.COLD_WALLET){
+                if(hardware === 'trezor'){
+                    let resp = await Wallet.walletFromTrezor(addressPage);
+
+                    wallet = new Object();
+                    wallet.address = resp.payload[0].address;
+                }
+                else if(hardware === 'ledger'){
+                    // TODO
+                }
+            }
 
             if(wallet){
                 //Only store the address in memory
                 Wallet.setWallet({address: wallet.address});
 
-                if(keystore === null || keystore === undefined){
+                if(strategy !== WalletUnlockStrategy.COLD_WALLET && (keystore === null || keystore === undefined)){
                     //The user is restoring a wallet, let's encrypt their keystore using their session password
                     keystore = Wallet.encryptToKeystore(wallet.privateKey, password);
                 }
+
                 Wallet.setKeystore(keystore);
             }
 

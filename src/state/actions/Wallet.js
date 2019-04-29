@@ -45,7 +45,7 @@ export function unlockWallet(strategy, password, data){
         let wallet = null;
 
         try {
-            wallet = Wallet.unlockWallet(strategy, password, data);
+            wallet = await Wallet.unlockWallet(strategy, password, data);
         }
         catch (e) {
             Alerts.showError(e.message);

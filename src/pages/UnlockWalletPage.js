@@ -346,6 +346,129 @@ class UnlockWalletViaKeystoreFile extends React.Component {
     }
 }
 
+class UnlockWalletViaColdWallet extends React.Component {
+    constructor(){
+        super();
+
+        this.state = {
+            hardware: '',
+            addressPage: 0,
+            loading: false,
+            addresses: null
+        };
+
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleUnlockClick = this.handleUnlockClick.bind(this);
+        this.handleTrezorClick = this.handleTrezorClick.bind(this);
+        this.handleLedgerClick = this.handleLedgerClick.bind(this);
+    }
+
+    isValid(){
+        return this.state.hardware.length > 0;
+    }
+
+    handleChange(event){
+        let name = event.target.name;
+        let value = event.target.value;
+
+        this.setState({[name]: value});
+    }
+
+    handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            this.handleUnlockClick();
+        }
+    }
+
+    unlockWallet(){
+        this.props.unlockWallet(WalletUnlockStrategy.COLD_WALLET, null, {addressPage: this.state.addressPage, hardware: this.state.hardware});
+
+        this.setState({loading: false});
+    }
+
+    prepareForUnlock(){
+        this.setState({loading: true});
+
+        setTimeout(() => {
+            this.unlockWallet()
+        }, 1500);
+    }
+
+    handleUnlockClick(){
+        if(this.isValid()){
+            this.prepareForUnlock();
+        }
+    }
+
+
+
+    // chooseHardware(){
+    //     this.props.chooseHardware(WalletUnlockStrategy.COLD_WALLET, null, {addressPage: this.state.addressPage, hardware: this.state.hardware});
+
+    //     this.setState({loading: false});
+    // }
+
+    // prepareForChooseHardware(){
+    //     this.setState({loading: true});
+
+    //     setTimeout(() => {
+    //         this.chooseHardware()
+    //     }, 1500);
+    // }
+
+    // handleChooseHardwareClick(){
+    //     if(this.isValid()){
+    //         this.prepareForUnlock();
+    //     }
+    // }
+
+    handleTrezorClick(){
+        this.setState({hardware: 'trezor'})
+    }
+
+    handleLedgerClick(){
+        this.setState({hardware: 'ledger'})
+    }
+
+    render() {
+        let isDisabled = (this.state.loading || this.isValid() === false);
+
+        return (
+            <div className="UnlockWalletViaColdWallet">
+                <div className="UnlockWalletViaColdWallet__title">
+                    Please choose a wallet type
+                </div>
+
+                <div className="UnlockWalletViaColdWallet__cold-wallet-hardware-select">
+                    <div className="UnlockWalletViaColdWallet__cold-wallet-hardware">
+                        <GradientButton title="Trezor"
+                                    loading={false}
+                                    onClick={this.handleTrezorClick}
+                                    disabled={false}
+                        />
+                    </div>
+                    <div className="UnlockWalletViaColdWallet__cold-wallet-hardware">
+                        <GradientButton title="Ledger"
+                                    loading={false}
+                                    onClick={this.handleLedgerClick}
+                                    disabled={false}
+                        />
+                    </div>
+                </div>
+
+                <div className="UnlockWalletViaColdWallet__footer">
+                    <GradientButton title="Choose a Hardware"
+                                    loading={this.state.loading}
+                                    onClick={this.handleUnlockClick}
+                                    disabled={isDisabled}
+                    />
+                </div>
+            </div>
+        );
+    }
+}
+
 class UnlockWalletCard extends React.Component {
     render() {
         let unlockWalletStrategyContent = null;
@@ -363,6 +486,11 @@ class UnlockWalletCard extends React.Component {
         else if(this.props.unlockStrategy === WalletUnlockStrategy.PRIVATE_KEY){
             unlockWalletStrategyContent = (
                 <UnlockWalletViaPrivateKey unlockWallet={this.props.unlockWallet}/>
+            );
+        }
+        else if(this.props.unlockStrategy === WalletUnlockStrategy.COLD_WALLET){
+            unlockWalletStrategyContent = (
+                <UnlockWalletViaColdWallet unlockWallet={this.props.unlockWallet}/>
             );
         }
 
@@ -384,6 +512,10 @@ class UnlockWalletCard extends React.Component {
                             <TabBarItem
                                 title="Private Key"
                                 href={"/unlock/" + WalletUnlockStrategy.PRIVATE_KEY}
+                            />
+                            <TabBarItem
+                                title="Cold Wallet"
+                                href={"/unlock/" + WalletUnlockStrategy.COLD_WALLET}
                             />
                         </TabBar>
                     </div>
