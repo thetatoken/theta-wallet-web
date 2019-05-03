@@ -9,6 +9,9 @@ import Alerts from '../../services/Alerts'
 import {onLine} from "../../utils/Utils";
 import Networks from "../../constants/Networks";
 import Config from "../../Config";
+import {store} from "../../state";
+import {showModal} from "./Modals";
+import ModalTypes from "../../constants/ModalTypes";
 
 
 export function fetchWalletEthereumBalances(){
@@ -62,6 +65,29 @@ export function unlockWallet(strategy, password, data){
                 //Navigate to the offline until they enable their network again
                 Router.push('/offline');
             }
+        }
+    };
+}
+
+export function getHardwareWalletAddresses(hardware, page){
+    return async function(dispatch, getState){
+        let addresses = null;
+
+        try {
+            addresses = await Wallet.getHardwareWalletAddresses(hardware, page);
+        }
+        catch (e) {
+            Alerts.showError(e.message);
+        }
+
+        if(addresses){
+            store.dispatch(showModal({
+                type: ModalTypes.COLD_WALLET_SELECTOR,
+                props: {
+                    hardware: hardware,
+                    addresses: addresses
+                }
+            }));
         }
     };
 }

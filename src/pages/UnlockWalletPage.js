@@ -8,6 +8,7 @@ import { WalletUnlockStrategy } from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
 import {unlockWallet} from "../state/actions/Wallet";
+import {getHardwareWalletAddresses} from "../state/actions/Wallet";
 import DropZone from '../components/DropZone'
 
 const classNames = require('classnames');
@@ -352,14 +353,12 @@ class UnlockWalletViaColdWallet extends React.Component {
 
         this.state = {
             hardware: '',
-            addressPage: 0,
-            loading: false,
-            addresses: null
+            loading: false
         };
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.handleUnlockClick = this.handleUnlockClick.bind(this);
+        this.handleChooseHardwareClick = this.handleChooseHardwareClick.bind(this);
         this.handleTrezorClick = this.handleTrezorClick.bind(this);
         this.handleLedgerClick = this.handleLedgerClick.bind(this);
     }
@@ -381,47 +380,45 @@ class UnlockWalletViaColdWallet extends React.Component {
         }
     }
 
-    unlockWallet(){
-        this.props.unlockWallet(WalletUnlockStrategy.COLD_WALLET, null, {addressPage: this.state.addressPage, hardware: this.state.hardware});
-
-        this.setState({loading: false});
-    }
-
-    prepareForUnlock(){
-        this.setState({loading: true});
-
-        setTimeout(() => {
-            this.unlockWallet()
-        }, 1500);
-    }
-
-    handleUnlockClick(){
-        if(this.isValid()){
-            this.prepareForUnlock();
-        }
-    }
-
-
-
-    // chooseHardware(){
-    //     this.props.chooseHardware(WalletUnlockStrategy.COLD_WALLET, null, {addressPage: this.state.addressPage, hardware: this.state.hardware});
+    // unlockWallet(){
+    //     this.props.unlockWallet(WalletUnlockStrategy.COLD_WALLET, null, {addressPage: this.state.addressPage, hardware: this.state.hardware});
 
     //     this.setState({loading: false});
     // }
 
-    // prepareForChooseHardware(){
+    // prepareForUnlock(){
     //     this.setState({loading: true});
 
     //     setTimeout(() => {
-    //         this.chooseHardware()
+    //         this.unlockWallet()
     //     }, 1500);
     // }
 
-    // handleChooseHardwareClick(){
+    // handleUnlockClick(){
     //     if(this.isValid()){
     //         this.prepareForUnlock();
     //     }
     // }
+
+    chooseHardware(){
+        this.props.getHardwareWalletAddresses(this.state.hardware, 0);
+
+        this.setState({loading: false});
+    }
+
+    prepareForChooseHardware(){
+        this.setState({loading: true});
+
+        setTimeout(() => {
+            this.chooseHardware()
+        }, 1500);
+    }
+
+    handleChooseHardwareClick(){
+        if(this.isValid()){
+            this.prepareForChooseHardware();
+        }
+    }
 
     handleTrezorClick(){
         this.setState({hardware: 'trezor'})
@@ -460,7 +457,7 @@ class UnlockWalletViaColdWallet extends React.Component {
                 <div className="UnlockWalletViaColdWallet__footer">
                     <GradientButton title="Choose a Hardware"
                                     loading={this.state.loading}
-                                    onClick={this.handleUnlockClick}
+                                    onClick={this.handleChooseHardwareClick}
                                     disabled={isDisabled}
                     />
                 </div>
@@ -490,7 +487,7 @@ class UnlockWalletCard extends React.Component {
         }
         else if(this.props.unlockStrategy === WalletUnlockStrategy.COLD_WALLET){
             unlockWalletStrategyContent = (
-                <UnlockWalletViaColdWallet unlockWallet={this.props.unlockWallet}/>
+                <UnlockWalletViaColdWallet getHardwareWalletAddresses={this.props.getHardwareWalletAddresses}/>
             );
         }
 
@@ -531,11 +528,16 @@ export class UnlockWalletPage extends React.Component {
     constructor(){
         super();
 
-        this.unlockWallet = this.unlockWallet.bind(this)
+        this.unlockWallet = this.unlockWallet.bind(this);
+        this.getHardwareWalletAddresses = this.getHardwareWalletAddresses.bind(this);
     }
 
     unlockWallet(strategy, password, data){
         this.props.dispatch(unlockWallet(strategy, password, data));
+    }
+
+    getHardwareWalletAddresses(hardware, page){
+        this.props.dispatch(getHardwareWalletAddresses(hardware, page));
     }
 
     render() {
@@ -550,6 +552,7 @@ export class UnlockWalletPage extends React.Component {
 
                     <UnlockWalletCard unlockStrategy={unlockStrategy}
                                       unlockWallet={this.unlockWallet.bind(this)}
+                                      getHardwareWalletAddresses={this.getHardwareWalletAddresses.bind(this)}
                     />
 
                     <div className="UnlockWalletPage__subtitle">

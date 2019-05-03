@@ -33,7 +33,7 @@ export class SendConfirmationModal extends React.Component {
 
     render() {
         let { tokenType, amount, to, gas, gasPrice, transactionFee } = this.props.transaction;
-        let isValid = this.state.password.length > 0;
+        let isValid = Wallet.getWalletHardware() || this.state.password.length > 0;
         let isLoading = this.props.isCreatingTransaction;
         let renderDataRow = (title, value) =>{
             return (
@@ -69,6 +69,23 @@ export class SendConfirmationModal extends React.Component {
             );
         }
 
+        let passwordRow = null;
+
+        if(!Wallet.getWalletHardware()){
+            passwordRow = (
+                <div className="SendConfirmationModal__password-container">
+                    <div className="SendConfirmationModal__password-title">Enter your wallet password to sign this transaction</div>
+                    <input className="ChoosePasswordCard__password-input"
+                           placeholder="Enter wallet password"
+                           name="password"
+                           type="password"
+                           value={this.state.password}
+                           onChange={this.handleChange.bind(this)}
+                    />
+                </div>
+            );
+        }
+
         return (
             <Modal>
                 <div className="SendConfirmationModal">
@@ -86,16 +103,7 @@ export class SendConfirmationModal extends React.Component {
                         { detailRows }
                     </div>
 
-                    <div className="SendConfirmationModal__password-container">
-                        <div className="SendConfirmationModal__password-title">Enter your wallet password to sign this transaction</div>
-                        <input className="ChoosePasswordCard__password-input"
-                               placeholder="Enter wallet password"
-                               name="password"
-                               type="password"
-                               value={this.state.password}
-                               onChange={this.handleChange.bind(this)}
-                        />
-                    </div>
+                    { passwordRow }
 
                     <GradientButton title="Confirm & Send"
                                     disabled={isLoading || isValid === false}

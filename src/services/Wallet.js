@@ -8,6 +8,7 @@ import Theta from "./Theta";
 import Networks, {isEthereumNetwork, isThetaNetwork} from "../constants/Networks";
 import Api from './Api';
 import TrezorConnect from 'trezor-connect';
+import Trezor from './Trezor';
 
 const ethUtil = require('ethereumjs-util');
 
@@ -51,6 +52,10 @@ export default class Wallet {
         return _.get(this._wallet, ['address'], null);
     }
 
+    static getWalletHardware(){
+        return _.get(this._wallet, ['hardware'], null);
+    }
+
     static unlocked(){
         return (this._wallet !== null);
     }
@@ -78,7 +83,7 @@ export default class Wallet {
     }
 
     static async walletFromTrezor(addressPage){
-        window.__TREZOR_CONNECT_SRC = 'https://localhost:8088/'; //TODO: for dev
+        // window.__TREZOR_CONNECT_SRC = 'https://localhost:8088/'; //TODO: for dev
 
         TrezorConnect.manifest({
             email: 'qinwei@sliver.com',
@@ -108,9 +113,37 @@ export default class Wallet {
         };
     }
 
+    static async getHardwareWalletAddresses(hardware, page){
+        let wallets = null;
+
+        try{
+            if(hardware === 'trezor'){
+                let res = await Wallet.walletFromTrezor(page);
+                wallets = res.payload;
+            }
+            else if(hardware === 'ledger'){
+                // TODO
+            }
+
+            return wallets;
+        }
+        catch (e) {
+            let message = null;
+
+            if(hardware === 'trezor'){
+                message = "No Trezor device attached.";
+            }
+            else if(hardware === 'ledger'){
+                message = "No Ledger device attached.";
+            }
+
+            throw new Error(message);
+        }
+    }
+
     static async unlockWallet(strategy, password, data){
         let wallet = null;
-        let { keystore, mnemonic, privateKey, addressPage, hardware } = data;
+        let { keystore, mnemonic, privateKey, hardware, address } = data;
 
         try{
             if(strategy === WalletUnlockStrategy.KEYSTORE_FILE){
@@ -143,20 +176,23 @@ export default class Wallet {
                 wallet = Wallet.walletFromPrivateKey(privateKey);
             }
             else if(strategy === WalletUnlockStrategy.COLD_WALLET){
-                if(hardware === 'trezor'){
-                    let resp = await Wallet.walletFromTrezor(addressPage);
+                // if(hardware === 'trezor'){
+                //     let resp = await Wallet.walletFromTrezor(addressPage);
 
-                    wallet = new Object();
-                    wallet.address = resp.payload[0].address;
-                }
-                else if(hardware === 'ledger'){
-                    // TODO
-                }
+                //     wallet = new Object();
+                //     wallet.address = resp.payload[0].address;
+                // }
+                // else if(hardware === 'ledger'){
+                //     // TODO
+                // }
+
+                wallet = new Object();
+                wallet.address = address;
             }
 
             if(wallet){
                 //Only store the address in memory
-                Wallet.setWallet({address: wallet.address});
+                Wallet.setWallet({address: wallet.address, hardware: hardware});
 
                 if(strategy !== WalletUnlockStrategy.COLD_WALLET && (keystore === null || keystore === undefined)){
                     //The user is restoring a wallet, let's encrypt their keystore using their session password
@@ -186,27 +222,44 @@ export default class Wallet {
     }
 
     static async signTransaction(network, txData, password){
-        let keystore = Wallet.getKeystore();
-        let wallet = Wallet.decryptFromKeystore(keystore, password);
         let address = Wallet.getWalletAddress();
+        network = "privatenet"; //temp
 
-        if(wallet){
-            //User had the correct password
-            if(isEthereumNetwork(network)){
-                //Ethereum Network
-                return Ethereum.signTransaction(txData, wallet.privateKey);
-            }
-            else if(isThetaNetwork(network)){
-                //Theta Network
-                let response = await Api.fetchSequence(address, {network: network});
-                let responseJSON = await response.json();
-                let sequence = parseInt(responseJSON['sequence']) + 1;
+        if(Wallet.getWalletHardware() == "trezor"){
+            let response = await Api.fetchSequence(address, {network: network});
+            let responseJSON = await response.json();
+            let sequence = parseInt(responseJSON['sequence']) + 1;
+            sequence = 11; //temp
+            console.log("---------------- seq: ", sequence)
+            console.log("---------------- tx fee: ", txData.transactionFee)
 
-                return Theta.signTransaction(txData, sequence, wallet.privateKey);
-            }
+            return Trezor.signTransaction(txData, sequence);
         }
-        else{
-            throw new Error('Wrong password.  Your transaction could not be signed.');
+        else if(Wallet.getWalletHardware() == "trezor"){
+            //TODO
+        }    
+        else {
+            let keystore = Wallet.getKeystore();
+            let wallet = Wallet.decryptFromKeystore(keystore, password);
+        
+            if(wallet){
+                //User had the correct password
+                if(isEthereumNetwork(network)){
+                    //Ethereum Network
+                    return Ethereum.signTransaction(txData, wallet.privateKey);
+                }
+                else if(isThetaNetwork(network)){
+                    //Theta Network
+                    let response = await Api.fetchSequence(address, {network: network});
+                    let responseJSON = await response.json();
+                    let sequence = parseInt(responseJSON['sequence']) + 1;
+
+                    return Theta.signTransaction(txData, sequence, wallet.privateKey);
+                }
+            }
+            else{
+                throw new Error('Wrong password.  Your transaction could not be signed.');
+            }
         }
     }
 
