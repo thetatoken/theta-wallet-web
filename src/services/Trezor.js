@@ -7,13 +7,10 @@ import TrezorConnect from 'trezor-connect';
 import Web3 from 'web3';
 import RLP from 'eth-lib/lib/rlp';
 import Bytes from 'eth-lib/lib/bytes';
+import Wallet from './Wallet'
 
 const rpcURL = "https://mainnet.infura.io/v3/40980e2189924c8abfc5f60dd2e5dc4b";
 const web3 = new Web3(rpcURL);
-
-// const protobuf = require("protobufjs");
-// const TrezorUri = 'http://127.0.0.1:21325';
-// const TrezorOrigin = 'https://wallet.trezor.io';
 
 export default class Trezor {
 
@@ -55,11 +52,8 @@ export default class Trezor {
         let encodedTx = RLP.encode(unsignedTx.rlpInput());
         let payload = encodedChainID + encodedTxType.slice(2) + encodedTx.slice(2);
 
-        console.log("============== sequence: ", sequence)
-        console.log("============== txData: ", txData)
-        console.log("============== data: ", payload.toString('hex'))
         const trezorSignParams = {
-            path: "m/44'/60'/0'/0", //`${addressN}/0`,
+            path: Wallet.getWalletPath(),
             transaction: {
                 to: "0000000000000000000000000000000000000000",
                 value: web3.utils.toHex('0'),
@@ -67,33 +61,29 @@ export default class Trezor {
                 nonce: web3.utils.toHex('0'),
                 gasPrice: web3.utils.toHex('0'),
                 gasLimit: web3.utils.toHex('0'),
-                data: "0x8a707269766174656e657402f84cc78085e8d4a51000e2e19429ea70257452bfd24548f4d6c7d3ff0ec34cecd2c98087038e67796b90000b80e0df942e833968e5bb786ae419c4d13189fb081cc43babc98087038d7ea4c68000", //payload.toString('hex'),
+                data: payload.toString('hex'),
             },
         };
 
-        const signedTr = await TrezorConnect.ethereumSignTransaction(trezorSignParams);
-        console.log("============= signedTr: ", signedTr.payload)
-        if (signedTr.payload.error) {
-            throw signedTr.payload.error;
+        const signedTx = await TrezorConnect.ethereumSignTransaction(trezorSignParams);
+        if (signedTx.payload.error) {
+            throw signedTx.payload.error;
         }
-          
-        //   transaction: {
-        //     tokenType: this.state.tokenType,
-        //     from: this.props.walletAddress,
-        //     to: this.state.to,
-        //     amount: this.state.amount,
-        //     transactionFee: this.state.transactionFee
-        // }
 
+        let signature = signedTx.payload.r + signedTx.payload.s.slice(2) + (parseInt(signedTx.payload.v, 16) - 27).toString().padStart(2, '0');
+        unsignedTx.setSignature(signature);
 
-        // //Remove the '0x' until the RPC endpoint supports '0x' prefixes
-        // signedTxRaw = signedTxRaw.substring(2);
+        let signedRawTxBytes = ThetaJS.TxSigner.serializeTx(unsignedTx);
+        let signedTxRaw = signedRawTxBytes.toString('hex');
 
-        // if(signedTxRaw){
-        //     return signedTxRaw;
-        // }
-        // else{
-        //     throw new Error("Failed to sign transaction.");
-        // }
+        //Remove the '0x' until the RPC endpoint supports '0x' prefixes
+        signedTxRaw = signedTxRaw.substring(2);
+
+        if(signedTxRaw){
+            return signedTxRaw;
+        }
+        else{
+            throw new Error("Failed to sign transaction.");
+        }
     }
 }

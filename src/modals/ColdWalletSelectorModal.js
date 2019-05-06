@@ -14,6 +14,7 @@ export default class ColdWalletSelectorModal extends React.Component {
         this.state = {
             page: 0,
             addressChosen: null,
+            pathChosen: null,
         };
 
         this.handleUnlockWalletClick = this.handleUnlockWalletClick.bind(this);
@@ -24,13 +25,13 @@ export default class ColdWalletSelectorModal extends React.Component {
     }
 
     handleUnlockWalletClick(){
-        store.dispatch(unlockWallet(WalletUnlockStrategy.COLD_WALLET, null, {hardware: this.props.hardware, address: this.state.addressChosen}));
+        store.dispatch(unlockWallet(WalletUnlockStrategy.COLD_WALLET, null, {hardware: this.props.hardware, address: this.state.addressChosen, path: this.state.pathChosen}));
         store.dispatch(hideModal());
     }
 
     handleAddressClick(address){
-        console.log("=========== addr: ", address)
-        this.setState({addressChosen: address})
+        this.setState({addressChosen: address.address})
+        this.setState({pathChosen: address.serializedPath})
     }
 
     render() {
@@ -39,7 +40,7 @@ export default class ColdWalletSelectorModal extends React.Component {
         let renderDataRow = (address, balance) =>{
             return (
                 // address.serializedPath
-                <div className="ColdWalletSelectorModal__row" key={address.serializedPath} onClick={() => {this.handleAddressClick(address.address)}} >
+                <div className="ColdWalletSelectorModal__row" key={address.serializedPath} onClick={() => {this.handleAddressClick(address)}} >
                     <div className="ColdWalletSelectorModal__row-address">
                         {address.address}
                     </div>

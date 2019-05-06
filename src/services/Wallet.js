@@ -52,6 +52,10 @@ export default class Wallet {
         return _.get(this._wallet, ['address'], null);
     }
 
+    static getWalletPath(){
+        return _.get(this._wallet, ['path'], null);
+    }
+
     static getWalletHardware(){
         return _.get(this._wallet, ['hardware'], null);
     }
@@ -143,7 +147,7 @@ export default class Wallet {
 
     static async unlockWallet(strategy, password, data){
         let wallet = null;
-        let { keystore, mnemonic, privateKey, hardware, address } = data;
+        let { keystore, mnemonic, privateKey, hardware, address, path } = data;
 
         try{
             if(strategy === WalletUnlockStrategy.KEYSTORE_FILE){
@@ -192,7 +196,7 @@ export default class Wallet {
 
             if(wallet){
                 //Only store the address in memory
-                Wallet.setWallet({address: wallet.address, hardware: hardware});
+                Wallet.setWallet({address: wallet.address, path: path, hardware: hardware});
 
                 if(strategy !== WalletUnlockStrategy.COLD_WALLET && (keystore === null || keystore === undefined)){
                     //The user is restoring a wallet, let's encrypt their keystore using their session password
@@ -223,15 +227,11 @@ export default class Wallet {
 
     static async signTransaction(network, txData, password){
         let address = Wallet.getWalletAddress();
-        network = "privatenet"; //temp
 
         if(Wallet.getWalletHardware() == "trezor"){
             let response = await Api.fetchSequence(address, {network: network});
             let responseJSON = await response.json();
             let sequence = parseInt(responseJSON['sequence']) + 1;
-            sequence = 11; //temp
-            console.log("---------------- seq: ", sequence)
-            console.log("---------------- tx fee: ", txData.transactionFee)
 
             return Trezor.signTransaction(txData, sequence);
         }

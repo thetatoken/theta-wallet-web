@@ -75,6 +75,10 @@ export class ThetaNetworkTxForm extends React.Component {
     }
 
     handleSendClick() {
+        if(this.state.to.startsWith("0x") === false){
+            this.state.to = "0x" + this.state.to;
+        }
+
         store.dispatch(showModal({
             type: ModalTypes.SEND_CONFIRMATION,
             props: {
