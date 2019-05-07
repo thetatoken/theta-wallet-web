@@ -8,6 +8,7 @@ import Web3 from 'web3';
 import RLP from 'eth-lib/lib/rlp';
 import Bytes from 'eth-lib/lib/bytes';
 import Wallet from './Wallet'
+import Theta from "./Theta.js"
 
 const rpcURL = "https://mainnet.infura.io/v3/40980e2189924c8abfc5f60dd2e5dc4b";
 const web3 = new Web3(rpcURL);
@@ -23,29 +24,13 @@ export default class Trezor {
         return Config.thetaChainID;
     }
 
-    static unsignedTransaction(txData, sequence) {
-        let { tokenType, from, to, amount, transactionFee} = txData;
-
-        const ten18 = (new BigNumber(10)).pow(18); // 10^18, 1 Theta = 10^18 ThetaWei, 1 Gamma = 10^ TFuelWei
-        const thetaWeiToSend = (tokenType === TokenTypes.THETA ? (new BigNumber(amount)).multipliedBy(ten18) : (new BigNumber(0)));
-        const tfuelWeiToSend = (tokenType === TokenTypes.THETA_FUEL ? (new BigNumber(amount)).multipliedBy(ten18) : (new BigNumber(0)));
-        const feeInTFuelWei  = (new BigNumber(transactionFee)).multipliedBy(ten18); // Any fee >= 10^12 TFuelWei should work, higher fee yields higher priority
-        const senderAddr =  from;
-        const receiverAddr = to;
-        const senderSequence = sequence;
-
-        let tx = new ThetaJS.SendTx(senderAddr, receiverAddr, thetaWeiToSend, tfuelWeiToSend, feeInTFuelWei, senderSequence);
-
-        return tx;
-    }
-
     static isAddress(address){
         return Ethereum.isAddress(address);
     }
 
     static async signTransaction(txData, sequence){
         let chainID = Trezor.getChainID();
-        let unsignedTx = Trezor.unsignedTransaction(txData, sequence);
+        let unsignedTx = Theta.unsignedTransaction(txData, sequence);
 
         let encodedChainID = RLP.encode(Bytes.fromString(chainID));
         let encodedTxType = RLP.encode(Bytes.fromNumber(unsignedTx.getType()));
