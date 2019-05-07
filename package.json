@@ -18,14 +18,15 @@
     "react-modal": "^3.8.1",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "2.1.5",
+    "react-scripts": "^3.0.0",
     "react-transition-group": "^2.6.0",
     "redux": "^3.7.2",
     "redux-actions": "^2.6.4",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "web3": "1.0.0-beta.34"
+    "trezor-connect": "^7.0.3",
+    "web3": "^1.0.0-beta.52"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -36,10 +37,19 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  "devDependencies": {
+    "css-loader": "^2.1.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

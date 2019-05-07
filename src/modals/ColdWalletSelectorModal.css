@@ -102,6 +102,17 @@
     color: white;
     text-align: left;
     line-height: 30px;
+    cursor: pointer;
+}
+
+.ColdWalletSelectorModal__footer-prev-hidden{
+    /* font-size: 15px;
+    font-weight: 400;
+    color: white;
+    text-align: left;
+    line-height: 30px;
+    cursor: pointer; */
+    visibility: hidden
 }
 
 .ColdWalletSelectorModal__footer-next{
@@ -110,4 +121,15 @@
     color: white;
     text-align: left;
     line-height: 30px;
+    cursor: pointer;
+}
+
+.ColdWalletSelectorModal__footer-next-hidden{
+    /* font-size: 15px;
+    font-weight: 400;
+    color: white;
+    text-align: left;
+    line-height: 30px;
+    cursor: pointer; */
+    visibility: hidden
 }

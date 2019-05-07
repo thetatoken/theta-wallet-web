@@ -85,7 +85,8 @@ export function getHardwareWalletAddresses(hardware, page){
                 type: ModalTypes.COLD_WALLET_SELECTOR,
                 props: {
                     hardware: hardware,
-                    addresses: addresses
+                    addresses: addresses,
+                    page: page,
                 }
             }));
         }

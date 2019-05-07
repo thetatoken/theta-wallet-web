@@ -14,7 +14,7 @@ const ethUtil = require('ethereumjs-util');
 
 const MnemonicPath = "m/44'/500'/0'/0/0";
 
-const ColdWalletPageNumPaths = 5;
+export const NumPathsPerPage = 5;
 
 export const WalletUnlockStrategy = {
     KEYSTORE_FILE: 'keystore-file',
@@ -86,23 +86,25 @@ export default class Wallet {
         return web3.eth.accounts.privateKeyToAccount(privateKey);
     }
 
-    static async walletFromTrezor(addressPage){
+    static async walletFromTrezor(page){
         // window.__TREZOR_CONNECT_SRC = 'https://localhost:8088/'; //TODO: for dev
 
         TrezorConnect.manifest({
             email: 'qinwei@sliver.com',
-            appUrl: 'https://wallet.thetatoken.org'
+            appUrl: 'https://wallet.thetatoken.org',
+            keepSession: true
         });
 
         let baseDerivationPath = "m/44'/60'/0'/0/";
+        let bundle = [];
+        for(var i = 0; i < 50; i++){
+            bundle.push({ path: baseDerivationPath + (page * NumPathsPerPage + i), showOnTrezor: false });
+        }
+
         const result = await TrezorConnect.ethereumGetAddress({
-            bundle: [
-                { path: baseDerivationPath + addressPage * ColdWalletPageNumPaths, showOnTrezor: false },
-                { path: baseDerivationPath + addressPage * ColdWalletPageNumPaths + 1, showOnTrezor: false },
-                { path: baseDerivationPath + addressPage * ColdWalletPageNumPaths + 2, showOnTrezor: false },
-                { path: baseDerivationPath + addressPage * ColdWalletPageNumPaths + 3, showOnTrezor: false },
-                { path: baseDerivationPath + addressPage * ColdWalletPageNumPaths + 4, showOnTrezor: false }
-            ]});
+            bundle: bundle,
+            keepSession: true
+        });
         return result;
     }
 

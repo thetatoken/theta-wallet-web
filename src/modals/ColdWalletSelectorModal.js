@@ -3,25 +3,29 @@ import './ColdWalletSelectorModal.css';
 import Modal from '../components/Modal';
 import GradientButton from "../components/buttons/GradientButton";
 import { WalletUnlockStrategy } from '../services/Wallet'
+import { NumPathsPerPage } from '../services/Wallet'
 import {unlockWallet} from "../state/actions/Wallet";
 import {store} from "../state";
 import {hideModal} from "../state/actions/Modals";
+// import {getHardwareWalletAddresses} from "../state/actions/Wallet";
 
 export default class ColdWalletSelectorModal extends React.Component {
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
 
         this.state = {
-            page: 0,
+            page: props.page,
             addressChosen: null,
             pathChosen: null,
         };
 
         this.handleUnlockWalletClick = this.handleUnlockWalletClick.bind(this);
+        this.handlePrevPageClick = this.handlePrevPageClick.bind(this);
+        this.handleNextPageClick = this.handleNextPageClick.bind(this);
     }
 
     isValid(){
-        return this.state.page >= 0 && this.state.addressChosen != null;
+        return this.state.addressChosen != null;
     }
 
     handleUnlockWalletClick(){
@@ -32,6 +36,14 @@ export default class ColdWalletSelectorModal extends React.Component {
     handleAddressClick(address){
         this.setState({addressChosen: address.address})
         this.setState({pathChosen: address.serializedPath})
+    }
+
+    handlePrevPageClick(){
+        this.setState({page: this.state.page - 1});
+    }
+
+    handleNextPageClick(){
+        this.setState({page: this.state.page + 1});
     }
 
     render() {
@@ -56,8 +68,9 @@ export default class ColdWalletSelectorModal extends React.Component {
         if(this.props.addresses){
             let addresses = this.props.addresses;
             addressRows = []
-            for(var i = 0; i < addresses.length; i++){
-                addressRows.push( renderDataRow(addresses[i], 'loading...') )
+            
+            for(var i = 0; i < NumPathsPerPage; i++){
+                addressRows.push( renderDataRow(addresses[this.state.page * NumPathsPerPage + i], 'loading...') )
             }
             addressRows = (
                 <React.Fragment>
@@ -87,11 +100,11 @@ export default class ColdWalletSelectorModal extends React.Component {
                     </div>
 
                     <div className="ColdWalletSelectorModal__footer">
-                        <div className="ColdWalletSelectorModal__footer-prev">
+                        <div className={this.state.page <= 0 ? "ColdWalletSelectorModal__footer-prev-hidden" : "ColdWalletSelectorModal__footer-prev"} onClick={this.handlePrevPageClick}>
                             { '< Previous' }
                         </div>
-                        <div className="ColdWalletSelectorModal__footer-next">
-                        { 'Next >' }
+                        <div className={(this.state.page + 1) * NumPathsPerPage >= this.props.addresses.length ? "ColdWalletSelectorModal__footer-next-hidden" : "ColdWalletSelectorModal__footer-next"} onClick={this.handleNextPageClick}>
+                            { 'Next >' }
                         </div>
                     </div>
 

@@ -380,26 +380,6 @@ class UnlockWalletViaColdWallet extends React.Component {
         }
     }
 
-    // unlockWallet(){
-    //     this.props.unlockWallet(WalletUnlockStrategy.COLD_WALLET, null, {addressPage: this.state.addressPage, hardware: this.state.hardware});
-
-    //     this.setState({loading: false});
-    // }
-
-    // prepareForUnlock(){
-    //     this.setState({loading: true});
-
-    //     setTimeout(() => {
-    //         this.unlockWallet()
-    //     }, 1500);
-    // }
-
-    // handleUnlockClick(){
-    //     if(this.isValid()){
-    //         this.prepareForUnlock();
-    //     }
-    // }
-
     chooseHardware(){
         this.props.getHardwareWalletAddresses(this.state.hardware, 0);
 
