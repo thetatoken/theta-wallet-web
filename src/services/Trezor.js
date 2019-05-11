@@ -11,7 +11,6 @@ export default class Trezor {
     static async signTransaction(txData, sequence){
         console.log("=============== sequence: ", sequence)
         let unsignedTx = Theta.unsignedTransaction(txData, sequence);
-        console.log("=============== unsignedTx: ", unsignedTx)
         let payload = Theta.prepareTxPayload(unsignedTx);
         // console.log("=============== payload: ", payload)
 
@@ -36,6 +35,8 @@ export default class Trezor {
         let signature = signedTx.payload.r + signedTx.payload.s.slice(2) + (parseInt(signedTx.payload.v, 16) - 27).toString().padStart(2, '0');
         console.log("================ signature: ", signature)
         unsignedTx.setSignature(signature);
+
+        console.log("=============== signedTx: ", unsignedTx)
 
         let signedRawTxBytes = ThetaJS.TxSigner.serializeTx(unsignedTx);
         let signedTxRaw = signedRawTxBytes.toString('hex');
