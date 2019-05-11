@@ -1,8 +1,6 @@
 import ThetaJS from '../libs/thetajs.esm';
 import TrezorConnect from 'trezor-connect';
 import Web3 from 'web3';
-import RLP from 'eth-lib/lib/rlp';
-import Bytes from 'eth-lib/lib/bytes';
 import Wallet from './Wallet'
 import Theta from "./Theta.js"
 
@@ -11,24 +9,22 @@ const web3 = new Web3(rpcURL);
 
 export default class Trezor {
     static async signTransaction(txData, sequence){
-        let chainID = Theta.getChainID();
+        console.log("=============== sequence: ", sequence)
         let unsignedTx = Theta.unsignedTransaction(txData, sequence);
-
-        let encodedChainID = RLP.encode(Bytes.fromString(chainID));
-        let encodedTxType = RLP.encode(Bytes.fromNumber(unsignedTx.getType()));
-        let encodedTx = RLP.encode(unsignedTx.rlpInput());
-        let payload = encodedChainID + encodedTxType.slice(2) + encodedTx.slice(2);
+        console.log("=============== unsignedTx: ", unsignedTx)
+        let payload = Theta.prepareTxPayload(unsignedTx);
+        // console.log("=============== payload: ", payload)
 
         const trezorSignParams = {
             path: Wallet.getWalletPath(),
             transaction: {
-                to: "0000000000000000000000000000000000000000",
-                value: web3.utils.toHex('0'),
                 // // chainId: 1,
                 nonce: web3.utils.toHex('0'),
                 gasPrice: web3.utils.toHex('0'),
                 gasLimit: web3.utils.toHex('0'),
-                data: payload.toString('hex'),
+                to: "0000000000000000000000000000000000000000",
+                value: web3.utils.toHex('0'),
+                data: payload,
             },
         };
 
@@ -38,6 +34,7 @@ export default class Trezor {
         }
 
         let signature = signedTx.payload.r + signedTx.payload.s.slice(2) + (parseInt(signedTx.payload.v, 16) - 27).toString().padStart(2, '0');
+        console.log("================ signature: ", signature)
         unsignedTx.setSignature(signature);
 
         let signedRawTxBytes = ThetaJS.TxSigner.serializeTx(unsignedTx);
@@ -46,8 +43,10 @@ export default class Trezor {
         //Remove the '0x' until the RPC endpoint supports '0x' prefixes
         signedTxRaw = signedTxRaw.substring(2);
 
+        console.log("================ signedTxRaw: ", signedTxRaw)
         if(signedTxRaw){
-            return signedTxRaw;
+            // return signedTxRaw;
+            return;
         }
         else{
             throw new Error("Failed to sign transaction.");

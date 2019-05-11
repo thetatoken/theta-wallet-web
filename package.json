@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ledgerhq/hw-app-eth": "^4.55.0",
+    "@ledgerhq/hw-transport-u2f": "^4.55.0",
+    "@ledgerhq/hw-transport-webusb": "^4.55.0",
     "await-timeout": "^0.3.0",
     "bignumber.js": "^8.0.1",
     "classnames": "^2.2.6",

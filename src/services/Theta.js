@@ -3,6 +3,8 @@ import Ethereum from "./Ethereum";
 import ThetaJS from '../libs/thetajs.esm';
 import TokenTypes from "../constants/TokenTypes";
 import Config from '../Config';
+import RLP from 'eth-lib/lib/rlp';
+import Bytes from 'eth-lib/lib/bytes';
 
 export default class Theta {
 
@@ -50,5 +52,14 @@ export default class Theta {
         else{
             throw new Error("Failed to sign transaction.");
         }
+    }
+
+    static prepareTxPayload(unsignedTx){
+        let chainID = Theta.getChainID();
+        let encodedChainID = RLP.encode(Bytes.fromString(chainID));
+        let encodedTxType = RLP.encode(Bytes.fromNumber(unsignedTx.getType()));
+        let encodedTx = RLP.encode(unsignedTx.rlpInput());
+        let payload = encodedChainID + encodedTxType.slice(2) + encodedTx.slice(2);
+        return payload.toString('hex');
     }
 }

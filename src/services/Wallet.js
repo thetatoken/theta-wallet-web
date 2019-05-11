@@ -9,9 +9,14 @@ import Networks, {isEthereumNetwork, isThetaNetwork} from "../constants/Networks
 import Api from './Api';
 import TrezorConnect from 'trezor-connect';
 import Trezor from './Trezor';
+import Ledger from './Ledger';
+import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import Eth from "@ledgerhq/hw-app-eth";
 
 const ethUtil = require('ethereumjs-util');
 
+const RootDerivationPath = "m/44'/60'/0'/";
+const BaseDerivationPath = "m/44'/60'/0'/0/";
 const MnemonicPath = "m/44'/500'/0'/0/0";
 
 export const NumPathsPerPage = 5;
@@ -95,16 +100,32 @@ export default class Wallet {
             keepSession: true
         });
 
-        let baseDerivationPath = "m/44'/60'/0'/0/";
+        
         let bundle = [];
-        for(var i = 0; i < 50; i++){
-            bundle.push({ path: baseDerivationPath + (page * NumPathsPerPage + i), showOnTrezor: false });
+        for(var i = 0; i < 30; i++){
+            bundle.push({ path: BaseDerivationPath + (page * NumPathsPerPage + i), showOnTrezor: false });
         }
 
         const result = await TrezorConnect.ethereumGetAddress({
             bundle: bundle,
             keepSession: true
         });
+
+        return result;
+    }
+
+    static async walletFromLedger(page){
+        const transport = await TransportWebUSB.create();
+        const eth = new Eth(transport);
+
+        let result = [];
+        for(var i = 0; i < 5; i++){
+            let path = RootDerivationPath + (page * NumPathsPerPage + i);
+            let res = await eth.getAddress(path);
+            result.push({address: res.address, serializedPath: path});
+        }
+        
+        // transport.close();
         return result;
     }
 
@@ -128,7 +149,7 @@ export default class Wallet {
                 wallets = res.payload;
             }
             else if(hardware === 'ledger'){
-                // TODO
+                wallets = await Wallet.walletFromLedger(page)
             }
 
             return wallets;
@@ -227,18 +248,23 @@ export default class Wallet {
         }
     }
 
+    static async getThetaTxSequence(address, network){
+        let response = await Api.fetchSequence(address, {network: network});
+        let responseJSON = await response.json();
+        let sequence = parseInt(responseJSON['sequence']) + 1;
+        return sequence;
+    }
+
     static async signTransaction(network, txData, password){
         let address = Wallet.getWalletAddress();
 
         if(Wallet.getWalletHardware() == "trezor"){
-            let response = await Api.fetchSequence(address, {network: network});
-            let responseJSON = await response.json();
-            let sequence = parseInt(responseJSON['sequence']) + 1;
-
+            let sequence = await Wallet.getThetaTxSequence(address, network)
             return Trezor.signTransaction(txData, sequence);
         }
-        else if(Wallet.getWalletHardware() == "trezor"){
-            //TODO
+        else if(Wallet.getWalletHardware() == "ledger"){
+            let sequence = await Wallet.getThetaTxSequence(address, network)
+            return Ledger.signTransaction(txData, sequence);
         }    
         else {
             let keystore = Wallet.getKeystore();
@@ -252,10 +278,7 @@ export default class Wallet {
                 }
                 else if(isThetaNetwork(network)){
                     //Theta Network
-                    let response = await Api.fetchSequence(address, {network: network});
-                    let responseJSON = await response.json();
-                    let sequence = parseInt(responseJSON['sequence']) + 1;
-
+                    let sequence = await Wallet.getThetaTxSequence(address, network)
                     return Theta.signTransaction(txData, sequence, wallet.privateKey);
                 }
             }

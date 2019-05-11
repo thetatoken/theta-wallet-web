@@ -7,7 +7,6 @@ import { NumPathsPerPage } from '../services/Wallet'
 import {unlockWallet} from "../state/actions/Wallet";
 import {store} from "../state";
 import {hideModal} from "../state/actions/Modals";
-// import {getHardwareWalletAddresses} from "../state/actions/Wallet";
 
 export default class ColdWalletSelectorModal extends React.Component {
     constructor(props){
@@ -68,7 +67,7 @@ export default class ColdWalletSelectorModal extends React.Component {
         if(this.props.addresses){
             let addresses = this.props.addresses;
             addressRows = []
-            
+
             for(var i = 0; i < NumPathsPerPage; i++){
                 addressRows.push( renderDataRow(addresses[this.state.page * NumPathsPerPage + i], 'loading...') )
             }
