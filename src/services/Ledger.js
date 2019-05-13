@@ -1,5 +1,5 @@
 import ThetaJS from '../libs/thetajs.esm';
-import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import TransportU2F from "@ledgerhq/hw-transport-u2f";
 import Eth from "@ledgerhq/hw-app-eth";
 import Web3 from 'web3';
 import Wallet from './Wallet';
@@ -29,7 +29,7 @@ export default class Ledger {
         serializedTx = serializedTx.slice(0, serializedTx.length - 3);
         let ethTxWrapper = serializedTx.toString("hex");
         
-        const transport = await TransportWebUSB.create();
+        const transport = await TransportU2F.create();
         const eth = new Eth(transport);
         
         let sig = await eth.signTransaction(Wallet.getWalletPath(), ethTxWrapper);
