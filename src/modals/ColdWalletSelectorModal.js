@@ -7,6 +7,99 @@ import { NumPathsPerPage } from '../services/Wallet'
 import {unlockWallet} from "../state/actions/Wallet";
 import {store} from "../state";
 import {hideModal} from "../state/actions/Modals";
+import MDSpinner from "react-md-spinner";
+import Api from "../services/Api";
+import Config from "../Config";
+import {zipMap} from "../utils/Utils";
+
+export class ColdWalletAddressRow extends React.Component {
+    constructor(props){
+        super(props);
+
+        this.state = {
+            tfuelWei: null,
+            thetaWei: null,
+            isLoading: true
+        };
+    }
+
+    async fetchBalances(address){
+        let response = await Api.fetchWallet(address, {network: Config.thetaNetwork});
+
+        if(response){
+            let responseJSON = await response.json();
+            let { balances } = responseJSON;
+            let balancesByType = null;
+
+            if(balances){
+                balancesByType = zipMap(balances.map(({ type }) => type), balances.map(({ value }) => value));
+            }
+            else{
+                balancesByType = {
+                    theta: 0,
+                    tfuel: 0
+                };
+            }
+
+            this.setState({
+                balances: balancesByType,
+                isLoading: false
+            });
+        }
+    }
+
+    componentDidMount(){
+        let {address} = this.props;
+
+        this.fetchBalances(address);
+    }
+
+    render() {
+        let {address, serializedPath, isSelected, onClick} = this.props;
+        let { balances, isLoading } = this.state;
+
+        let balanceView = null;
+
+        if(isLoading){
+            balanceView = <MDSpinner singleColor="#ffffff"/>
+        }
+        else{
+            balanceView = (
+                <React.Fragment>
+                    <div className="ColdWalletSelectorModal__amount-container">
+                        <div className="ColdWalletSelectorModal__amount">{balances.theta}</div>
+                        <img className="ColdWalletSelectorModal__amount-icon"
+                             src="/img/tokens/theta_large@2x.png"
+                        />
+                    </div>
+                    <div className="ColdWalletSelectorModal__amount-container">
+                        <div className="ColdWalletSelectorModal__amount">{balances.tfuel}</div>
+                        <img className="ColdWalletSelectorModal__amount-icon"
+                             src="/img/tokens/tfuel_large@2x.png"
+                        />
+                    </div>
+                </React.Fragment>
+            );
+        }
+
+        return (
+            <a className="ColdWalletSelectorModal__row"
+                 key={serializedPath}
+                 onClick={onClick} >
+                <img className="ColdWalletSelectorModal__checkmark-icon"
+                     src={isSelected ? "/img/icons/checkmark-green@2x.png" : "/img/icons/checkmark-transparent@2x.png"}
+                />
+                <div className="ColdWalletSelectorModal__row-address">
+                    {address}
+                </div>
+
+                <div className="ColdWalletSelectorModal__row-balance">
+                    {balanceView}
+                </div>
+            </a>
+        )
+    }
+}
 
 export default class ColdWalletSelectorModal extends React.Component {
     constructor(props){
@@ -33,8 +126,10 @@ export default class ColdWalletSelectorModal extends React.Component {
     }
 
     handleAddressClick(address){
-        this.setState({addressChosen: address.address})
-        this.setState({pathChosen: address.serializedPath})
+        this.setState({
+            addressChosen: address.address,
+            pathChosen: address.serializedPath
+        });
     }
 
     handlePrevPageClick(){
@@ -48,33 +143,68 @@ export default class ColdWalletSelectorModal extends React.Component {
     render() {
         let isDisabled = (this.state.loading || this.isValid() === false);
 
-        let renderDataRow = (address, balance) =>{
-            return (
-                // address.serializedPath
-                <div className="ColdWalletSelectorModal__row" key={address.serializedPath} onClick={() => {this.handleAddressClick(address)}} >
-                    <div className="ColdWalletSelectorModal__row-address">
-                        {address.address}
-                    </div>
-                    <div className="ColdWalletSelectorModal__row-balance">
-                        {balance}
-                    </div>
-                </div>
-            );
+        let renderDataRow = (addressInfo) => {
+            if(addressInfo){
+                return (
+                    <ColdWalletAddressRow address={addressInfo.address}
+                                          serializedPath={addressInfo.serializedPath}
+                                          key={addressInfo.address}
+                                          isSelected={this.state.addressChosen === addressInfo.address}
+                                          onClick={() => {this.handleAddressClick(addressInfo)}}>
+                    </ColdWalletAddressRow>
+                );
+            }
         };
 
         let addressRows = null;
 
         if(this.props.addresses){
             let addresses = this.props.addresses;
-            addressRows = []
+            addressRows = [];
 
             for(var i = 0; i < NumPathsPerPage; i++){
-                addressRows.push( renderDataRow(addresses[this.state.page * NumPathsPerPage + i], 'loading...') )
+                let addressInfo = addresses[this.state.page * NumPathsPerPage + i];
+
+                addressRows.push( renderDataRow(addressInfo) );
             }
+
             addressRows = (
                 <React.Fragment>
                     { addressRows }
                 </React.Fragment>
+            );
+        }
+
+        let showPrevButton = this.state.page > 0;
+        let showNextButton = (this.state.page + 1) * NumPathsPerPage < this.props.addresses.length;
+        let prevButton = false;
+        let nextButton = false;
+
+        if(showPrevButton){
+            prevButton = (
+                <a className="ColdWalletSelectorModal__footer-button"
+                   onClick={this.handlePrevPageClick}>
+                    { '< Previous' }
+                </a>
+            );
+        }
+        else{
+            prevButton = (
+                <div/>
+            );
+        }
+
+        if(showNextButton){
+            nextButton = (
+                <a className="ColdWalletSelectorModal__footer-button"
+                   onClick={this.handleNextPageClick}>
+                    { 'Next >' }
+                </a>
+            );
+        }
+        else{
+            nextButton = (
+                <div/>
             );
         }
 
@@ -85,26 +215,13 @@ export default class ColdWalletSelectorModal extends React.Component {
                         Select an Address
                     </div>
 
-                    <div className="ColdWalletSelectorModal__header">
-                        <div className="ColdWalletSelectorModal__header-address">
-                            address
-                        </div>
-                        <div className="ColdWalletSelectorModal__header-balance">
-                            balance
-                        </div>
-                    </div>
-
                     <div className="ColdWalletSelectorModal__rows">
                         { addressRows }
                     </div>
 
                     <div className="ColdWalletSelectorModal__footer">
-                        <div className={this.state.page <= 0 ? "ColdWalletSelectorModal__footer-prev-hidden" : "ColdWalletSelectorModal__footer-prev"} onClick={this.handlePrevPageClick}>
-                            { '< Previous' }
-                        </div>
-                        <div className={(this.state.page + 1) * NumPathsPerPage >= this.props.addresses.length ? "ColdWalletSelectorModal__footer-next-hidden" : "ColdWalletSelectorModal__footer-next"} onClick={this.handleNextPageClick}>
-                            { 'Next >' }
-                        </div>
+                        {prevButton}
+                        {nextButton}
                     </div>
 
                     <GradientButton title="Access My Wallet"

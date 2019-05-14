@@ -115,6 +115,7 @@ export default class Wallet {
     }
 
     static async walletFromLedger(page){
+        console.log("walletFromLedger :: page == " + page);
         const transport = await TransportWebUSB.create();
         const eth = new Eth(transport);
 
@@ -124,6 +125,10 @@ export default class Wallet {
             let res = await eth.getAddress(path);
             result.push({address: res.address, serializedPath: path});
         }
+
+
+        console.log("walletFromLedger :: result == ");
+        console.log(result);
         
         // transport.close();
         return result;
@@ -155,6 +160,7 @@ export default class Wallet {
             return wallets;
         }
         catch (e) {
+            console.log(e);
             let message = null;
 
             if(hardware === 'trezor'){

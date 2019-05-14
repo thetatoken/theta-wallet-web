@@ -13,27 +13,13 @@
     font-weight: 600;
     text-align: center;
     color: white;
-    /* margin-bottom: 10px; */
+    margin-bottom: 6px;
 }
 
 .ColdWalletSelectorModal__rows{
     display: flex;
     flex-direction: column;
-    margin-top: 10px;
-    /* border-top: 1px solid #687399; */
     margin-bottom: auto;
-}
-
-.ColdWalletSelectorModal__header{
-    display: flex;
-    flex-direction: row;
-    flex: 1;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 24px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #687399;
 }
 
 .ColdWalletSelectorModal__header-address{
@@ -58,13 +44,16 @@
     display: flex;
     flex-direction: row;
     flex: 1;
-    justify-content: space-between;
     align-items: center;
-    min-height: 24px;
+    min-height: 53px;
     padding-top: 8px;
     padding-bottom: 8px;
     border-bottom: 1px solid #687399;
     cursor: pointer;
+}
+
+.ColdWalletSelectorModal__row:hover{
+    background-color: rgba(0,0,0,0.05);
 }
 
 .ColdWalletSelectorModal__row-address{
@@ -74,14 +63,31 @@
     text-align: left;
     line-height: 40px;
     text-transform: uppercase;
+    flex: 1;
 }
 
-.ColdWalletSelectorModal__row-balance{
-    font-size: 14px;
-    font-weight: normal;
+.ColdWalletSelectorModal__amount-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-left: 15px;
+}
+
+.ColdWalletSelectorModal__amount{
+    font-size: 16px;
+    font-weight: 100;
+    line-height: 20px;
+    height: 20px;
     color: white;
-    text-align: left;
-    line-height: 40px;
+    text-align: right;
+}
+
+.ColdWalletSelectorModal__amount-icon{
+    height: 16px;
+    margin-left: 6px;
 }
 
 .ColdWalletSelectorModal__footer{
@@ -96,7 +102,8 @@
     border-bottom: 1px solid #687399;
 }
 
-.ColdWalletSelectorModal__footer-prev{
+
+.ColdWalletSelectorModal__footer-button{
     font-size: 15px;
     font-weight: 400;
     color: white;
@@ -105,31 +112,12 @@
     cursor: pointer;
 }
 
-.ColdWalletSelectorModal__footer-prev-hidden{
-    /* font-size: 15px;
-    font-weight: 400;
-    color: white;
-    text-align: left;
-    line-height: 30px;
-    cursor: pointer; */
-    visibility: hidden
+.ColdWalletSelectorModal__footer-button:hover{
+    color: rgba(255,255,255,0.8);
 }
 
-.ColdWalletSelectorModal__footer-next{
-    font-size: 15px;
-    font-weight: 400;
-    color: white;
-    text-align: left;
-    line-height: 30px;
-    cursor: pointer;
-}
-
-.ColdWalletSelectorModal__footer-next-hidden{
-    /* font-size: 15px;
-    font-weight: 400;
-    color: white;
-    text-align: left;
-    line-height: 30px;
-    cursor: pointer; */
-    visibility: hidden
+.ColdWalletSelectorModal__checkmark-icon{
+    height: 20px;
+    margin-right: 10px;
+    margin-left: 10px;
 }

@@ -3,6 +3,7 @@ import './UnlockWalletPage.css';
 import {connect} from 'react-redux'
 import {Link} from "react-router-dom";
 import GradientButton from '../components/buttons/GradientButton'
+import GhostButton from '../components/buttons/GhostButton'
 import Wallet from '../services/Wallet'
 import { WalletUnlockStrategy } from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
@@ -419,23 +420,23 @@ class UnlockWalletViaColdWallet extends React.Component {
 
                 <div className="UnlockWalletViaColdWallet__cold-wallet-hardware-select">
                     <div className="UnlockWalletViaColdWallet__cold-wallet-hardware">
-                        <GradientButton title="Trezor"
-                                    loading={false}
-                                    onClick={this.handleTrezorClick}
-                                    disabled={false}
+                        <GhostButton title="Trezor"
+                                     iconUrl={(this.state.hardware === "trezor" ? "/img/icons/checkmark-green@2x.png" : "/img/icons/checkmark-transparent@2x.png")}
+                                     className={(this.state.hardware === "trezor" ? "GhostButton--is-green" : null)}
+                                     onClick={this.handleTrezorClick}
                         />
                     </div>
                     <div className="UnlockWalletViaColdWallet__cold-wallet-hardware">
-                        <GradientButton title="Ledger"
-                                    loading={false}
+                        <GhostButton title="Ledger"
+                                     iconUrl={(this.state.hardware === "ledger" ? "/img/icons/checkmark-green@2x.png" : "/img/icons/checkmark-transparent@2x.png")}
+                                     className={(this.state.hardware === "ledger" ? "GhostButton--is-green" : null)}
                                     onClick={this.handleLedgerClick}
-                                    disabled={false}
                         />
                     </div>
                 </div>
 
                 <div className="UnlockWalletViaColdWallet__footer">
-                    <GradientButton title="Choose a Hardware"
+                    <GradientButton title="Continue"
                                     loading={this.state.loading}
                                     onClick={this.handleChooseHardwareClick}
                                     disabled={isDisabled}
@@ -479,11 +480,11 @@ class UnlockWalletCard extends React.Component {
                                 condensed={true}
                                 className="UnlockWalletCard__tab-bar">
                             <TabBarItem
-                                title="Keystore File"
+                                title="Keystore"
                                 href={"/unlock/" + WalletUnlockStrategy.KEYSTORE_FILE}
                             />
                             <TabBarItem
-                                title="Mnemonic Phrase"
+                                title="Mnemonic"
                                 href={"/unlock/" + WalletUnlockStrategy.MNEMONIC_PHRASE}
                             />
                             <TabBarItem
@@ -491,7 +492,7 @@ class UnlockWalletCard extends React.Component {
                                 href={"/unlock/" + WalletUnlockStrategy.PRIVATE_KEY}
                             />
                             <TabBarItem
-                                title="Cold Wallet"
+                                title="Hardware"
                                 href={"/unlock/" + WalletUnlockStrategy.COLD_WALLET}
                             />
                         </TabBar>
