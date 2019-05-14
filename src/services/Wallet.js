@@ -10,7 +10,7 @@ import Api from './Api';
 import TrezorConnect from 'trezor-connect';
 import Trezor from './Trezor';
 import Ledger from './Ledger';
-import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import TransportU2F from "@ledgerhq/hw-transport-u2f";
 import Eth from "@ledgerhq/hw-app-eth";
 
 const ethUtil = require('ethereumjs-util');
@@ -115,8 +115,7 @@ export default class Wallet {
     }
 
     static async walletFromLedger(page){
-        console.log("walletFromLedger :: page == " + page);
-        const transport = await TransportWebUSB.create();
+        const transport = await TransportU2F.create();
         const eth = new Eth(transport);
 
         let result = [];
