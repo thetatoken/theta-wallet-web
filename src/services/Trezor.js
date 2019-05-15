@@ -9,7 +9,7 @@ const web3 = new Web3(rpcURL);
 
 export default class Trezor {
     static async signTransaction(txData, sequence){
-        console.log("=============== sequence: ", sequence)
+        console.log("=============== sequence: ", sequence);
         let unsignedTx = Theta.unsignedTransaction(txData, sequence);
         let payload = Theta.prepareTxPayload(unsignedTx);
         // console.log("=============== payload: ", payload)
@@ -46,8 +46,7 @@ export default class Trezor {
 
         console.log("================ signedTxRaw: ", signedTxRaw)
         if(signedTxRaw){
-            // return signedTxRaw;
-            return;
+            return signedTxRaw;
         }
         else{
             throw new Error("Failed to sign transaction.");

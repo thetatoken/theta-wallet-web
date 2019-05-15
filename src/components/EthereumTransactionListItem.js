@@ -8,7 +8,7 @@ import {truncate} from "../utils/Utils";
 class EthereumTransactionListItem extends React.Component {
     render() {
         let { transaction } = this.props;
-        let {from, to, token_symbol, token_decimal, dec_value, type, time_stamp, bound, hash, is_local} = transaction;
+        let {from, to, token_symbol, dec_value, type, time_stamp, bound, is_local} = transaction;
         let isReceived = (bound === "inbound");
         let iconUrl = `/img/tokens/${type}_small@2x.png`;
         let explorerUrl = `https://etherscan.io/tx/${transaction.hash}`;

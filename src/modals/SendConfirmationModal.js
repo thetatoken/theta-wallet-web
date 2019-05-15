@@ -6,7 +6,7 @@ import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet'
 import {createTransaction} from "../state/actions/Transactions";
 import {tokenTypeToTokenName} from "../constants/TokenTypes";
-import Networks, {isEthereumNetwork, isThetaNetwork} from "../constants/Networks";
+import {isEthereumNetwork, isThetaNetwork} from "../constants/Networks";
 
 export class SendConfirmationModal extends React.Component {
     constructor(){

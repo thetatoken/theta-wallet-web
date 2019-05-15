@@ -75,8 +75,9 @@ export class ThetaNetworkTxForm extends React.Component {
     }
 
     handleSendClick() {
-        if(this.state.to.startsWith("0x") === false){
-            this.state.to = "0x" + this.state.to;
+        let to = this.state.to;
+        if(to.startsWith("0x") === false){
+            to = "0x" + to;
         }
 
         store.dispatch(showModal({
@@ -88,7 +89,7 @@ export class ThetaNetworkTxForm extends React.Component {
 
                     from: this.props.walletAddress,
 
-                    to: this.state.to,
+                    to: to,
                     amount: this.state.amount,
 
                     transactionFee: this.state.transactionFee

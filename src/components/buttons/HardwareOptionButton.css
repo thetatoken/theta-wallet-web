@@ -1,0 +1,39 @@
+.HardwareOptionButton{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    border: 1px solid #687399;
+    border-radius: 4px;
+    padding-left: 16px;
+    padding-right: 16px;
+    cursor: pointer;
+    box-sizing: border-box;
+    position: relative;
+    color: white;
+    margin-top: 22px;
+}
+
+.HardwareOptionButton:hover{
+    background-color: rgba(0,0,0,0.05);
+}
+
+.HardwareOptionButton__icon{
+    height: 22px;
+    margin-right: 8px;
+    position: absolute;
+    left: 8px;
+}
+
+.HardwareOptionButton__title{
+    font-size: 17px;
+    font-weight: normal;
+    color: inherit;
+    cursor: pointer;
+}
+
+.HardwareOptionButton--is-selected{
+    border: 1px solid #1BDED0;
+    color: #1BDED0;
+}

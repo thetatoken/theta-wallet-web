@@ -2,7 +2,6 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
     height: 40px;
     border: 1px solid #687399;
     border-radius: 4px;
@@ -10,7 +9,6 @@
     padding-right: 16px;
     cursor: pointer;
     box-sizing: border-box;
-    position: relative;
 }
 
 .GhostButton:hover{
@@ -20,8 +18,6 @@
 .GhostButton__icon{
     height: 22px;
     margin-right: 8px;
-    position: absolute;
-    left: 8px;
 }
 
 .GhostButton__title{
@@ -29,8 +25,4 @@
     font-weight: normal;
     color: white;
     cursor: pointer;
-}
-
-.GhostButton--is-green{
-    border: 1px solid #10EDBD;
 }

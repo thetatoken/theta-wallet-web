@@ -3,7 +3,7 @@ import './UnlockWalletPage.css';
 import {connect} from 'react-redux'
 import {Link} from "react-router-dom";
 import GradientButton from '../components/buttons/GradientButton'
-import GhostButton from '../components/buttons/GhostButton'
+import HardwareOptionButton from '../components/buttons/HardwareOptionButton';
 import Wallet from '../services/Wallet'
 import { WalletUnlockStrategy } from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
@@ -384,7 +384,15 @@ class UnlockWalletViaColdWallet extends React.Component {
     chooseHardware(){
         this.props.getHardwareWalletAddresses(this.state.hardware, 0);
 
-        this.setState({loading: false});
+        if(this.state.hardware === "ledger"){
+            //Ledger is very slow...
+            setTimeout(function(){
+                this.setState({loading: false});
+            }.bind(this), 6500);
+        }
+        else{
+            this.setState({loading: false});
+        }
     }
 
     prepareForChooseHardware(){
@@ -419,20 +427,16 @@ class UnlockWalletViaColdWallet extends React.Component {
                 </div>
 
                 <div className="UnlockWalletViaColdWallet__cold-wallet-hardware-select">
-                    <div className="UnlockWalletViaColdWallet__cold-wallet-hardware">
-                        <GhostButton title="Trezor"
-                                     iconUrl={(this.state.hardware === "trezor" ? "/img/icons/checkmark-green@2x.png" : "/img/icons/checkmark-transparent@2x.png")}
-                                     className={(this.state.hardware === "trezor" ? "GhostButton--is-green" : null)}
-                                     onClick={this.handleTrezorClick}
-                        />
-                    </div>
-                    <div className="UnlockWalletViaColdWallet__cold-wallet-hardware">
-                        <GhostButton title="Ledger"
-                                     iconUrl={(this.state.hardware === "ledger" ? "/img/icons/checkmark-green@2x.png" : "/img/icons/checkmark-transparent@2x.png")}
-                                     className={(this.state.hardware === "ledger" ? "GhostButton--is-green" : null)}
-                                    onClick={this.handleLedgerClick}
-                        />
-                    </div>
+                    <HardwareOptionButton title="Trezor"
+                                 iconUrl={(this.state.hardware === "trezor" ? "/img/icons/checkmark-green@2x.png" : null)}
+                                          isSelected={(this.state.hardware === "trezor")}
+                                 onClick={this.handleTrezorClick}
+                    />
+                    <HardwareOptionButton title="Ledger"
+                                 iconUrl={(this.state.hardware === "ledger" ? "/img/icons/checkmark-green@2x.png" : null)}
+                                          isSelected={(this.state.hardware === "ledger")}
+                                 onClick={this.handleLedgerClick}
+                    />
                 </div>
 
                 <div className="UnlockWalletViaColdWallet__footer">

@@ -10,7 +10,6 @@ import {
 } from "../types/Transactions";
 import Wallet from "../../services/Wallet";
 import TokenTypes from "../../constants/TokenTypes";
-import Networks, {isThetaNetwork} from "../../constants/Networks";
 import Timeout from 'await-timeout';
 import {hideModals} from "./Modals";
 import Alerts from "../../services/Alerts";
@@ -44,15 +43,6 @@ export function fetchTransaction(network, txHash) {
     return reduxFetch(FETCH_TRANSACTION, function () {
         return Api.fetchTransaction(txHash, {network: network});
     }, {network: network});
-}
-
-function errorToHumanError(error){
-    if(error === "Insufficient funds for gas * price + value"){
-        return "Insufficient gas, please deposit additional Ethereum";
-    }
-    else{
-        return error;
-    }
 }
 
 export async function createTransactionAsync(dispatch, network, txData, password) {
