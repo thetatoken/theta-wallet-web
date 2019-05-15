@@ -419,6 +419,14 @@ class UnlockWalletViaColdWallet extends React.Component {
 
     render() {
         let isDisabled = (this.state.loading || this.isValid() === false);
+        let warning = "";
+
+        if(this.state.hardware === "trezor"){
+            warning = "Please make sure your Trezor is connected before clicking 'Continue' below.";
+        }
+        else if(this.state.hardware === "ledger"){
+            warning = "Please make sure your Ledger is connected with the Ethereum app open before clicking 'Continue' below.";
+        }
 
         return (
             <div className="UnlockWalletViaColdWallet">
@@ -437,6 +445,10 @@ class UnlockWalletViaColdWallet extends React.Component {
                                           isSelected={(this.state.hardware === "ledger")}
                                  onClick={this.handleLedgerClick}
                     />
+                </div>
+
+                <div className="UnlockWalletCard__warning">
+                    {warning}
                 </div>
 
                 <div className="UnlockWalletViaColdWallet__footer">
