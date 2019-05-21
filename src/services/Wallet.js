@@ -113,7 +113,7 @@ export default class Wallet {
     }
 
     static async walletFromLedger(page){
-        const transport = await TransportWebUSB.create();
+        const transport = await TransportU2F.create();
         const eth = new Eth(transport);
 
         let result = [];

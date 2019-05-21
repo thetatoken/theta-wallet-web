@@ -75,7 +75,7 @@ export class ThetaNetworkTxForm extends React.Component {
     }
 
     handleSendClick() {
-        let to = this.state.to;
+        let to = this.state.to.toLowerCase();
         if(to.startsWith("0x") === false){
             to = "0x" + to;
         }
