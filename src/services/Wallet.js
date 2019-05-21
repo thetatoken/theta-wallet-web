@@ -8,7 +8,6 @@ import TrezorConnect from 'trezor-connect';
 import Trezor from './Trezor';
 import Ledger from './Ledger';
 import TransportU2F from "@ledgerhq/hw-transport-u2f";
-import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import Eth from "@ledgerhq/hw-app-eth";
 
 const ethUtil = require('ethereumjs-util');
