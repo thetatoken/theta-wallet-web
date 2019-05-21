@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from "react";
 import './SettingsPage.css';
 import PageHeader from "../components/PageHeader";
@@ -137,6 +138,8 @@ class SettingsSection extends React.Component {
 
 class SettingsPage extends React.Component {
     render() {
+        let canExport = _.isNil(Wallet.getWallet().hardware);
+
         return (
             <div className="SettingsPage">
                 <div className="SettingsPage__detail-view">
@@ -144,11 +147,12 @@ class SettingsPage extends React.Component {
                                 sticky={true}
                     />
 
-                    <SettingsSection title="Export Keystore">
-                        <ExportKeystoreContent/>
-                    </SettingsSection>
-
-
+                    {
+                        canExport &&
+                        <SettingsSection title="Export Keystore">
+                            <ExportKeystoreContent/>
+                        </SettingsSection>
+                    }
                 </div>
             </div>
         );
