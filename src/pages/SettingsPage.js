@@ -3,9 +3,9 @@ import React from "react";
 import './SettingsPage.css';
 import PageHeader from "../components/PageHeader";
 import GradientButton from "../components/buttons/GradientButton";
-import Wallet from '../services/Wallet'
+import Wallet from '../services/Wallet';
 import {downloadFile} from "../utils/Utils";
-import Alerts from '../services/Alerts'
+import Alerts from '../services/Alerts';
 
 class ExportKeystoreContent extends React.Component {
     constructor(){
