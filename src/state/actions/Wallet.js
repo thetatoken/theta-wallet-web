@@ -69,12 +69,12 @@ export function unlockWallet(strategy, password, data){
     };
 }
 
-export function getHardwareWalletAddresses(hardware, page){
+export function getHardwareWalletAddresses(hardware, page, derivationPath){
     return async function(dispatch, getState){
         let addresses = null;
 
         try {
-            addresses = await Wallet.getHardwareWalletAddresses(hardware, page);
+            addresses = await Wallet.getHardwareWalletAddresses(hardware, page, derivationPath);
         }
         catch (e) {
             Alerts.showError(e.message);

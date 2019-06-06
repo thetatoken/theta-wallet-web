@@ -354,7 +354,8 @@ class UnlockWalletViaColdWallet extends React.Component {
 
         this.state = {
             hardware: '',
-            loading: false
+            loading: false,
+            derivationPath: 'Ethereum'
         };
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -362,6 +363,8 @@ class UnlockWalletViaColdWallet extends React.Component {
         this.handleChooseHardwareClick = this.handleChooseHardwareClick.bind(this);
         this.handleTrezorClick = this.handleTrezorClick.bind(this);
         this.handleLedgerClick = this.handleLedgerClick.bind(this);
+        this.handleDerivationPathEthereumClick = this.handleDerivationPathEthereumClick.bind(this);
+        this.handleDerivationPathLedgerLiveClick = this.handleDerivationPathLedgerLiveClick.bind(this);
     }
 
     isValid(){
@@ -382,7 +385,7 @@ class UnlockWalletViaColdWallet extends React.Component {
     }
 
     chooseHardware(){
-        this.props.getHardwareWalletAddresses(this.state.hardware, 0);
+        this.props.getHardwareWalletAddresses(this.state.hardware, 0, this.state.derivationPath);
 
         if(this.state.hardware === "ledger"){
             //Ledger is very slow...
@@ -417,6 +420,14 @@ class UnlockWalletViaColdWallet extends React.Component {
         this.setState({hardware: 'ledger'})
     }
 
+    handleDerivationPathEthereumClick(){
+        this.setState({derivationPath: 'Ethereum'})
+    }
+
+    handleDerivationPathLedgerLiveClick(){
+        this.setState({derivationPath: 'LedgerLive'})
+    }
+
     render() {
         let isDisabled = (this.state.loading || this.isValid() === false);
         let warning = "";
@@ -427,7 +438,40 @@ class UnlockWalletViaColdWallet extends React.Component {
         else if(this.state.hardware === "ledger"){
             warning = "Please make sure your Ledger is connected with the Ethereum app open before clicking 'Continue' below.";
         }
-
+        if(this.state.hardware !== "ledger"){
+            return (
+                <div className="UnlockWalletViaColdWallet">
+                    <div className="UnlockWalletViaColdWallet__title">
+                        Please choose a wallet type
+                    </div>
+    
+                    <div className="UnlockWalletViaColdWallet__cold-wallet-hardware-select">
+                        <HardwareOptionButton title="Trezor"
+                                     iconUrl={(this.state.hardware === "trezor" ? "/img/icons/checkmark-green@2x.png" : null)}
+                                              isSelected={(this.state.hardware === "trezor")}
+                                     onClick={this.handleTrezorClick}
+                        />
+                        <HardwareOptionButton title="Ledger"
+                                     iconUrl={(this.state.hardware === "ledger" ? "/img/icons/checkmark-green@2x.png" : null)}
+                                              isSelected={(this.state.hardware === "ledger")}
+                                     onClick={this.handleLedgerClick}
+                        />
+                    </div>
+    
+                    <div className="UnlockWalletCard__warning">
+                        {warning}
+                    </div>
+        
+                    <div className="UnlockWalletViaColdWallet__footer">
+                        <GradientButton title="Continue"
+                                        loading={this.state.loading}
+                                        onClick={this.handleChooseHardwareClick}
+                                        disabled={isDisabled}
+                        />
+                    </div>
+                </div>
+            );   
+        }
         return (
             <div className="UnlockWalletViaColdWallet">
                 <div className="UnlockWalletViaColdWallet__title">
@@ -449,6 +493,19 @@ class UnlockWalletViaColdWallet extends React.Component {
 
                 <div className="UnlockWalletCard__warning">
                     {warning}
+                </div>
+
+                <div className="UnlockColdWalletLedger__choose-derivation-path">
+                    <HardwareOptionButton title="Ethereum - m/44'/60'/0'"
+                                 iconUrl={(this.state.hardware === "ledger" && this.state.derivationPath === 'Ethereum' ? "/img/icons/checkmark-green@2x.png" : null)}
+                                          isSelected={(this.state.hardware === "ledger" && this.state.derivationPath === 'Ethereum')}
+                                 onClick={this.handleDerivationPathEthereumClick}
+                    />
+                    <HardwareOptionButton title="Ethereum - Ledger Live - m/44'/60'"
+                                 iconUrl={(this.state.hardware === "ledger" && this.state.derivationPath === 'LedgerLive' ? "/img/icons/checkmark-green@2x.png" : null)}
+                                          isSelected={(this.state.hardware === "ledger" && this.state.derivationPath === 'LedgerLive')}
+                                 onClick={this.handleDerivationPathLedgerLiveClick}
+                    />
                 </div>
 
                 <div className="UnlockWalletViaColdWallet__footer">
@@ -533,8 +590,8 @@ export class UnlockWalletPage extends React.Component {
         this.props.dispatch(unlockWallet(strategy, password, data));
     }
 
-    getHardwareWalletAddresses(hardware, page){
-        this.props.dispatch(getHardwareWalletAddresses(hardware, page));
+    getHardwareWalletAddresses(hardware, page, derivationPath){
+        this.props.dispatch(getHardwareWalletAddresses(hardware, page, derivationPath));
     }
 
     render() {
