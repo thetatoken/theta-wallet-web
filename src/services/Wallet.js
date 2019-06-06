@@ -13,7 +13,9 @@ import Eth from "@ledgerhq/hw-app-eth";
 const ethUtil = require('ethereumjs-util');
 
 const RootDerivationPath = "m/44'/60'/0'/";
-const BaseDerivationPath = "m/44'/60'/0'/0/";
+const BaseDerivationPath = "m/44'/60'/0'/";
+const LedgerLiveDerivationPath = "m/44'/60'/";
+
 const MnemonicPath = "m/44'/500'/0'/0/0";
 
 export const NumPathsPerPage = 5;
@@ -111,15 +113,20 @@ export default class Wallet {
         return result;
     }
 
-    static async walletFromLedger(page){
+    static async walletFromLedger(page, derivationPath){
         const transport = await TransportU2F.create();
         const eth = new Eth(transport);
 
         let result = [];
         for(var i = 0; i < 5; i++){
-            let path = BaseDerivationPath + (page * NumPathsPerPage + i);
+            var path = "";
+            if(derivationPath === 'Ethereum'){
+                path = BaseDerivationPath + (page * NumPathsPerPage + i);
+            }
+            else if(derivationPath === 'LedgerLive'){
+                path = LedgerLiveDerivationPath + (page * NumPathsPerPage + i) + "'/0/0";
+            }
             let res = await eth.getAddress(path, false);
-
             result.push({address: res.address, serializedPath: path});
         }
 
@@ -138,7 +145,7 @@ export default class Wallet {
         };
     }
 
-    static async getHardwareWalletAddresses(hardware, page){
+    static async getHardwareWalletAddresses(hardware, page, derivationPath){
         let wallets = null;
 
         try{
@@ -147,7 +154,7 @@ export default class Wallet {
                 wallets = res.payload;
             }
             else if(hardware === 'ledger'){
-                wallets = await Wallet.walletFromLedger(page)
+                wallets = await Wallet.walletFromLedger(page, derivationPath);
             }
 
             return wallets;
