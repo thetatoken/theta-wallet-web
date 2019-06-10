@@ -420,7 +420,7 @@ class UnlockWalletViaColdWallet extends React.Component {
     }
 
     handleDerivationPathChange(e) {
-        this.setState({derivationPath: e.value});
+        this.setState({derivationPath: e.target.value});
     }
 
     render() {
