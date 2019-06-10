@@ -178,7 +178,7 @@
     margin-bottom: 15px;
 }
 
-.UnlockWalletViaKeystoreFile__password-input{
+.UnlockWalletViaKeystoreFile__password-input, .UnlockColdWalletLedger__select{
     background-color: #404C6E;
     height: 50px;
     color: white;
@@ -192,12 +192,11 @@
     font-family: 'AlwynNew', "Helvetica Neue", -apple-system, sans-serif;
 }
 
-
-
-
-
-
-
+.UnlockColdWalletLedger__select{
+    width: 100%;
+    margin-bottom: 18px;
+    text-align: center;
+}
 
 
 
@@ -360,7 +359,7 @@
     text-align: center;
     line-height: 22px;
     color: white;
-    margin-bottom: 15px;
+    margin-bottom: 0;
 }
 
 

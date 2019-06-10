@@ -12,9 +12,9 @@ import Eth from "@ledgerhq/hw-app-eth";
 
 const ethUtil = require('ethereumjs-util');
 
-const RootDerivationPath = "m/44'/60'/0'/";
 const BaseDerivationPath = "m/44'/60'/0'/";
-const LedgerLiveDerivationPath = "m/44'/60'/";
+export const EthereumDerivationPath = "m/44'/60'/0'/";
+export const EthereumLedgerLiveDerivationPath = "m/44'/60'/";
 
 const MnemonicPath = "m/44'/500'/0'/0/0";
 
@@ -120,11 +120,11 @@ export default class Wallet {
         let result = [];
         for(var i = 0; i < 5; i++){
             var path = "";
-            if(derivationPath === 'Ethereum'){
-                path = BaseDerivationPath + (page * NumPathsPerPage + i);
+            if(derivationPath === EthereumDerivationPath){
+                path = EthereumDerivationPath + (page * NumPathsPerPage + i);
             }
-            else if(derivationPath === 'LedgerLive'){
-                path = LedgerLiveDerivationPath + (page * NumPathsPerPage + i) + "'/0/0";
+            else if(derivationPath === EthereumLedgerLiveDerivationPath){
+                path = EthereumLedgerLiveDerivationPath + (page * NumPathsPerPage + i) + "'/0/0";
             }
             let res = await eth.getAddress(path, false);
             result.push({address: res.address, serializedPath: path});
