@@ -12,9 +12,12 @@ import Eth from "@ledgerhq/hw-app-eth";
 
 const ethUtil = require('ethereumjs-util');
 
-const BaseDerivationPath = "m/44'/60'/0'/";
-export const EthereumDerivationPath = "m/44'/60'/0'/";
+//DO NOT TOUCH THESE!!!
+const BaseDerivationPath = "m/44'/60'/0'/0/";
+export const EthereumDerivationPath = "m/44'/60'/0'/0/";
+export const EthereumOtherDerivationPath = "m/44'/60'/0'/";
 export const EthereumLedgerLiveDerivationPath = "m/44'/60'/";
+//END
 
 const MnemonicPath = "m/44'/500'/0'/0/0";
 
@@ -122,6 +125,9 @@ export default class Wallet {
             var path = "";
             if(derivationPath === EthereumDerivationPath){
                 path = EthereumDerivationPath + (page * NumPathsPerPage + i);
+            }
+            else if(derivationPath === EthereumOtherDerivationPath){
+                path = EthereumOtherDerivationPath + (page * NumPathsPerPage + i);
             }
             else if(derivationPath === EthereumLedgerLiveDerivationPath){
                 path = EthereumLedgerLiveDerivationPath + (page * NumPathsPerPage + i) + "'/0/0";
