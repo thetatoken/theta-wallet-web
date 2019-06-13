@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {Link} from "react-router-dom";
 import GradientButton from '../components/buttons/GradientButton'
 import HardwareOptionButton from '../components/buttons/HardwareOptionButton';
-import Wallet from '../services/Wallet'
+import Wallet, {EthereumOtherDerivationPath} from '../services/Wallet'
 import { WalletUnlockStrategy, EthereumDerivationPath, EthereumLedgerLiveDerivationPath } from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
@@ -464,7 +464,8 @@ class UnlockWalletViaColdWallet extends React.Component {
                                 onChange={this.handleDerivationPathChange}
                                 className={"UnlockColdWalletLedger__select"}
                         >
-                            <option value={EthereumDerivationPath}>Ethereum - m/44'/60'/0'</option>
+                            <option value={EthereumDerivationPath}>Ethereum - m/44'/60'/0'/0</option>
+                            <option value={EthereumOtherDerivationPath}>Ethereum - m/44'/60'/0'</option>
                             <option value={EthereumLedgerLiveDerivationPath}>Ethereum - Ledger Live - m/44'/60'</option>
                         </select>
                     }
