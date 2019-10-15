@@ -129,19 +129,41 @@ export default class ColdWalletSelectorModal extends React.Component {
     }
 
     handleAddressClick(address){
-        this.setState({
-            addressChosen: address.address,
-            pathChosen: address.serializedPath
-        });
+        if(address.address === this.state.addressChosen){
+            //Unselect this address
+
+            this.setState({
+                addressChosen: null,
+                pathChosen: null
+            });
+        }
+        else{
+            //Select this address
+            
+            this.setState({
+                addressChosen: address.address,
+                pathChosen: address.serializedPath
+            });
+        }
+
     }
 
     handlePrevPageClick(){
-        this.setState({page: this.state.page - 1});
+        this.setState({
+            page: this.state.page - 1,
+            addressChosen: null,
+            pathChosen: null
+        });
     }
 
     async handleNextPageClick(){
         let nextPage = this.state.page + 1;
-        this.setState({page: nextPage});
+
+        this.setState({
+            page: nextPage,
+            addressChosen: null,
+            pathChosen: null
+        });
 
         if(this.props.hardware === "ledger"){
             //If the page has not been loaded yet...load it
@@ -157,9 +179,6 @@ export default class ColdWalletSelectorModal extends React.Component {
                     addresses: [...this.state.addresses, ...addresses],
                     isLoading: false
                 });
-
-                console.log("STORE THESE...");
-                console.log(addresses);
             }
         }
     }
