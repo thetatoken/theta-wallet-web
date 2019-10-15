@@ -139,7 +139,7 @@ export default class ColdWalletSelectorModal extends React.Component {
         }
         else{
             //Select this address
-            
+
             this.setState({
                 addressChosen: address.address,
                 pathChosen: address.serializedPath
