@@ -390,7 +390,7 @@ class UnlockWalletViaColdWallet extends React.Component {
             //Ledger is very slow...
             setTimeout(function(){
                 this.setState({loading: false});
-            }.bind(this), 6500);
+            }.bind(this), 8000);
         }
         else{
             this.setState({loading: false});

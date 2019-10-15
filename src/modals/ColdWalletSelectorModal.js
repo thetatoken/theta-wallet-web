@@ -11,6 +11,7 @@ import MDSpinner from "react-md-spinner";
 import Api from "../services/Api";
 import Config from "../Config";
 import {zipMap} from "../utils/Utils";
+import Wallet from "../services/Wallet";
 
 export class ColdWalletAddressRow extends React.Component {
     constructor(props){
@@ -109,6 +110,8 @@ export default class ColdWalletSelectorModal extends React.Component {
             page: props.page,
             addressChosen: null,
             pathChosen: null,
+            addresses: props.addresses,
+            isLoading: false
         };
 
         this.handleUnlockWalletClick = this.handleUnlockWalletClick.bind(this);
@@ -136,12 +139,34 @@ export default class ColdWalletSelectorModal extends React.Component {
         this.setState({page: this.state.page - 1});
     }
 
-    handleNextPageClick(){
-        this.setState({page: this.state.page + 1});
+    async handleNextPageClick(){
+        let nextPage = this.state.page + 1;
+        this.setState({page: nextPage});
+
+        if(this.props.hardware === "ledger"){
+            //If the page has not been loaded yet...load it
+
+            if(this.state.addresses.length < ((nextPage + 1) * 5)){
+                this.setState({isLoading: true});
+
+                let { hardware, derivationPath } = this.props;
+                let addresses = await Wallet.getHardwareWalletAddresses(hardware, nextPage, derivationPath);
+
+
+                this.setState({
+                    addresses: [...this.state.addresses, ...addresses],
+                    isLoading: false
+                });
+
+                console.log("STORE THESE...");
+                console.log(addresses);
+            }
+        }
     }
 
     render() {
         let isDisabled = (this.state.loading || this.isValid() === false);
+        let {isLoading} = this.state;
 
         let renderDataRow = (addressInfo) => {
             if(addressInfo){
@@ -158,8 +183,8 @@ export default class ColdWalletSelectorModal extends React.Component {
 
         let addressRows = null;
 
-        if(this.props.addresses){
-            let addresses = this.props.addresses;
+        if(this.state.addresses){
+            let addresses = this.state.addresses;
             addressRows = [];
 
             for(var i = 0; i < NumPathsPerPage; i++){
@@ -176,11 +201,18 @@ export default class ColdWalletSelectorModal extends React.Component {
         }
 
         let showPrevButton = this.state.page > 0;
-        let showNextButton = (this.state.page + 1) * NumPathsPerPage < this.props.addresses.length;
+        let showNextButton = true;
         let prevButton = false;
         let nextButton = false;
 
-        if(showPrevButton){
+        if(this.props.hardware === "trezor"){
+            showNextButton = (this.state.page + 1) * NumPathsPerPage < this.state.addresses.length;
+        }
+        else if(this.props.hardware === "ledger"){
+            showNextButton = true;
+        }
+
+        if(showPrevButton && isLoading === false){
             prevButton = (
                 <a className="ColdWalletSelectorModal__footer-button"
                    onClick={this.handlePrevPageClick}>
@@ -194,7 +226,7 @@ export default class ColdWalletSelectorModal extends React.Component {
             );
         }
 
-        if(showNextButton){
+        if(showNextButton && isLoading === false){
             nextButton = (
                 <a className="ColdWalletSelectorModal__footer-button"
                    onClick={this.handleNextPageClick}>
@@ -212,7 +244,9 @@ export default class ColdWalletSelectorModal extends React.Component {
             <Modal>
                 <div className="ColdWalletSelectorModal">
                     <div className="ColdWalletSelectorModal__title">
-                        Select an Address
+                        {
+                            (isLoading ? "Loading Addresses" : "Select an Address")
+                        }
                     </div>
 
                     <div className="ColdWalletSelectorModal__rows">
@@ -227,7 +261,7 @@ export default class ColdWalletSelectorModal extends React.Component {
                     <GradientButton title="Access My Wallet"
                                     disabled={isDisabled}
                                     onClick={this.handleUnlockWalletClick}
-                                    loading={this.state.loading}
+                                    loading={this.state.isLoading}
                     />
 
                 </div>

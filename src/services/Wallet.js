@@ -102,7 +102,7 @@ export default class Wallet {
             keepSession: true
         });
 
-        
+
         let bundle = [];
         for(var i = 0; i < 30; i++){
             bundle.push({ path: BaseDerivationPath + (page * NumPathsPerPage + i), showOnTrezor: false });
@@ -122,6 +122,8 @@ export default class Wallet {
 
         let result = [];
         for(var i = 0; i < 5; i++){
+            var t0 = performance.now();
+
             var path = "";
             if(derivationPath === EthereumDerivationPath){
                 path = EthereumDerivationPath + (page * NumPathsPerPage + i);
@@ -132,8 +134,14 @@ export default class Wallet {
             else if(derivationPath === EthereumLedgerLiveDerivationPath){
                 path = EthereumLedgerLiveDerivationPath + (page * NumPathsPerPage + i) + "'/0/0";
             }
-            let res = await eth.getAddress(path, false);
+            let res = await eth.getAddress(path, false, false);
+
+            var t1 = performance.now();
+            console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+
+
             result.push({address: res.address, serializedPath: path});
+
         }
 
         // transport.close();
@@ -268,11 +276,11 @@ export default class Wallet {
         else if(hardware === "ledger"){
             let sequence = await Wallet.getThetaTxSequence(address, network);
             return Ledger.signTransaction(txData, sequence);
-        }    
+        }
         else {
             let keystore = Wallet.getKeystore();
             let wallet = Wallet.decryptFromKeystore(keystore, password);
-        
+
             if(wallet){
                 //User had the correct password
                 if(isEthereumNetwork(network)){

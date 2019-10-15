@@ -1140,64 +1140,45 @@
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/yargs" "^12.0.9"
 
-"@ledgerhq/devices@^4.55.0":
-  version "4.55.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-4.55.0.tgz#c1fb7e33d38f2352f4991ea9fa4987e90238ee21"
+"@ledgerhq/devices@^4.72.1":
+  version "4.72.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-4.72.1.tgz#725c89c434ce764a30bfb1c14df6e3a5066f8427"
   dependencies:
-    "@ledgerhq/errors" "^4.55.0"
+    "@ledgerhq/errors" "^4.72.1"
+    "@ledgerhq/logs" "^4.72.0"
+    rxjs "^6.5.3"
 
-"@ledgerhq/devices@^4.56.0":
-  version "4.56.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-4.56.0.tgz#a74de6e7bebff9267cc061e3491205c1c1e0c2ad"
+"@ledgerhq/errors@^4.72.1":
+  version "4.72.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-4.72.1.tgz#de2d0390476078d5bd5a0659dae796f36ed3970a"
+
+"@ledgerhq/hw-app-eth@^4.72.1":
+  version "4.72.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-4.72.1.tgz#4098a64d20d337d808aad92428cda95ef00ac31d"
   dependencies:
-    "@ledgerhq/errors" "^4.56.0"
+    "@ledgerhq/errors" "^4.72.1"
+    "@ledgerhq/hw-transport" "^4.72.1"
 
-"@ledgerhq/errors@^4.55.0":
-  version "4.55.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-4.55.0.tgz#5fbef730abbcf3fd8a37838f37a08eada11720fd"
-
-"@ledgerhq/errors@^4.56.0":
-  version "4.56.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-4.56.0.tgz#6b94b16bbda0eeddd2dba51bc28ab7f863662b0d"
-
-"@ledgerhq/hw-app-eth@^4.55.0":
-  version "4.55.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-4.55.0.tgz#fbaf866dac12a58b0801995b1700f0ac02ca6c44"
+"@ledgerhq/hw-transport-u2f@^4.72.1":
+  version "4.72.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-u2f/-/hw-transport-u2f-4.72.1.tgz#3663e8c0adc21f8ad17c1b0412492618e129d7b0"
   dependencies:
-    "@ledgerhq/errors" "^4.55.0"
-    "@ledgerhq/hw-transport" "^4.55.0"
-
-"@ledgerhq/hw-transport-u2f@^4.56.0":
-  version "4.56.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-u2f/-/hw-transport-u2f-4.56.0.tgz#c8800c7f5cc38fd3585abdff3400f8fd461aaba2"
-  dependencies:
-    "@ledgerhq/errors" "^4.56.0"
-    "@ledgerhq/hw-transport" "^4.56.0"
+    "@ledgerhq/errors" "^4.72.1"
+    "@ledgerhq/hw-transport" "^4.72.1"
+    "@ledgerhq/logs" "^4.72.0"
     u2f-api "0.2.7"
 
-"@ledgerhq/hw-transport-webusb@^4.55.0":
-  version "4.56.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-4.56.0.tgz#5cf649b1c08e3153694e2457a30824e53dca5615"
+"@ledgerhq/hw-transport@^4.72.1":
+  version "4.72.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-4.72.1.tgz#431be99e883c71be6fc6bd7480902bcd41ae24a0"
   dependencies:
-    "@ledgerhq/devices" "^4.56.0"
-    "@ledgerhq/errors" "^4.56.0"
-    "@ledgerhq/hw-transport" "^4.56.0"
-
-"@ledgerhq/hw-transport@^4.55.0":
-  version "4.55.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-4.55.0.tgz#76249204d9571245ff3efb354a618f94b2634f33"
-  dependencies:
-    "@ledgerhq/devices" "^4.55.0"
-    "@ledgerhq/errors" "^4.55.0"
+    "@ledgerhq/devices" "^4.72.1"
+    "@ledgerhq/errors" "^4.72.1"
     events "^3.0.0"
 
-"@ledgerhq/hw-transport@^4.56.0":
-  version "4.56.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-4.56.0.tgz#2b8eea4246a683e23ed84e1bdb652ec2a724bce4"
-  dependencies:
-    "@ledgerhq/devices" "^4.56.0"
-    "@ledgerhq/errors" "^4.56.0"
-    events "^3.0.0"
+"@ledgerhq/logs@^4.72.0":
+  version "4.72.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-4.72.0.tgz#43df23af013ad1135407e5cf33ca6e4c4c7708d5"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -8381,6 +8362,12 @@ run-queue@^1.0.0, run-queue@^1.0.3:
 rxjs@^6.4.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.4.0.tgz#f3bb0fe7bda7fb69deac0c16f17b50b0b8790504"
+  dependencies:
+    tslib "^1.9.0"
+
+rxjs@^6.5.3:
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.3.tgz#510e26317f4db91a7eb1de77d9dd9ba0a4899a3a"
   dependencies:
     tslib "^1.9.0"
 

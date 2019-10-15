@@ -87,6 +87,7 @@ export function getHardwareWalletAddresses(hardware, page, derivationPath){
                     hardware: hardware,
                     addresses: addresses,
                     page: page,
+                    derivationPath: derivationPath
                 }
             }));
         }
