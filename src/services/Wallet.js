@@ -104,7 +104,7 @@ export default class Wallet {
 
 
         let bundle = [];
-        for(var i = 0; i < 30; i++){
+        for(var i = 0; i < 50; i++){
             bundle.push({ path: BaseDerivationPath + (page * NumPathsPerPage + i), showOnTrezor: false });
         }
 
@@ -122,8 +122,6 @@ export default class Wallet {
 
         let result = [];
         for(var i = 0; i < 5; i++){
-            var t0 = performance.now();
-
             var path = "";
             if(derivationPath === EthereumDerivationPath){
                 path = EthereumDerivationPath + (page * NumPathsPerPage + i);
@@ -135,10 +133,6 @@ export default class Wallet {
                 path = EthereumLedgerLiveDerivationPath + (page * NumPathsPerPage + i) + "'/0/0";
             }
             let res = await eth.getAddress(path, false, false);
-
-            var t1 = performance.now();
-            console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
-
 
             result.push({address: res.address, serializedPath: path});
 
