@@ -4,10 +4,20 @@ import './StakesPage.css';
 import PageHeader from "../components/PageHeader";
 import {fetchStakes} from "../state/actions/Stakes";
 import GhostButton from "../components/buttons/GhostButton";
+import {showModal} from "../state/actions/Modals";
+import ModalTypes from "../constants/ModalTypes";
 
 class StakesPage extends React.Component {
-    handleStakeClick = () => {
+    handleDepositStakeClick = () => {
+        this.props.dispatch(showModal({
+            type: ModalTypes.DEPOSIT_STAKE,
+        }));
+    };
 
+    handleWithdrawStakeClick = () => {
+        this.props.dispatch(showModal({
+            type: ModalTypes.DEPOSIT_STAKE,
+        }));
     };
 
     componentDidMount(){
@@ -22,9 +32,12 @@ class StakesPage extends React.Component {
                                 sticky={true}
                     >
                         <div className="StakesPage__header-buttons">
-                            <GhostButton title="Stake"
+                            <GhostButton title="Deposit Stake"
                                          iconUrl="/img/icons/send@2x.png"
-                                         onClick={this.handleStakeClick}/>
+                                         onClick={this.handleDepositStakeClick}/>
+                            <GhostButton title="Withdraw Stake"
+                                         iconUrl="/img/icons/send@2x.png"
+                                         onClick={this.handleWithdrawStakeClick}/>
                         </div>
                     </PageHeader>
                 </div>
