@@ -75,10 +75,12 @@ export class DepositStakeTxForm extends React.Component {
 
     handleDepositStakeClick = () => {
         store.dispatch(showModal({
-            type: ModalTypes.SEND_CONFIRMATION,
+            type: ModalTypes.DEPOSIT_STAKE_CONFIRMATION,
             props: {
                 network: Config.thetaNetwork,
                 transaction: {
+                    tokenType: this.state.tokenType,
+
                     from: this.props.walletAddress,
 
                     holder: this.state.holder,
@@ -210,7 +212,7 @@ export class DepositStakeTxForm extends React.Component {
                         <option value={TokenTypes.THETA}>{thetaTitle}</option>
                     </select>
                 </FormInputContainer>
-                <FormInputContainer title="Guardian Node (Summary)"
+                <FormInputContainer title="Guardian Node Holder (Summary)"
                                     error={toError}>
                     <input className="BottomBorderInput"
                            name="holder"

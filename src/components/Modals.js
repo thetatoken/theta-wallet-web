@@ -11,6 +11,7 @@ import PrivateKeyModal from "../modals/PrivateKeyModal";
 import SendConfirmationModal from "../modals/SendConfirmationModal";
 import ColdWalletSelectorModal from "../modals/ColdWalletSelectorModal";
 import DepositStakeModal from "../modals/DepositStakeModal";
+import DepositStakeConfirmationModal from "../modals/DepositStakeConfirmationModal";
 
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
@@ -19,6 +20,7 @@ const ModalComponentByType = {
     [ModalTypes.PRIVATE_KEY]: PrivateKeyModal,
     [ModalTypes.COLD_WALLET_SELECTOR]: ColdWalletSelectorModal,
     [ModalTypes.DEPOSIT_STAKE]: DepositStakeModal,
+    [ModalTypes.DEPOSIT_STAKE_CONFIRMATION]: DepositStakeConfirmationModal
 };
 
 class ModalContainer extends React.Component {

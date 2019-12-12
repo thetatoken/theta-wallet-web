@@ -1,0 +1,142 @@
+.TxConfirmationModal{
+    display: flex;
+    flex-direction: column;
+    background-color: #242F4B;
+    width: 500px;
+    min-height: 540px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.TxConfirmationModal__title{
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.TxConfirmationModal__amount-title{
+    font-size: 13px;
+    font-weight: 600;
+    color: #92A2D6;
+    text-align: center;
+    line-height: 24px;
+    text-transform: uppercase;
+}
+
+.TxConfirmationModal__amount{
+    font-size: 41px;
+    font-weight: 300;
+    color: white;
+    line-height: 50px;
+}
+
+.TxConfirmationModal__token-name{
+    font-size: 13px;
+    font-weight: normal;
+    color: white;
+    text-align: center;
+    line-height: 16px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.TxConfirmationModal__to-title{
+    font-size: 13px;
+    font-weight: 600;
+    color: #92A2D6;
+    text-align: center;
+    line-height: 24px;
+    text-transform: uppercase;
+}
+
+.TxConfirmationModal__to{
+    font-size: 16px;
+    font-weight: normal;
+    color: white;
+    text-align: center;
+    line-height: 20px;
+}
+
+.TxConfirmationModal__holder-title{
+    font-size: 13px;
+    font-weight: 600;
+    color: #92A2D6;
+    text-align: center;
+    line-height: 24px;
+    text-transform: uppercase;
+}
+
+.TxConfirmationModal__holder{
+    font-size: 16px;
+    font-weight: normal;
+    color: white;
+    text-align: center;
+    line-height: 20px;
+    white-space: pre-wrap;      /* CSS3 */
+    white-space: -moz-pre-wrap; /* Firefox */
+    white-space: -pre-wrap;     /* Opera <7 */
+    white-space: -o-pre-wrap;   /* Opera 7 */
+    word-wrap: break-word;      /* IE */
+}
+
+.TxConfirmationModal__rows{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    border-top: 1px solid #687399;
+    margin-bottom: auto;
+}
+
+.TxConfirmationModal__row{
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 24px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #687399;
+}
+
+.TxConfirmationModal__row-title{
+    font-size: 13px;
+    font-weight: 600;
+    color: #92A2D6;
+    text-align: left;
+    line-height: 22px;
+    text-transform: uppercase;
+}
+
+.TxConfirmationModal__row-value{
+    font-size: 14px;
+    font-weight: normal;
+    color: white;
+    text-align: left;
+    line-height: 22px;
+}
+
+.TxConfirmationModal__password-container{
+    display: flex;
+    flex-direction: column;
+    padding-top: 25px;
+    padding-bottom: 30px;
+}
+
+.TxConfirmationModal__password-title{
+    font-size: 14px;
+    font-weight: normal;
+    color: white;
+    line-height: 16px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+@media only screen and (max-height: 650px) {
+    .TxConfirmationModal{
+        transform: scale(0.8);
+    }
+}

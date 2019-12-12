@@ -1,15 +1,14 @@
 import React from 'react'
 import './TxConfirmationModal.css';
-import './SendConfirmationModal.css';
+import './DepositStakeConfirmationModal.css';
 import connect from "react-redux/es/connect/connect";
 import Modal from '../components/Modal'
 import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet'
 import {createTransaction} from "../state/actions/Transactions";
 import {tokenTypeToTokenName} from "../constants/TokenTypes";
-import {isEthereumNetwork, isThetaNetwork} from "../constants/Networks";
 
-export class SendConfirmationModal extends React.Component {
+export class DepositStakeConfirmationModal extends React.Component {
     constructor(){
         super();
 
@@ -18,7 +17,6 @@ export class SendConfirmationModal extends React.Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleSendClick = this.handleSendClick.bind(this);
     }
 
     handleChange(event) {
@@ -28,12 +26,12 @@ export class SendConfirmationModal extends React.Component {
         this.setState({[name]: value});
     }
 
-    handleSendClick(){
+    handleConfirmClick = () =>{
         this.props.dispatch(createTransaction(this.props.network, this.props.transaction, this.state.password));
-    }
+    };
 
     render() {
-        let { tokenType, amount, to, gas, gasPrice, transactionFee } = this.props.transaction;
+        let { tokenType, amount, holder, transactionFee } = this.props.transaction;
         let isValid = Wallet.getWalletHardware() || this.state.password.length > 0;
         let isLoading = this.props.isCreatingTransaction;
         let renderDataRow = (title, value) =>{
@@ -48,27 +46,12 @@ export class SendConfirmationModal extends React.Component {
                 </div>
             );
         };
-        let detailRows = null;
-
-        if(isEthereumNetwork(this.props.network)){
-            detailRows = (
-                <React.Fragment>
-                    { renderDataRow("From", this.props.walletAddress) }
-                    { renderDataRow("Transaction Type", "Asset Transfer") }
-                    { renderDataRow("Gas Limit", gas) }
-                    { renderDataRow("Gas Price", gasPrice + " Gwei") }
-                    { renderDataRow("Transaction Fee", transactionFee + " ETH") }
-                </React.Fragment>
-            );
-        }
-        else if(isThetaNetwork(this.props.network)){
-            detailRows = (
-                <React.Fragment>
-                    { renderDataRow("From", this.props.walletAddress) }
-                    { renderDataRow("Transaction Fee", transactionFee + " TFUEL") }
-                </React.Fragment>
-            );
-        }
+        let detailRows = (
+            <React.Fragment>
+                { renderDataRow("From", this.props.walletAddress) }
+                { renderDataRow("Transaction Fee", transactionFee + " TFUEL") }
+            </React.Fragment>
+        );
 
         let passwordRow = null;
 
@@ -94,11 +77,11 @@ export class SendConfirmationModal extends React.Component {
                         Confirm Transaction
                     </div>
 
-                    <div className="TxConfirmationModal__amount-title">You are sending</div>
+                    <div className="TxConfirmationModal__amount-title">You are depositing</div>
                     <div className="TxConfirmationModal__amount">{ amount }</div>
                     <div className="TxConfirmationModal__token-name">{ tokenTypeToTokenName(tokenType) }</div>
-                    <div className="TxConfirmationModal__to-title">To recipient</div>
-                    <div className="TxConfirmationModal__to">{ to }</div>
+                    <div className="TxConfirmationModal__holder-title">Guardian Node Holder (Summary)</div>
+                    <div className="TxConfirmationModal__holder">{ holder }</div>
 
                     <div className="TxConfirmationModal__rows">
                         { detailRows }
@@ -106,9 +89,9 @@ export class SendConfirmationModal extends React.Component {
 
                     { passwordRow }
 
-                    <GradientButton title="Confirm & Send"
+                    <GradientButton title="Confirm & Deposit Stake"
                                     disabled={isLoading || isValid === false}
-                                    onClick={this.handleSendClick}
+                                    onClick={this.handleConfirmClick}
                                     loading={isLoading}
                     />
                 </div>
@@ -124,4 +107,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps)(SendConfirmationModal);
+export default connect(mapStateToProps)(DepositStakeConfirmationModal);
