@@ -227,7 +227,7 @@ export class SendTxForm extends React.Component {
         }
 
         return (
-            <div className="TxForm TxForm--ethereum-network">
+            <div className="TxForm">
                 <FormInputContainer title="Token">
                     <select className="BottomBorderInput" value={this.state.tokenType} onChange={this.handleChange}
                             name="tokenType">

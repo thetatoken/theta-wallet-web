@@ -5,5 +5,7 @@ export default {
     PRIVATE_KEY: 'private-key',
     COLD_WALLET_SELECTOR: 'cold-wallet-selector',
     DEPOSIT_STAKE: 'deposit-stake',
-    DEPOSIT_STAKE_CONFIRMATION: 'deposit-stake-confirmation'
+    DEPOSIT_STAKE_CONFIRMATION: 'deposit-stake-confirmation',
+    WITHDRAW_STAKE: 'withdraw-stake',
+    WITHDRAW_STAKE_CONFIRMATION: 'withdraw-stake-confirmation'
 };

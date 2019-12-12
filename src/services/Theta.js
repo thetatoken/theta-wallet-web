@@ -41,8 +41,23 @@ export default class Theta {
         const feeInTFuelWei  = (new BigNumber(transactionFee)).multipliedBy(ten18); // Any fee >= 10^12 TFuelWei should work, higher fee yields higher priority
         const source =  from;
         const senderSequence = sequence;
+        const purpose = ThetaJS.StakePurposes.StakeForGuardian;
 
-        let tx = new ThetaJS.DepositStakeTx(source, holder, thetaWeiToSend, feeInTFuelWei, senderSequence);
+        let tx = new ThetaJS.DepositStakeTx(source, holder, thetaWeiToSend, feeInTFuelWei, purpose, senderSequence);
+
+        return tx;
+    }
+
+    static unsignedWithdrawStakeTx(txData, sequence) {
+        let { tokenType, from, holder, transactionFee} = txData;
+
+        const ten18 = (new BigNumber(10)).pow(18); // 10^18, 1 Theta = 10^18 ThetaWei, 1 Gamma = 10^ TFuelWei
+        const feeInTFuelWei  = (new BigNumber(transactionFee)).multipliedBy(ten18); // Any fee >= 10^12 TFuelWei should work, higher fee yields higher priority
+        const source =  from;
+        const senderSequence = sequence;
+        const purpose = ThetaJS.StakePurposes.StakeForGuardian;
+
+        let tx = new ThetaJS.WithdrawStakeTx(source, holder, feeInTFuelWei, purpose, senderSequence);
 
         return tx;
     }
@@ -51,7 +66,7 @@ export default class Theta {
         return Ethereum.isAddress(address);
     }
 
-    static isValidHolderSummaryAddress(holderSummary){
+    static isHolderSummary(holderSummary){
         if(holderSummary){
             let expectedLen = 458;
 

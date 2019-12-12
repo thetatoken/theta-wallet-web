@@ -1,5 +1,7 @@
 .TxForm{
-
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .TxForm input{
@@ -45,4 +47,8 @@
     color: white;
     margin-left: 12px;
     cursor: pointer;
+}
+
+.TxForm .GradientButton{
+    margin-top: auto;
 }

@@ -139,9 +139,9 @@ export class DepositStakeTxForm extends React.Component {
     }
 
     async validateHolderSummary() {
-        let isAddress = Theta.isValidHolderSummaryAddress(this.state.holder);
+        let isValid = Theta.isHolderSummary(this.state.holder);
 
-        this.setState({invalidHolder: (isAddress === false)});
+        this.setState({invalidHolder: (isValid === false)});
     }
 
     async validateAmount() {
@@ -162,8 +162,8 @@ export class DepositStakeTxForm extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.state.to !== prevState.to) {
-            this.validateAddress();
+        if (this.state.holder !== prevState.holder) {
+            this.validateHolderSummary();
         }
 
         if (this.state.amount !== prevState.amount || this.state.gasPrice !== prevState.gasPrice) {
@@ -172,7 +172,7 @@ export class DepositStakeTxForm extends React.Component {
     }
 
     render() {
-        let hasHolder = (this.state.to !== null && this.state.to !== '' && this.state.invalidHolder === false);
+        let hasHolder = (this.state.holder !== null && this.state.holder !== '' && this.state.invalidHolder === false);
         let thetaTitle = `Theta (${ this.getBalanceOfTokenType(TokenTypes.THETA) })`;
         let transactionFeeValueContent = (
             <React.Fragment>
@@ -207,7 +207,7 @@ export class DepositStakeTxForm extends React.Component {
         }
 
         return (
-            <div className="TxForm TxForm--ethereum-network">
+            <div className="TxForm">
                 <FormInputContainer title="Token">
                     <select className="BottomBorderInput" value={this.state.tokenType} onChange={this.handleChange}
                             name="tokenType">

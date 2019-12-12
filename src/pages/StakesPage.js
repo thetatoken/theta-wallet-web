@@ -16,7 +16,7 @@ class StakesPage extends React.Component {
 
     handleWithdrawStakeClick = () => {
         this.props.dispatch(showModal({
-            type: ModalTypes.DEPOSIT_STAKE,
+            type: ModalTypes.WITHDRAW_STAKE,
         }));
     };
 

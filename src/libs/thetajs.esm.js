@@ -265,6 +265,11 @@ class SendTx extends Tx{
     }
 }
 
+const StakePurposes = {
+    StakeForValidator: 0,
+    StakeForGuardian: 1
+};
+
 class StakeTx extends Tx{
 
 }
@@ -572,6 +577,7 @@ var index = {
     DepositStakeTx,
     WithdrawStakeTx,
     TxSigner,
+    StakePurposes,
     Utils: {
         hexToBytes,
         bytesToHex
