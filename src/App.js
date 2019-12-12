@@ -57,6 +57,12 @@ class WalletTabBar extends Component {
                     activeIconUrl="/img/tab-bar/receive-active@2x.png"
                 />
                 <TabBarItem
+                    title="Stakes"
+                    href="/wallet/stakes"
+                    normalIconUrl="/img/tab-bar/wallet@2x.png"
+                    activeIconUrl="/img/tab-bar/wallet-active@2x.png"
+                />
+                <TabBarItem
                     title="Settings"
                     href="/wallet/settings"
                     normalIconUrl="/img/tab-bar/settings@2x.png"

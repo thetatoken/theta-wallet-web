@@ -123,5 +123,14 @@ export default class Api {
         return GET(path, null, queryParams);
     }
 
+    //
+    //Stakes
+    //
+
+    static fetchStakes(address, queryParams) {
+        let path = `/stakes/${ address }`;
+        return GET(path, null, queryParams);
+    }
+
 }
 
