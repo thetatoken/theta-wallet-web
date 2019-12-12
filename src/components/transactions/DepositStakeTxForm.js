@@ -28,14 +28,13 @@ export class DepositStakeTxForm extends React.Component {
 
             transactionFee: Theta.getTransactionFee(),
 
-            invalidAddress: false,
+            invalidHolder: false,
             insufficientFunds: false,
             invalidAmount: false,
             invalidDecimalPlaces: false,
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleSendClick = this.handleSendClick.bind(this);
         this.handleEntireBalanceClick = this.handleEntireBalanceClick.bind(this);
     }
 
@@ -55,7 +54,7 @@ export class DepositStakeTxForm extends React.Component {
 
                 transactionFee: TRANSACTION_FEE,
 
-                invalidAddress: false,
+                invalidHolder: false,
                 invalidDecimalPlaces: false,
                 invalidAmount: false,
                 insufficientFunds: false,
@@ -74,7 +73,7 @@ export class DepositStakeTxForm extends React.Component {
         }
     }
 
-    handleSendClick() {
+    handleDepositStakeClick = () => {
         store.dispatch(showModal({
             type: ModalTypes.SEND_CONFIRMATION,
             props: {
@@ -89,13 +88,13 @@ export class DepositStakeTxForm extends React.Component {
                 }
             }
         }));
-    }
+    };
 
     isValid() {
         return (
             this.state.holder.length > 0 &&
             this.state.amount.length > 0 &&
-            this.state.invalidAddress === false &&
+            this.state.invalidHolder === false &&
             this.state.insufficientFunds === false &&
             this.state.invalidDecimalPlaces === false &&
             this.state.invalidAmount === false);
@@ -127,8 +126,8 @@ export class DepositStakeTxForm extends React.Component {
     }
 
     validate() {
-        if (this.state.to.length > 0) {
-            this.validateAddress();
+        if (this.state.holder.length > 0) {
+            this.validateHolderSummary();
         }
 
         if (this.state.amount.length > 0) {
@@ -136,10 +135,10 @@ export class DepositStakeTxForm extends React.Component {
         }
     }
 
-    async validateAddress() {
-        let isAddress = Theta.isAddress(this.state.to);
+    async validateHolderSummary() {
+        let isAddress = Theta.isValidHolderSummaryAddress(this.state.holder);
 
-        this.setState({invalidAddress: (isAddress === false)});
+        this.setState({invalidHolder: (isAddress === false)});
     }
 
     async validateAmount() {
@@ -169,7 +168,7 @@ export class DepositStakeTxForm extends React.Component {
     }
 
     render() {
-        let hasToAddress = (this.state.to !== null && this.state.to !== '' && this.state.invalidAddress === false);
+        let hasHolder = (this.state.to !== null && this.state.to !== '' && this.state.invalidHolder === false);
         let thetaTitle = `Theta (${ this.getBalanceOfTokenType(TokenTypes.THETA) })`;
         let transactionFeeValueContent = (
             <React.Fragment>
@@ -180,7 +179,7 @@ export class DepositStakeTxForm extends React.Component {
             <React.Fragment>
                 <span>Amount</span>
                 {
-                    hasToAddress &&
+                    hasHolder &&
                     <a className="TxForm__entire-balance"
                        onClick={this.handleEntireBalanceClick}>
                         Entire Balance
@@ -190,7 +189,7 @@ export class DepositStakeTxForm extends React.Component {
         );
 
         let isValid = this.isValid();
-        let toError = this.state.invalidAddress ? "Invalid address" : null;
+        let toError = this.state.invalidHolder ? "Invalid holder summary" : null;
         let amountError = null;
 
         if (this.state.insufficientFunds) {
@@ -235,7 +234,7 @@ export class DepositStakeTxForm extends React.Component {
                 </div>
                 <GradientButton title="Deposit Stake"
                                 disabled={isValid === false}
-                                onClick={this.handleSendClick}
+                                onClick={this.handleDepositStakeClick}
                 />
             </div>
         )

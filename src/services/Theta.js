@@ -37,6 +37,21 @@ export default class Theta {
         return Ethereum.isAddress(address);
     }
 
+    static isValidHolderSummaryAddress(holderSummary){
+        if(holderSummary){
+            let expectedLen = 458;
+
+            if(holderSummary.startsWith('0x')){
+                expectedLen = expectedLen + 2;
+            }
+
+            return (holderSummary.length === expectedLen);
+        }
+        else{
+            return false;
+        }
+    }
+
     static async signTransaction(txData, sequence, privateKey){
         let chainID = Theta.getChainID();
         let unsignedTx = Theta.unsignedTransaction(txData, sequence);
