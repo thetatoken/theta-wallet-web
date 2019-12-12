@@ -2,7 +2,6 @@ import { ethers } from 'ethers';
 import _ from "lodash";
 import Ethereum from './Ethereum'
 import Theta from "./Theta";
-import {isEthereumNetwork, isThetaNetwork} from "../constants/Networks";
 import Api from './Api';
 import TrezorConnect from 'trezor-connect';
 import Trezor from './Trezor';
@@ -259,17 +258,14 @@ export default class Wallet {
         return sequence;
     }
 
-    static async signTransaction(network, txData, password){
-        let address = Wallet.getWalletAddress();
+    static async signTransaction(network, unsignedTx, password){
         let hardware = Wallet.getWalletHardware();
 
         if(hardware === "trezor"){
-            let sequence = await Wallet.getThetaTxSequence(address, network);
-            return Trezor.signTransaction(txData, sequence);
+            return Trezor.signTransaction(unsignedTx);
         }
         else if(hardware === "ledger"){
-            let sequence = await Wallet.getThetaTxSequence(address, network);
-            return Ledger.signTransaction(txData, sequence);
+            return Ledger.signTransaction(unsignedTx);
         }
         else {
             let keystore = Wallet.getKeystore();
@@ -277,15 +273,7 @@ export default class Wallet {
 
             if(wallet){
                 //User had the correct password
-                if(isEthereumNetwork(network)){
-                    //Ethereum Network
-                    return Ethereum.signTransaction(txData, wallet.privateKey);
-                }
-                else if(isThetaNetwork(network)){
-                    //Theta Network
-                    let sequence = await Wallet.getThetaTxSequence(address, network);
-                    return Theta.signTransaction(txData, sequence, wallet.privateKey);
-                }
+                return Theta.signTransaction(unsignedTx, wallet.privateKey);
             }
             else{
                 throw new Error('Wrong password.  Your transaction could not be signed.');

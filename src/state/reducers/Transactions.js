@@ -170,19 +170,19 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
             });
         }
 
-        //Create Transaction
-        case actionTypes.CREATE_TRANSACTION_START: {
+        //Create Send Transaction
+        case actionTypes.CREATE_SEND_TRANSACTION_START: {
             return Object.assign({}, state, {
                 isCreatingTransaction: true,
                 pendingTransaction: action.metadata.txData
             });
         }
-        case actionTypes.CREATE_TRANSACTION_END: {
+        case actionTypes.CREATE_SEND_TRANSACTION_END: {
             return Object.assign({}, state, {
                 isCreatingTransaction: false
             });
         }
-        case actionTypes.CREATE_TRANSACTION_SUCCESS: {
+        case actionTypes.CREATE_SEND_TRANSACTION_SUCCESS: {
             let body = action.response.body;
             let hash = body.hash;
             let network = action.metadata.network;
@@ -191,6 +191,24 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
             return Object.assign({}, state, {
                 localTransactionsByHash: Object.assign({}, state.localTransactionsByHash, {[hash]: localTransaction}),
                 pendingTransaction: null
+            });
+        }
+
+        //Create Deposit Stake Transaction
+        case actionTypes.CREATE_DEPOSIT_STAKE_TRANSACTION_START: {
+            return Object.assign({}, state, {
+                isCreatingTransaction: true,
+                pendingDepositStakeTransaction: action.metadata.txData
+            });
+        }
+        case actionTypes.CREATE_DEPOSIT_STAKE_TRANSACTION_END: {
+            return Object.assign({}, state, {
+                isCreatingTransaction: false
+            });
+        }
+        case actionTypes.CREATE_DEPOSIT_STAKE_TRANSACTION_SUCCESS: {
+            return Object.assign({}, state, {
+                pendingDepositStakeTransaction: null
             });
         }
 

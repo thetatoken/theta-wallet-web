@@ -17,7 +17,7 @@ export default class Theta {
         return Config.thetaChainID;
     }
 
-    static unsignedTransaction(txData, sequence) {
+    static unsignedSendTx(txData, sequence) {
         let { tokenType, from, to, amount, transactionFee} = txData;
 
         const ten18 = (new BigNumber(10)).pow(18); // 10^18, 1 Theta = 10^18 ThetaWei, 1 Gamma = 10^ TFuelWei
@@ -52,9 +52,9 @@ export default class Theta {
         }
     }
 
-    static async signTransaction(txData, sequence, privateKey){
+    static async signTransaction(unsignedTx, privateKey){
         let chainID = Theta.getChainID();
-        let unsignedTx = Theta.unsignedTransaction(txData, sequence);
+        // let unsignedTx = Theta.unsignedSendTx(txData, sequence);
         let signedRawTxBytes = ThetaJS.TxSigner.signAndSerializeTx(chainID, unsignedTx, privateKey);
         let signedTxRaw = signedRawTxBytes.toString('hex');
 

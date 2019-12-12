@@ -10,10 +10,10 @@ const rpcURL = "https://mainnet.infura.io/v3/40980e2189924c8abfc5f60dd2e5dc4b";
 const web3 = new Web3(rpcURL);
 
 export default class Ledger {
-    static async signTransaction(txData, sequence){
-        let unsignedTx = Theta.unsignedTransaction(txData, sequence);
+    static async signTransaction(unsignedTx){
+        // let unsignedTx = Theta.unsignedSendTx(txData, sequence);
         let payload = Theta.prepareTxPayload(unsignedTx);
-        
+
         let txParams = {
             nonce: web3.utils.toHex(0),
             gasPrice: web3.utils.toHex(0),
@@ -28,10 +28,10 @@ export default class Ledger {
         serializedTx[1] -= 3;
         serializedTx = serializedTx.slice(0, serializedTx.length - 3);
         let ethTxWrapper = serializedTx.toString("hex");
-        
+
         const transport = await TransportU2F.create();
         const eth = new Eth(transport);
-        
+
         let sig = await eth.signTransaction(Wallet.getWalletPath(), ethTxWrapper);
         // transport.close();
 

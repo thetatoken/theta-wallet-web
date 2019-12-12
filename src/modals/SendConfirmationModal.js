@@ -5,7 +5,7 @@ import connect from "react-redux/es/connect/connect";
 import Modal from '../components/Modal'
 import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet'
-import {createTransaction} from "../state/actions/Transactions";
+import {createSendTransaction} from "../state/actions/Transactions";
 import {tokenTypeToTokenName} from "../constants/TokenTypes";
 import {isEthereumNetwork, isThetaNetwork} from "../constants/Networks";
 
@@ -29,7 +29,7 @@ export class SendConfirmationModal extends React.Component {
     }
 
     handleSendClick(){
-        this.props.dispatch(createTransaction(this.props.network, this.props.transaction, this.state.password));
+        this.props.dispatch(createSendTransaction(this.props.network, this.props.transaction, this.state.password));
     }
 
     render() {
