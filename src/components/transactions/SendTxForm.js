@@ -1,23 +1,23 @@
 import React from 'react'
-import './ThetaNetworkTxForm.css';
-import './EthereumNetworkTxForm.css';
+import './TxForm.css';
+import './SendTxForm.css';
 import _ from 'lodash'
 import {connect} from 'react-redux'
-import Theta from '../services/Theta'
-import TokenTypes from "../constants/TokenTypes";
-import FormInputContainer from '../components/FormInputContainer'
-import ValueWithTitle from '../components/ValueWithTitle'
-import GradientButton from './buttons/GradientButton';
-import {hasValidDecimalPlaces} from '../utils/Utils'
+import Theta from '../../services/Theta'
+import TokenTypes from "../../constants/TokenTypes";
+import FormInputContainer from '../FormInputContainer'
+import ValueWithTitle from '../ValueWithTitle'
+import GradientButton from '../buttons/GradientButton';
+import {hasValidDecimalPlaces} from '../../utils/Utils'
 import {BigNumber} from 'bignumber.js';
-import {store} from "../state";
-import {showModal} from "../state/actions/Modals";
-import ModalTypes from "../constants/ModalTypes";
-import Config from "../Config";
+import {store} from "../../state";
+import {showModal} from "../../state/actions/Modals";
+import ModalTypes from "../../constants/ModalTypes";
+import Config from "../../Config";
 
 const TRANSACTION_FEE = 0.000001;
 
-export class ThetaNetworkTxForm extends React.Component {
+export class SendTxForm extends React.Component {
     constructor(props) {
         super(props);
 
@@ -273,4 +273,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps)(ThetaNetworkTxForm);
+export default connect(mapStateToProps)(SendTxForm);

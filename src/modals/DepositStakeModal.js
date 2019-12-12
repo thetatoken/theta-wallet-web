@@ -1,7 +1,7 @@
 import React from 'react'
 import './DepositStakeModal.css';
 import Modal from '../components/Modal'
-import ThetaNetworkTxForm from '../components/ThetaNetworkTxForm'
+import SendTxForm from '../components/transactions/SendTxForm'
 
 export default class DepositStakeModal extends React.Component {
     render() {
@@ -11,10 +11,9 @@ export default class DepositStakeModal extends React.Component {
                     <div className="DepositStakeModal__title">
                         Deposit Stake
                     </div>
-                    <ThetaNetworkTxForm/>
+                    <SendTxForm/>
                 </div>
             </Modal>
         )
     }
 }
-

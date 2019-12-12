@@ -2,7 +2,7 @@ import React from 'react'
 import './SendModal.css';
 import Modal from '../components/Modal'
 import EthereumNetworkTxForm from '../components/EthereumNetworkTxForm'
-import ThetaNetworkTxForm from '../components/ThetaNetworkTxForm'
+import SendTxForm from '../components/transactions/SendTxForm'
 import Config from '../Config'
 import TokenTypes from "../constants/TokenTypes";
 
@@ -13,7 +13,7 @@ export default class SendModal extends React.Component {
         let form = null;
 
         if(showThetaForm){
-            form = <ThetaNetworkTxForm defaultTokenType={tokenType}/>;
+            form = <SendTxForm defaultTokenType={tokenType}/>;
         }
         else{
             form = <EthereumNetworkTxForm defaultTokenType={tokenType}/>;
@@ -33,3 +33,4 @@ export default class SendModal extends React.Component {
         )
     }
 }
+

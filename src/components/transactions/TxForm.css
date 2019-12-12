@@ -1,0 +1,48 @@
+.TxForm{
+
+}
+
+.TxForm input{
+    width: 100%;
+}
+
+.TxForm select{
+    width: 100%;
+}
+
+.TxForm__entire-balance{
+    display: flex;
+    align-self: flex-start;
+    text-align: left;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    margin-left: 12px;
+}
+
+.TxForm__fee-container{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    height: 105px;
+    margin-bottom: 20px;
+}
+
+.TxForm__tx-fee-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.TxForm__gas-details-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.TxForm__toggle-gas-details{
+    font-size: 13px;
+    color: white;
+    margin-left: 12px;
+    cursor: pointer;
+}
