@@ -16,6 +16,7 @@ import ModalTypes from "../../constants/ModalTypes";
 import Config from "../../Config";
 
 const TRANSACTION_FEE = 0.000001;
+const MIN_DEPOSIT_STAKE_AMOUNT = 0.0;//TODO this should be 10,000.0
 
 export class DepositStakeTxForm extends React.Component {
     constructor(props) {
@@ -154,7 +155,8 @@ export class DepositStakeTxForm extends React.Component {
 
         this.setState({
             insufficientFunds: (amountFloat > parseFloat(balance)),
-            invalidAmount: (amountFloat === 0.0 || amountFloat < 0.0),
+            //TODO this stake amount should be 10,000
+            invalidAmount: (amountFloat === 0.0 || amountFloat < MIN_DEPOSIT_STAKE_AMOUNT),
             invalidDecimalPlaces: !hasValidDecimalPlaces(this.state.amount, 18)
         });
     }

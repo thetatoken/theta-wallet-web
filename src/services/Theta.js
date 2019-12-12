@@ -33,6 +33,20 @@ export default class Theta {
         return tx;
     }
 
+    static unsignedDepositStakeTx(txData, sequence) {
+        let { tokenType, from, holder, amount, transactionFee} = txData;
+
+        const ten18 = (new BigNumber(10)).pow(18); // 10^18, 1 Theta = 10^18 ThetaWei, 1 Gamma = 10^ TFuelWei
+        const thetaWeiToSend = (tokenType === TokenTypes.THETA ? (new BigNumber(amount)).multipliedBy(ten18) : (new BigNumber(0)));
+        const feeInTFuelWei  = (new BigNumber(transactionFee)).multipliedBy(ten18); // Any fee >= 10^12 TFuelWei should work, higher fee yields higher priority
+        const source =  from;
+        const senderSequence = sequence;
+
+        let tx = new ThetaJS.DepositStakeTx(source, holder, thetaWeiToSend, feeInTFuelWei, senderSequence);
+
+        return tx;
+    }
+
     static isAddress(address){
         return Ethereum.isAddress(address);
     }
