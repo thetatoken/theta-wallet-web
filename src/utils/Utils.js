@@ -17,7 +17,10 @@ export function hasValidDecimalPlaces(str, maxDecimalPlaces){
         return true;
     }
 
-    var decimalSplit = str.split('.');
+    //Ensure it is a string
+    var ensureStr = '' + str;
+
+    var decimalSplit = ensureStr.split('.');
 
     if(decimalSplit.length > 0){
         var decimals = decimalSplit[decimalSplit.length - 1];

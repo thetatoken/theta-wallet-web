@@ -37,6 +37,7 @@ class StakesPage extends React.Component {
                                          onClick={this.handleDepositStakeClick}/>
                             <GhostButton title="Withdraw Stake"
                                          iconUrl="/img/icons/send@2x.png"
+                                         style={{marginLeft: 12}}
                                          onClick={this.handleWithdrawStakeClick}/>
                         </div>
                     </PageHeader>
