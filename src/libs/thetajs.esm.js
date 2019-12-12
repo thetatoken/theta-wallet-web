@@ -29,11 +29,25 @@ class Coins{
         this.tfuelWei = tfuelWei;
     }
 
+    encodeWei(wei){
+        if(wei === null || wei === undefined){
+            return Bytes.fromNat("0x0");
+        }
+        else if(wei.isEqualTo(new BigNumber(0))){
+            return Bytes.fromNat("0x0");
+        }
+        else{
+            return Bytes.fromNumber(wei);
+        }
+    }
+
     rlpInput(){
 
         let rlpInput = [
-            (this.thetaWei.isEqualTo(new BigNumber(0))) ? Bytes.fromNat("0x0") : Bytes.fromNumber(this.thetaWei),
-            (this.tfuelWei.isEqualTo(new BigNumber(0))) ? Bytes.fromNat("0x0") : Bytes.fromNumber(this.tfuelWei)
+            this.encodeWei(this.thetaWei),
+            this.encodeWei(this.tfuelWei),
+            //(this.thetaWei.isEqualTo(new BigNumber(0))) ? Bytes.fromNat("0x0") : Bytes.fromNumber(this.thetaWei),
+            //(this.tfuelWei.isEqualTo(new BigNumber(0))) ? Bytes.fromNat("0x0") : Bytes.fromNumber(this.tfuelWei)
         ];
 
         return rlpInput;
@@ -43,16 +57,27 @@ class Coins{
 class TxInput{
     constructor(address, thetaWei, tfuelWei, sequence) {
         this.address = address;
-        this.coins = new Coins(thetaWei, tfuelWei);
         this.sequence = sequence;
         this.signature = "";
+
+        if(thetaWei || tfuelWei){
+            this.coins = new Coins(thetaWei, tfuelWei);
+        }
+        else{
+            //TODO should this be undefined or null?
+            this.coins = new Coins(null, null);
+        }
     }
 
     setSignature(signature) {
+        console.log("TxInput :: setSignature :: signature == " + signature);
+
         this.signature = signature;
     }
 
     rlpInput(){
+        console.log("TxInput :: this.signature == " + this.signature);
+
         let rplInput = [
             this.address.toLowerCase(),
             this.coins.rlpInput(),
@@ -67,7 +92,14 @@ class TxInput{
 class TxOutput {
     constructor(address, thetaWei, tfuelWei) {
         this.address = address;
-        this.coins = new Coins(thetaWei, tfuelWei);
+
+        if(thetaWei || tfuelWei){
+            this.coins = new Coins(thetaWei, tfuelWei);
+        }
+        else{
+            //TODO should this be undefined or null?
+            this.coins = new Coins(null, null);
+        }
     }
 
     rlpInput(){
@@ -90,7 +122,8 @@ const TxType = {
     TxTypeSplitRule: 6,
     TxTypeSmartContract: 7,
     TxTypeDepositStake: 8,
-    TxTypeWithdrawStake: 9
+    TxTypeWithdrawStake: 9,
+    TxTypeDepositStakeV2: 10,
 };
 
 class EthereumTx{
@@ -118,31 +151,67 @@ class EthereumTx{
 }
 
 class SendTx extends Tx{
-    constructor(senderAddr, receiverAddr, thetaWei, tfuelWei, feeInTFuelWei, senderSequence){
+    constructor(senderAddr, outputs, feeInTFuelWei, senderSequence){
         super();
 
-        this.fee = new Coins(new BigNumber(0), feeInTFuelWei);
+        let totalThetaWeiBN = new BigNumber(0);
+        let totalTfuelWeiBN = new BigNumber(0);
+        let feeInTFuelWeiBN = BigNumber.isBigNumber(feeInTFuelWei) ? feeInTFuelWei : (new BigNumber(feeInTFuelWei));
 
-        let txInput = new TxInput(senderAddr, thetaWei, tfuelWei.plus(feeInTFuelWei), senderSequence);
+        for(var i = 0; i < outputs.length; i++){
+            let output = outputs[i];
+            let thetaWei = output.thetaWei;
+            let tfuelWei = output.tfuelWei;
+
+            let thetaWeiBN = BigNumber.isBigNumber(thetaWei) ? thetaWei : (new BigNumber(thetaWei));
+            let tfuelWeiBN = BigNumber.isBigNumber(tfuelWei) ? tfuelWei : (new BigNumber(tfuelWei));
+
+            totalThetaWeiBN = totalThetaWeiBN.plus(thetaWeiBN);
+            totalTfuelWeiBN = totalTfuelWeiBN.plus(tfuelWeiBN);
+        }
+
+        this.fee = new Coins(new BigNumber(0), feeInTFuelWeiBN);
+
+        let txInput = new TxInput(senderAddr, totalThetaWeiBN, totalTfuelWeiBN.plus(feeInTFuelWeiBN), senderSequence);
         this.inputs = [txInput];
 
-        let txOutput = new TxOutput(receiverAddr, thetaWei, tfuelWei);
-        this.outputs = [txOutput];
+        this.outputs = [];
+        for(var j = 0; j < outputs.length; j++){
+            let output = outputs[j];
+            let address = output.address;
+            let thetaWei = output.thetaWei;
+            let tfuelWei = output.tfuelWei;
+
+            let thetaWeiBN = BigNumber.isBigNumber(thetaWei) ? thetaWei : (new BigNumber(thetaWei));
+            let tfuelWeiBN = BigNumber.isBigNumber(tfuelWei) ? tfuelWei : (new BigNumber(tfuelWei));
+
+            let txOutput = new TxOutput(address, thetaWeiBN, tfuelWeiBN);
+
+            this.outputs.push(txOutput);
+        }
     }
 
     setSignature(signature){
         //TODO support multiple inputs
         let input = this.inputs[0];
-
         input.setSignature(signature);
     }
 
     signBytes(chainID){
-        let input = this.inputs[0];
+        let sigz = [];
+        //let input = this.inputs[0];
 
         // Detach the existing signatures from the input if any, so that we don't sign the signature
-        let originalSignature = input.signature;
-        input.signature = "";
+        //let originalSignature = input.signature;
+        //input.signature = "";
+
+        // Detach the existing signatures from the input if any, so that we don't sign the signature
+        for(var i = 0; i < this.inputs.length; i++){
+            let input = this.inputs[i];
+
+            sigz[i] = input.signature;
+            input.signature = "";
+        }
 
         let encodedChainID = RLP.encode(Bytes.fromString(chainID));
         let encodedTxType = RLP.encode(Bytes.fromNumber(this.getType()));
@@ -153,8 +222,17 @@ class SendTx extends Tx{
         let ethTxWrapper = new EthereumTx(payload);
         let signedBytes = RLP.encode(ethTxWrapper.rlpInput()); // the signBytes conforms to the Ethereum raw tx format
 
+        console.log("SendTx :: signBytes :: txRawBytes = " + signedBytes);
+
         // Attach the original signature back to the inputs
-        input.signature = originalSignature;
+        //input.signature = originalSignature;
+
+        // Attach the original signature back to the inputs
+        for(var j = 0; j < this.inputs.length; j++){
+            let input = this.inputs[j];
+
+            input.signature = sigz[j];
+        }
 
         return signedBytes;
     }
@@ -179,8 +257,183 @@ class SendTx extends Tx{
 
         let rlpInput = [
             this.fee.rlpInput(),
-            inputBytesArray, 
+            inputBytesArray,
             outputBytesArray
+        ];
+
+        return rlpInput;
+    }
+}
+
+class StakeTx extends Tx{
+
+}
+
+class DepositStakeTx extends StakeTx{
+    constructor(source, holderSummary, stakeInThetaWei, feeInTFuelWei, purpose, senderSequence){
+        super();
+
+        let feeInTFuelWeiBN = BigNumber.isBigNumber(feeInTFuelWei) ? feeInTFuelWei : (new BigNumber(feeInTFuelWei));
+        this.fee = new Coins(new BigNumber(0), feeInTFuelWeiBN);
+
+        let stakeInThetaWeiBN = BigNumber.isBigNumber(stakeInThetaWei) ? stakeInThetaWei : (new BigNumber(stakeInThetaWei));
+        this.source = new TxInput(source, stakeInThetaWeiBN, null, senderSequence);
+
+        this.purpose = purpose;
+
+
+        console.log("BEFORE :: holderSummary == " );
+        console.log(holderSummary);
+
+        //Parse out the info from the holder (summary) param
+        if(!holderSummary.startsWith('0x')){
+            holderSummary = "0x" + holderSummary;
+        }
+
+        console.log("AFTER :: holderSummary == " );
+        console.log(holderSummary);
+
+        //Ensure correct size
+        if(holderSummary.length !== 460) {
+            //TODO: throw error
+            console.log("Holder must be a valid guardian address");
+        }
+
+        //let guardianKeyBytes = Bytes.fromString(holderSummary);
+        let guardianKeyBytes = Bytes.toArray(holderSummary);
+
+        console.log("guardianKeyBytes == " );
+        //console.log(guardianKeyBytes);
+        console.log(typeof guardianKeyBytes);
+
+        //slice instead of subarray
+        let holderAddressBytes = guardianKeyBytes.slice(0, 20);
+
+        this.blsPubkeyBytes = guardianKeyBytes.slice(20, 68);
+        this.blsPopBytes = guardianKeyBytes.slice(68, 164);
+        this.holderSigBytes = guardianKeyBytes.slice(164);
+
+        let holderAddress = Bytes.fromArray(holderAddressBytes);
+
+        console.log("holderAddress == ");
+        console.log(holderAddress);
+
+        this.holder = new TxOutput(holderAddress, null, null);
+    }
+
+    setSignature(signature){
+        console.log("setSignature :: signature == " + signature);
+
+        let input = this.source;
+        input.setSignature(signature);
+    }
+
+    signBytes(chainID){
+        console.log("DepositStakeTx :: signBytes :: chainId == " + chainID);
+
+        console.log("DepositStakeTx :: signBytes :: this.source == " + this.source);
+
+        console.log("DepositStakeTx :: signBytes :: this.source.signature == " + this.source.signature);
+
+        // Detach the existing signature from the source if any, so that we don't sign the signature
+        let sig = this.source.signature;
+
+        console.log("DepositStakeTx :: signBytes :: sig == '" + sig + "'");
+        console.log("DepositStakeTx :: signBytes :: sig type == " + typeof sig);
+
+
+        this.source.signature = "";
+
+        let encodedChainID = RLP.encode(Bytes.fromString(chainID));
+        let encodedTxType = RLP.encode(Bytes.fromNumber(this.getType()));
+        let encodedTx = RLP.encode(this.rlpInput());
+        let payload = encodedChainID + encodedTxType.slice(2) + encodedTx.slice(2);
+
+        // For ethereum tx compatibility, encode the tx as the payload
+        let ethTxWrapper = new EthereumTx(payload);
+        let signedBytes = RLP.encode(ethTxWrapper.rlpInput()); // the signBytes conforms to the Ethereum raw tx format
+
+        console.log("SendTx :: signBytes :: txRawBytes = " + signedBytes);
+
+        // Attach the original signature back to the source
+        this.source.signature = sig;
+
+        return signedBytes;
+    }
+
+    getType(){
+        return TxType.TxTypeDepositStakeV2;
+    }
+
+    rlpInput(){
+        let rlpInput = [
+            this.fee.rlpInput(),
+            this.source.rlpInput(),
+            this.holder.rlpInput(),
+
+            Bytes.fromNumber(this.purpose),
+
+            Bytes.fromArray(this.blsPubkeyBytes),
+            Bytes.fromArray(this.blsPopBytes),
+            Bytes.fromArray(this.holderSigBytes)
+        ];
+
+        return rlpInput;
+    }
+}
+
+class WithdrawStakeTx extends StakeTx{
+    constructor(source, holder, feeInTFuelWei, purpose, senderSequence){
+        super();
+
+        let feeInTFuelWeiBN = BigNumber.isBigNumber(feeInTFuelWei) ? feeInTFuelWei : (new BigNumber(feeInTFuelWei));
+        this.fee = new Coins(new BigNumber(0), feeInTFuelWeiBN);
+
+        this.source = new TxInput(source, null, null, senderSequence);
+
+        this.holder = new TxOutput(holder, null, null);
+
+        this.purpose = purpose;
+    }
+
+    setSignature(signature){
+        let input = this.source;
+        input.setSignature(signature);
+    }
+
+    signBytes(chainID){
+        // Detach the existing signature from the source if any, so that we don't sign the signature
+        let sig = this.source.signature;
+        this.source.signature = "";
+
+        let encodedChainID = RLP.encode(Bytes.fromString(chainID));
+        let encodedTxType = RLP.encode(Bytes.fromNumber(this.getType()));
+        let encodedTx = RLP.encode(this.rlpInput());
+        let payload = encodedChainID + encodedTxType.slice(2) + encodedTx.slice(2);
+
+        // For ethereum tx compatibility, encode the tx as the payload
+        let ethTxWrapper = new EthereumTx(payload);
+        let signedBytes = RLP.encode(ethTxWrapper.rlpInput()); // the signBytes conforms to the Ethereum raw tx format
+
+        console.log("SendTx :: signBytes :: txRawBytes = " + signedBytes);
+
+        // Attach the original signature back to the source
+        this.source.signature = sig;
+
+        return signedBytes;
+    }
+
+    getType(){
+        return TxType.TxTypeWithdrawStake;
+    }
+
+    rlpInput(){
+        let rlpInput = [
+            this.fee.rlpInput(),
+            this.source.rlpInput(),
+            this.holder.rlpInput(),
+
+            Bytes.fromNumber(this.purpose),
         ];
 
         return rlpInput;
@@ -251,7 +504,7 @@ const bnFromString = str => {
     return bigNumWithPad; // Jieyi: return "0x00" instead of "0x" to be compatible with the Golang/Java signature
 };
 
-const elliptic = require("elliptic");
+const elliptic = (window.elliptic || require("elliptic"));
 const secp256k1 = new elliptic.ec("secp256k1"); // eslint-disable-line
 const SHA3_NULL_S = '0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470';
 
@@ -298,6 +551,10 @@ class TxSigner {
         let signature = sign(txHash, privateKey);
         tx.setSignature(signature);
 
+        console.log("signTx :: txRawBytes = " + txRawBytes);
+        console.log("signTx :: txHash = " + txHash);
+        console.log("signTx :: txSig = " + signature);
+
         return tx
     }
 
@@ -312,6 +569,8 @@ class TxSigner {
 
 var index = {
     SendTx,
+    DepositStakeTx,
+    WithdrawStakeTx,
     TxSigner,
     Utils: {
         hexToBytes,
