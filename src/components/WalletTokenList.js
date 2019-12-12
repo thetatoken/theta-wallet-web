@@ -67,18 +67,18 @@ class WalletTokenList extends React.Component {
             <div className="WalletTokenList">
                 {content}
 
-                {Config.isThetaNetworkLive &&
-                <a className="WalletTokenList__ethereum-balances-toggle"
-                   onClick={this.toggleEthereumTokens}>
-                    { (this.state.showEthereumTokens ? 'Hide Ethereum Tokens' : 'Show Ethereum Tokens') }
-                </a>}
+                {/*{Config.isThetaNetworkLive &&*/}
+                {/*<a className="WalletTokenList__ethereum-balances-toggle"*/}
+                   {/*onClick={this.toggleEthereumTokens}>*/}
+                    {/*{ (this.state.showEthereumTokens ? 'Hide Ethereum Tokens' : 'Show Ethereum Tokens') }*/}
+                {/*</a>}*/}
 
-                {
-                    this.state.showEthereumTokens &&
-                    <div className="WalletTokenList__ethereum-balances-warning">
-                        Ethereum token support will be removed in a future version of this wallet.
-                    </div>
-                }
+                {/*{*/}
+                    {/*this.state.showEthereumTokens &&*/}
+                    {/*<div className="WalletTokenList__ethereum-balances-warning">*/}
+                        {/*Ethereum token support will be removed in a future version of this wallet.*/}
+                    {/*</div>*/}
+                {/*}*/}
             </div>
         );
     }
