@@ -1,7 +1,10 @@
 import * as actionTypes from "../types/Wallet";
 import { zipMap } from "../../utils/Utils";
+import Config from '../../Config';
 
 const INITIAL_STATE = {
+    network: Config.defaultThetaChainID,
+
     isFetchingBalances : false,
     isFetchingEthereumBalances : false,
 
@@ -19,6 +22,11 @@ const INITIAL_STATE = {
 
 export const walletReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
+        case actionTypes.SET_NETWORK:{
+            return Object.assign({}, state, {
+                network: action.network
+            });
+        }
         case actionTypes.FETCH_WALLET_ETHEREUM_BALANCES_START:{
             return Object.assign({}, state, {
                 isFetchingEthereumBalances: true

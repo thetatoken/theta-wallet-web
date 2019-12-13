@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import {connect} from 'react-redux'
 import React from "react";
 import './NavBar.css';
 import Wallet from "../services/Wallet";
@@ -76,7 +77,10 @@ class NavBar extends React.Component {
     }
 
     render() {
-        let address = Wallet.getWalletAddress();
+        const {network} = this.props;
+        const address = Wallet.getWalletAddress();
+
+        console.log("Navbar :: network == " + network);
 
         return (
             <div className={classNames("NavBar", { 'NavBar--is-centered': this.props.centered })}>
@@ -84,7 +88,9 @@ class NavBar extends React.Component {
                     <img className="NavBar__logo" src={'/img/logo/theta_wallet_logo@2x.png'}/>
                     <a className={classNames("NavBar__network-badge", {"NavBar__network-badge--is-disabled": !_.isNil(address)})}
                        onClick={this.onNetworkBadgeClick}
-                    >Mainnet</a>
+                    >
+                        {network}
+                    </a>
                 </div>
 
                 { this.renderAccountIfNeeded() }
@@ -93,4 +99,10 @@ class NavBar extends React.Component {
     }
 }
 
-export default NavBar;
+const mapStateToProps = (state, ownProps) => {
+    return {
+        network: state.wallet.network
+    };
+};
+
+export default connect(mapStateToProps)(NavBar);

@@ -3,6 +3,7 @@ import './NetworkSelectorModal.css';
 import Modal from '../components/Modal';
 import {store} from "../state";
 import {hideModal} from "../state/actions/Modals";
+import {setNetwork} from "../state/actions/Wallet";
 import {NetworksWithDescriptions} from '../constants/Networks';
 
 export class NetworkRow extends React.Component {
@@ -26,8 +27,10 @@ export class NetworkRow extends React.Component {
 }
 
 export default class NetworkSelectorModal extends React.Component {
-    handleNetworkClick(address){
+    handleNetworkClick(network){
         store.dispatch(hideModal());
+
+        store.dispatch(setNetwork(network.id));
     }
 
     render() {
