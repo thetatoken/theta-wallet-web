@@ -12,23 +12,23 @@ import Router from "./services/Router";
 import Transactions from './services/Transactions'
 import UnsupportedDevice from './components/UnsupportedDevice'
 import Wallet from "./services/Wallet";
-
+import {isStakingAvailable} from './Flags';
 
 class WalletTabBar extends Component {
-    constructor(){
+    constructor() {
         super();
 
         this.onSendClick = this.onSendClick.bind(this);
         this.onReceiveClick = this.onReceiveClick.bind(this);
     }
 
-    onSendClick(){
+    onSendClick() {
         store.dispatch(showModal({
             type: ModalTypes.SEND,
         }));
     }
 
-    onReceiveClick(){
+    onReceiveClick() {
         store.dispatch(showModal({
             type: ModalTypes.RECEIVE,
         }));
@@ -36,6 +36,7 @@ class WalletTabBar extends Component {
 
 
     render() {
+
         return (
             <TabBar>
                 <TabBarItem
@@ -56,12 +57,16 @@ class WalletTabBar extends Component {
                     normalIconUrl="/img/tab-bar/receive@2x.png"
                     activeIconUrl="/img/tab-bar/receive-active@2x.png"
                 />
-                <TabBarItem
-                    title="Stakes"
-                    href="/wallet/stakes"
-                    normalIconUrl="/img/tab-bar/stakes@2x.png"
-                    activeIconUrl="/img/tab-bar/stakes-active@2x.png"
-                />
+                {
+                    isStakingAvailable() &&
+                    <TabBarItem
+                        title="Stakes"
+                        href="/wallet/stakes"
+                        normalIconUrl="/img/tab-bar/stakes@2x.png"
+                        activeIconUrl="/img/tab-bar/stakes-active@2x.png"
+                    />
+                }
+
                 <TabBarItem
                     title="Settings"
                     href="/wallet/settings"
@@ -74,7 +79,7 @@ class WalletTabBar extends Component {
 }
 
 export class App extends Component {
-    componentDidMount(){
+    componentDidMount() {
         Router.setHistory(this.props.history);
     }
 
@@ -93,7 +98,7 @@ export class App extends Component {
 }
 
 export class WalletApp extends Component {
-    componentDidMount(){
+    componentDidMount() {
         Router.setHistory(this.props.history);
 
         //Start polling local Txs
