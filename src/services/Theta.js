@@ -25,6 +25,9 @@ export default class Theta {
     static unsignedSendTx(txData, sequence) {
         let { tokenType, from, to, amount, transactionFee} = txData;
 
+        console.log("unsignedSendTx :: txData ==  ");
+        console.log(txData);
+
         const ten18 = (new BigNumber(10)).pow(18); // 10^18, 1 Theta = 10^18 ThetaWei, 1 Gamma = 10^ TFuelWei
         const thetaWeiToSend = (tokenType === TokenTypes.THETA ? (new BigNumber(amount)).multipliedBy(ten18) : (new BigNumber(0)));
         const tfuelWeiToSend = (tokenType === TokenTypes.THETA_FUEL ? (new BigNumber(amount)).multipliedBy(ten18) : (new BigNumber(0)));
@@ -32,8 +35,18 @@ export default class Theta {
         const senderAddr =  from;
         const receiverAddr = to;
         const senderSequence = sequence;
+        const outputs = [
+            {
+                address: receiverAddr,
+                thetaWei: thetaWeiToSend,
+                tfuelWei: tfuelWeiToSend,
+            }
+        ];
 
-        let tx = new ThetaJS.SendTx(senderAddr, receiverAddr, thetaWeiToSend, tfuelWeiToSend, feeInTFuelWei, senderSequence);
+        let tx = new ThetaJS.SendTx(senderAddr, outputs, feeInTFuelWei, senderSequence);
+
+        console.log("tx ==");
+        console.log(tx);
 
         return tx;
     }
