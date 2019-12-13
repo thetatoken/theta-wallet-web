@@ -9,29 +9,45 @@ export function reduxFetch(baseAction, apiFn, metadata = {}, opts = {}) {
             metadata: metadata
         });
 
-        let response = await apiFn();
+        try {
+            let response = await apiFn();
 
-        if(response){
-            let responseJSON = await response.json();
+            if(response){
+                let responseJSON = await response.json();
 
-            response = {
-                status: response.status,
-                body: responseJSON
+                response = {
+                    status: response.status,
+                    body: responseJSON
+                }
             }
-        }
 
-        if(isResponseSuccessful(response)){
-            dispatch({
-                type : `${baseAction}/SUCCESS`,
-                response : response,
-                metadata: metadata
-            });
+            if(isResponseSuccessful(response)){
+                dispatch({
+                    type : `${baseAction}/SUCCESS`,
+                    response : response,
+                    metadata: metadata
+                });
 
-            if(onSuccess){
-                onSuccess(dispatch, response);
+                if(onSuccess){
+                    onSuccess(dispatch, response);
+                }
             }
+            else{
+                dispatch({
+                    type : `${baseAction}/FAILURE`,
+                    response : null,
+                    metadata: metadata
+                });
+
+                if(onError){
+                    onError(dispatch, response);
+                }
+            }
+
+
         }
-        else{
+        catch (e) {
+            // Failed to parse
             dispatch({
                 type : `${baseAction}/FAILURE`,
                 response : null,
@@ -39,13 +55,14 @@ export function reduxFetch(baseAction, apiFn, metadata = {}, opts = {}) {
             });
 
             if(onError){
-                onError(dispatch, response);
+                onError(dispatch, null);
             }
         }
-
-        dispatch({
-            type : `${baseAction}/END`,
-            metadata: metadata
-        });
+        finally {
+            dispatch({
+                type : `${baseAction}/END`,
+                metadata: metadata
+            });
+        }
     };
 }

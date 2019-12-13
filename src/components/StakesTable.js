@@ -2,6 +2,7 @@ import React from "react";
 import './StakesTable.css';
 import {BigNumber} from "bignumber.js";
 import TokenTypes from "../constants/TokenTypes";
+import EmptyState from "./EmptyState";
 
 const ten18 = (new BigNumber(10)).pow(18); // 10^18, 1 Theta = 10^18 ThetaWei, 1 Gamma = 10^ TFuelWei
 
