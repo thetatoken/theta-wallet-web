@@ -68,37 +68,56 @@
 .NavBar__network-badge{
     position: relative;
     padding: 0;
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 11px;
+    padding-right: 22px;
     border-radius: 1px;
-    color: white;
-    background-color: #242F4B;
     line-height: 12px;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: bold;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
     text-align: center;
     margin-top: -2px;
     margin-left: auto;
     margin-right: auto;
     cursor: pointer;
-    border: 1px solid #242F4B;
+    background: #29b3eb;
+    background: linear-gradient(to right, #29b3eb 0%,#21edba 100%);
+    background-size: 100%;
+    color: #1C243B;
+    padding-top: 3px;
+    height: 18px;
+    box-sizing: border-box;
 }
 
 .NavBar__network-badge:after{
+    display: block;
     content: "";
-    border: solid #92A2D6;
-    border-width: 0 1px 1px 0;
-    display: inline-block;
-    padding: 1px;
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-    color: white;
+    width: 9px;
+    height: 5px;
+    background: transparent url('/img/icons/dropdown-arrow@2x.png') no-repeat;
+    background-size: 9px 5px;
     position: absolute;
-    right: 4px;
-    top: 4px;
+    right: 7px;
+    top: 6px;
 }
 
+
 .NavBar__network-badge:hover{
-    background-color: #1C243B;
+    background: #21edba;
+}
+
+.NavBar__network-badge.NavBar__network-badge--is-disabled{
+    cursor: not-allowed;
+    pointer-events: none;
+
+    /*Make it look disabled and change spacing because we removed the dropdown arrow*/
+    background: #1C243B;
+    padding-left: 11px;
+    padding-right: 11px;
+    color: #8A8FB5;
+}
+
+.NavBar__network-badge.NavBar__network-badge--is-disabled:after{
+    display: none;
 }

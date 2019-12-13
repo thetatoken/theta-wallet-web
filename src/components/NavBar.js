@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from "react";
 import './NavBar.css';
 import Wallet from "../services/Wallet";
@@ -31,9 +32,16 @@ class NavBar extends React.Component {
     }
 
     onNetworkBadgeClick = () => {
-        store.dispatch(showModal({
-            type: ModalTypes.NETWORK_SELECTOR,
-        }));
+        let address = Wallet.getWalletAddress();
+
+        if(address){
+            alert("You cannot change networks while a wallet is unlocked.")
+        }
+        else{
+            store.dispatch(showModal({
+                type: ModalTypes.NETWORK_SELECTOR,
+            }));
+        }
     };
 
     renderAccountIfNeeded(){
@@ -68,11 +76,13 @@ class NavBar extends React.Component {
     }
 
     render() {
+        let address = Wallet.getWalletAddress();
+
         return (
             <div className={classNames("NavBar", { 'NavBar--is-centered': this.props.centered })}>
                 <div style={{display: 'flex', flexDirection: 'column'}}>
                     <img className="NavBar__logo" src={'/img/logo/theta_wallet_logo@2x.png'}/>
-                    <a className={"NavBar__network-badge"}
+                    <a className={classNames("NavBar__network-badge", {"NavBar__network-badge--is-disabled": !_.isNil(address)})}
                        onClick={this.onNetworkBadgeClick}
                     >Mainnet</a>
                 </div>

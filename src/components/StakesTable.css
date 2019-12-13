@@ -1,0 +1,47 @@
+.StakesTable{
+    color: white;
+    border: none;
+    border-collapse:collapse;
+}
+
+.StakesTable thead{
+    border-bottom: 1px solid rgba(59, 66, 99, 1.0);
+    background-color: rgba(0,0,0,0.05);
+}
+
+.StakesTable th{
+    text-align: left;
+    height: 50px;
+    line-height: 44px;
+}
+
+.StakesTable tr{
+    text-align: left;
+    height: 44px;
+    line-height: 44px;
+    border-bottom: 1px solid rgba(59, 66, 99, 1.0);
+}
+
+.StakesTable td{
+    text-align: left;
+    font-size: 15px;
+}
+
+.StakesTable__header--holder{
+
+}
+
+.StakesTable__header--withdrawn{
+
+}
+
+.StakesTable__header--return-height{
+    width: 150px;
+}
+
+.StakesTable__header--amount{
+}
+
+.StakesTable__header--holder{
+    width: 450px;
+}
