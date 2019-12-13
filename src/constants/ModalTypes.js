@@ -7,5 +7,6 @@ export default {
     DEPOSIT_STAKE: 'deposit-stake',
     DEPOSIT_STAKE_CONFIRMATION: 'deposit-stake-confirmation',
     WITHDRAW_STAKE: 'withdraw-stake',
-    WITHDRAW_STAKE_CONFIRMATION: 'withdraw-stake-confirmation'
+    WITHDRAW_STAKE_CONFIRMATION: 'withdraw-stake-confirmation',
+    NETWORK_SELECTOR: 'network-selector'
 };

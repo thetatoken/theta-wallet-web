@@ -43,8 +43,8 @@ export class WalletPages extends React.Component {
                     }
                     <Route path="/wallet/settings" component={SettingsPage}/>
                     <Route path="/wallet/stakes" component={StakesPage}/>
-                    <Redirect from='/wallet' to={(Config.isThetaNetworkLive ? '/wallet/tokens/theta' : '/wallet/tokens/erc20')} exact={true}/>
-                    <Redirect from='/wallet/tokens' to={(Config.isThetaNetworkLive ? '/wallet/tokens/theta' : '/wallet/tokens/erc20')} exact={true}/>
+                    <Redirect from='/wallet' to='/wallet/tokens/theta' exact={true}/>
+                    <Redirect from='/wallet/tokens' to='/wallet/tokens/theta' exact={true}/>
                     <Route path="/wallet/tokens/:tokenType" component={WalletPage}/>
                     <Route path="/offline" component={OfflinePage}/>
                 </Switch>

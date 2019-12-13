@@ -1,0 +1,53 @@
+.NetworkSelectorModal{
+    display: flex;
+    flex-direction: column;
+    background-color: #242F4B;
+    width: 400px;
+    min-height: 400px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.NetworkSelectorModal__title{
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    color: white;
+    margin-bottom: 6px;
+}
+
+.NetworkSelectorModal__rows{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: auto;
+}
+
+.NetworkSelectorModal__row{
+    display: flex;
+    flex-direction: column;
+    min-height: 50px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #687399;
+    cursor: pointer;
+}
+
+.NetworkSelectorModal__row:hover{
+    background-color: rgba(0,0,0,0.05);
+}
+
+.NetworkSelectorModal__row-name{
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    text-align: left;
+    line-height: 26px;
+}
+
+.NetworkSelectorModal__row-description{
+    font-size: 12px;
+    font-weight: normal;
+    color: #92A2D6;
+    text-align: left;
+    line-height: 16px;
+}

@@ -4,6 +4,24 @@ const Networks =  {
     THETA_MAINNET: 'mainnet',
 };
 
+export const NetworksWithDescriptions = [
+    {
+        id: "mainnet",
+        name: "Mainnet (Default)",
+        description: "THETA mainnet"
+    },
+    {
+        id: "testnet",
+        name: "Testnet",
+        description: "THETA testnet"
+    },
+    {
+        id: "testnet_amber",
+        name: "Testnet_Amber",
+        description: "THETA testnet for gaurdian nodes"
+    }
+];
+
 export function isEthereumNetwork(network) {
     return (network === Networks.ETHEREUM);
 }

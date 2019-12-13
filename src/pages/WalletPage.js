@@ -10,7 +10,6 @@ import {getERC20Transactions, getEthereumTransactions, getThetaNetworkTransactio
 import EmptyState from "../components/EmptyState";
 import TokenTypes from "../constants/TokenTypes";
 import MDSpinner from "react-md-spinner";
-import Config from "../Config";
 import GhostButton from "../components/buttons/GhostButton";
 import {showModal} from "../state/actions/Modals";
 import ModalTypes from "../constants/ModalTypes";
@@ -39,13 +38,8 @@ export class WalletPage extends React.Component {
     }
 
     fetchBalances(){
-        if(Config.isThetaNetworkLive){
-            this.props.dispatch(fetchWalletBalances());
-            this.props.dispatch(fetchWalletEthereumBalances());
-        }
-        else{
-            this.props.dispatch(fetchWalletEthereumBalances());
-        }
+        this.props.dispatch(fetchWalletBalances());
+        this.props.dispatch(fetchWalletEthereumBalances());
     }
 
     startPollingWalletBalances(){

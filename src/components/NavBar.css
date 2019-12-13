@@ -12,6 +12,7 @@
 
 .NavBar__logo{
     height: 38px;
+    align-self: center;
 }
 
 .NavBar--is-centered{
@@ -62,4 +63,42 @@
     margin-top: 6px;
     cursor: pointer;
     transition: opacity, 0.2s, ease-in-out;
+}
+
+.NavBar__network-badge{
+    position: relative;
+    padding: 0;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-radius: 1px;
+    color: white;
+    background-color: #242F4B;
+    line-height: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: -2px;
+    margin-left: auto;
+    margin-right: auto;
+    cursor: pointer;
+    border: 1px solid #242F4B;
+}
+
+.NavBar__network-badge:after{
+    content: "";
+    border: solid #92A2D6;
+    border-width: 0 1px 1px 0;
+    display: inline-block;
+    padding: 1px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    color: white;
+    position: absolute;
+    right: 4px;
+    top: 4px;
+}
+
+.NavBar__network-badge:hover{
+    background-color: #1C243B;
 }
