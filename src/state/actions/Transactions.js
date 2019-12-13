@@ -44,7 +44,7 @@ export function fetchThetaTransactions() {
     let address = Wallet.getWalletAddress();
 
     return reduxFetch(FETCH_TRANSACTIONS_THETA, function () {
-        return Api.fetchTransactions(address, {network: Config.thetaNetwork});
+        return Api.fetchTransactions(address, {network: Theta.getChainID()});
     });
 }
 

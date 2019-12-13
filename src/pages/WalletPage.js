@@ -4,8 +4,8 @@ import {connect} from 'react-redux'
 import WalletTokenList from '../components/WalletTokenList'
 import PageHeader from '../components/PageHeader'
 import TransactionList from '../components/TransactionList'
-import {fetchWalletBalances, fetchWalletEthereumBalances} from "../state/actions/Wallet";
-import {fetchERC20Transactions, fetchEthereumTransactions, fetchThetaTransactions} from "../state/actions/Transactions";
+import {fetchWalletBalances} from "../state/actions/Wallet";
+import {fetchThetaTransactions} from "../state/actions/Transactions";
 import {getERC20Transactions, getEthereumTransactions, getThetaNetworkTransactions} from "../state/selectors/Transactions";
 import EmptyState from "../components/EmptyState";
 import TokenTypes from "../constants/TokenTypes";
@@ -26,20 +26,13 @@ export class WalletPage extends React.Component {
     }
 
     fetchTransactions(tokenType){
-        if(tokenType === TokenTypes.ERC20_THETA){
-            this.props.dispatch(fetchERC20Transactions());
-        }
-        else if(tokenType === TokenTypes.ETHEREUM){
-            this.props.dispatch(fetchEthereumTransactions());
-        }
-        else if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
+        if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
             this.props.dispatch(fetchThetaTransactions());
         }
     }
 
     fetchBalances(){
         this.props.dispatch(fetchWalletBalances());
-        this.props.dispatch(fetchWalletEthereumBalances());
     }
 
     startPollingWalletBalances(){

@@ -7,14 +7,19 @@ import RLP from 'eth-lib/lib/rlp';
 import Bytes from 'eth-lib/lib/bytes';
 
 export default class Theta {
+    static _chainId = Config.defaultThetaChainID;
+
+    static setChainID(newChainID){
+        this._chainId = newChainID;
+    }
+
+    static getChainID(){
+        return this._chainId;
+    }
 
     static getTransactionFee(){
         //10^12 TFuelWei
         return 0.000001;
-    }
-
-    static getChainID(){
-        return Config.thetaChainID;
     }
 
     static unsignedSendTx(txData, sequence) {

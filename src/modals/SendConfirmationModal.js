@@ -7,7 +7,6 @@ import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet'
 import {createSendTransaction} from "../state/actions/Transactions";
 import {tokenTypeToTokenName} from "../constants/TokenTypes";
-import {isEthereumNetwork, isThetaNetwork} from "../constants/Networks";
 
 export class SendConfirmationModal extends React.Component {
     constructor(){
@@ -33,7 +32,7 @@ export class SendConfirmationModal extends React.Component {
     }
 
     render() {
-        let { tokenType, amount, to, gas, gasPrice, transactionFee } = this.props.transaction;
+        let { tokenType, amount, to, transactionFee } = this.props.transaction;
         let isValid = Wallet.getWalletHardware() || this.state.password.length > 0;
         let isLoading = this.props.isCreatingTransaction;
         let renderDataRow = (title, value) =>{
@@ -50,25 +49,12 @@ export class SendConfirmationModal extends React.Component {
         };
         let detailRows = null;
 
-        if(isEthereumNetwork(this.props.network)){
-            detailRows = (
-                <React.Fragment>
-                    { renderDataRow("From", this.props.walletAddress) }
-                    { renderDataRow("Transaction Type", "Asset Transfer") }
-                    { renderDataRow("Gas Limit", gas) }
-                    { renderDataRow("Gas Price", gasPrice + " Gwei") }
-                    { renderDataRow("Transaction Fee", transactionFee + " ETH") }
-                </React.Fragment>
-            );
-        }
-        else if(isThetaNetwork(this.props.network)){
-            detailRows = (
-                <React.Fragment>
-                    { renderDataRow("From", this.props.walletAddress) }
-                    { renderDataRow("Transaction Fee", transactionFee + " TFUEL") }
-                </React.Fragment>
-            );
-        }
+        detailRows = (
+            <React.Fragment>
+                { renderDataRow("From", this.props.walletAddress) }
+                { renderDataRow("Transaction Fee", transactionFee + " TFUEL") }
+            </React.Fragment>
+        );
 
         let passwordRow = null;
 

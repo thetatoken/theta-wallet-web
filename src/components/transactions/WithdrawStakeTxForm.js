@@ -43,7 +43,7 @@ export class WithdrawStakeTxForm extends React.Component {
         store.dispatch(showModal({
             type: ModalTypes.WITHDRAW_STAKE_CONFIRMATION,
             props: {
-                network: Config.thetaNetwork,
+                network: Theta.getChainID(),
                 transaction: {
                     from: this.props.walletAddress,
 

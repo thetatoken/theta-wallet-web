@@ -17,3 +17,5 @@ export const SET_WALLET_ADDRESS = `${name}/SET_WALLET_ADDRESS`;
 export const UNLOCK = `${name}/UNLOCK`;
 
 export const RESET = `${name}/RESET`;
+
+export const SET_NETWORK = `${name}/SET_NETWORK`;

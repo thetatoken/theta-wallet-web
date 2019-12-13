@@ -86,7 +86,7 @@ export class EthereumNetworkTxForm extends React.Component {
         store.dispatch(showModal({
             type: ModalTypes.SEND_CONFIRMATION,
             props: {
-                network: Networks.ETHEREUM,
+                network: Networks.__deprecated__ETHEREUM,
                 transaction: {
                     tokenType: this.state.tokenType,
 

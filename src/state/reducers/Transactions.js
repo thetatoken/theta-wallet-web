@@ -2,7 +2,7 @@ import * as actionTypes from "../types/Transactions";
 import {zipMap} from "../../utils/Utils";
 import _ from 'lodash';
 import TokenTypes from "../../constants/TokenTypes";
-import {isEthereumNetwork, isThetaNetwork} from "../../constants/Networks";
+import {isThetaNetwork} from "../../constants/Networks";
 import {BigNumber} from "bignumber.js";
 
 const INITIAL_STATE = {
@@ -88,10 +88,7 @@ function pendingEthererumNetworkTransactionToLocalTransaction(network, pendingTr
 }
 
 function pendingTransactionToLocalTransaction(network, pendingTransaction, hash) {
-    if (isEthereumNetwork(network)) {
-        return pendingEthererumNetworkTransactionToLocalTransaction(network, pendingTransaction, hash);
-    }
-    else if (isThetaNetwork(network)) {
+    if (isThetaNetwork(network)) {
         return pendingThetaNetworkTransactionToLocalTransaction(network, pendingTransaction, hash);
     }
     else {
@@ -230,31 +227,16 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
             if (transactions.length > 0) {
                 transaction = transactions[0];
 
-                if(isEthereumNetwork(metadata.network)){
-                    let transactionsByHash = Object.assign({}, state.ethereumNetworkTransactionsByHash, {[transaction.hash]: transaction});
-                    let ethereumTransactionsByType =  Object.assign({}, state.ethereumNetworkTransactionsByType, {[transaction.type]: [...state.ethereumNetworkTransactionsByType[transaction.type], transaction]});
+                let transactionsByHash = Object.assign({}, state.transactionsByHash, {[transaction.hash]: transaction});
 
-                    return Object.assign({}, state, {
-                        //Remove the local transaction from the state since it is in the blockchain now
-                        localTransactionsByHash: _.omit(state.localTransactionsByHash, transaction.hash),
+                return Object.assign({}, state, {
+                    //Remove the local transaction from the state since it is in the blockchain now
+                    localTransactionsByHash: _.omit(state.localTransactionsByHash, transaction.hash),
 
-                        //Append this tx to the list
-                        ethereumNetworkTransactionsByHash: transactionsByHash,
-                        ethereumNetworkTransactionsByType: ethereumTransactionsByType
-                    });
-                }
-                else{
-                    let transactionsByHash = Object.assign({}, state.transactionsByHash, {[transaction.hash]: transaction});
-
-                    return Object.assign({}, state, {
-                        //Remove the local transaction from the state since it is in the blockchain now
-                        localTransactionsByHash: _.omit(state.localTransactionsByHash, transaction.hash),
-
-                        //Append this tx to the list
-                        transactionsByHash: transactionsByHash,
-                        transactions: Object.values(transactionsByHash)
-                    });
-                }
+                    //Append this tx to the list
+                    transactionsByHash: transactionsByHash,
+                    transactions: Object.values(transactionsByHash)
+                });
             }
 
             return state;

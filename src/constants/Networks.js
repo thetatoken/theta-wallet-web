@@ -1,5 +1,5 @@
 const Networks =  {
-    ETHEREUM: 'ethereum',
+    __deprecated__ETHEREUM: 'ethereum',
     THETA_TESTNET: 'testnet',
     THETA_MAINNET: 'mainnet',
 };
@@ -23,7 +23,7 @@ export const NetworksWithDescriptions = [
 ];
 
 export function isEthereumNetwork(network) {
-    return (network === Networks.ETHEREUM);
+    return (network === Networks.__deprecated__ETHEREUM);
 }
 
 export function isThetaNetwork(network) {

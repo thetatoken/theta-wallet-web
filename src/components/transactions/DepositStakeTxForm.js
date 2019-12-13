@@ -78,7 +78,7 @@ export class DepositStakeTxForm extends React.Component {
         store.dispatch(showModal({
             type: ModalTypes.DEPOSIT_STAKE_CONFIRMATION,
             props: {
-                network: Config.thetaNetwork,
+                network: Theta.getChainID(),
                 transaction: {
                     tokenType: this.state.tokenType,
 

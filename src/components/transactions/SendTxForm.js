@@ -83,7 +83,7 @@ export class SendTxForm extends React.Component {
         store.dispatch(showModal({
             type: ModalTypes.SEND_CONFIRMATION,
             props: {
-                network: Config.thetaNetwork,
+                network: Theta.getChainID(),
                 transaction: {
                     tokenType: this.state.tokenType,
 

@@ -1,6 +1,6 @@
 import Api from '../../services/Api'
 import { reduxFetch } from'./Api'
-import {FETCH_WALLET_BALANCES, FETCH_WALLET_ETHEREUM_BALANCES, SET_WALLET_ADDRESS, RESET} from "../types/Wallet";
+import {FETCH_WALLET_BALANCES, FETCH_WALLET_ETHEREUM_BALANCES, SET_WALLET_ADDRESS, RESET, SET_NETWORK} from "../types/Wallet";
 import Wallet from '../../services/Wallet'
 import TemporaryState from "../../services/TemporaryState";
 import {resetTransactionsState} from './Transactions'
@@ -12,21 +12,26 @@ import Config from "../../Config";
 import {store} from "../../state";
 import {showModal} from "./Modals";
 import ModalTypes from "../../constants/ModalTypes";
+import Theta from "../../services/Theta";
 
 
-export function fetchWalletEthereumBalances(){
-    let address = Wallet.getWalletAddress();
+export function setNetwork(networkId){
+    Theta.setChainID(networkId);
 
-    return reduxFetch(FETCH_WALLET_ETHEREUM_BALANCES, function(){
-        return Api.fetchWallet(address, {network: Networks.ETHEREUM});
-    });
+    return async function(dispatch, getState){
+        dispatch({
+                type: SET_NETWORK,
+                network: networkId
+            }
+        );
+    };
 }
 
 export function fetchWalletBalances(){
     let address = Wallet.getWalletAddress();
 
     return reduxFetch(FETCH_WALLET_BALANCES, function(){
-        return Api.fetchWallet(address, {network: Config.thetaNetwork});
+        return Api.fetchWallet(address, {network: Theta.getChainID()});
     });
 }
 

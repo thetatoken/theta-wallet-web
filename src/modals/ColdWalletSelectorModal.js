@@ -12,6 +12,7 @@ import Api from "../services/Api";
 import Config from "../Config";
 import {zipMap} from "../utils/Utils";
 import Wallet from "../services/Wallet";
+import Theta from "../services/Theta";
 
 export class ColdWalletAddressRow extends React.Component {
     constructor(props){
@@ -25,7 +26,7 @@ export class ColdWalletAddressRow extends React.Component {
     }
 
     async fetchBalances(address){
-        let response = await Api.fetchWallet(address, {network: Config.thetaNetwork});
+        let response = await Api.fetchWallet(address, {network: Theta.getChainID()});
 
         if(response){
             let responseJSON = await response.json();
