@@ -4,8 +4,6 @@ import {
     CREATE_SEND_TRANSACTION,
     CREATE_SEND_TRANSACTION_END,
     CREATE_SEND_TRANSACTION_START,
-    FETCH_TRANSACTIONS_ERC20,
-    FETCH_TRANSACTIONS_ETHEREUM,
     FETCH_TRANSACTION,
     RESET,
     FETCH_TRANSACTIONS_THETA,
@@ -18,27 +16,9 @@ import {
 } from "../types/Transactions";
 import Wallet from "../../services/Wallet";
 import Theta from "../../services/Theta";
-import TokenTypes from "../../constants/TokenTypes";
 import Timeout from 'await-timeout';
 import {hideModals} from "./Modals";
 import Alerts from "../../services/Alerts";
-import Config from '../../Config'
-
-export function fetchERC20Transactions() {
-    let address = Wallet.getWalletAddress();
-
-    return reduxFetch(FETCH_TRANSACTIONS_ERC20, function () {
-        return Api.fetchTransactions(address, {type: TokenTypes.ERC20_THETA});
-    });
-}
-
-export function fetchEthereumTransactions() {
-    let address = Wallet.getWalletAddress();
-
-    return reduxFetch(FETCH_TRANSACTIONS_ETHEREUM, function () {
-        return Api.fetchTransactions(address, {type: TokenTypes.ETHEREUM});
-    });
-}
 
 export function fetchThetaTransactions() {
     let address = Wallet.getWalletAddress();
