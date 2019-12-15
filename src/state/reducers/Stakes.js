@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as actionTypes from "../types/Stakes";
 
 const INITIAL_STATE = {
@@ -21,7 +22,7 @@ export const stakesReducer = (state = INITIAL_STATE, action) => {
         }
         case actionTypes.FETCH_STAKES_SUCCESS: {
             let body = action.response.body;
-            let stakes = body.stakes;
+            let stakes = _.get(body, ['stakes', 'sourceRecords'], []);
 
             return Object.assign({}, state, {
                 stakes: stakes,
