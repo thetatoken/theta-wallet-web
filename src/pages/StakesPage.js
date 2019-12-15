@@ -59,8 +59,29 @@ class StakesPage extends React.Component {
         }));
     };
 
-    componentDidMount(){
+    fetchStakes = () => {
         this.props.dispatch(fetchStakes());
+    };
+
+    startPollingStakes(){
+        //Fetch it immediately
+        this.fetchStakes();
+
+        this.pollStakesIntervalId = setInterval(this.fetchStakes, 15000);
+    }
+
+    stopPollingStakes(){
+        if(this.pollStakesIntervalId){
+            clearInterval(this.pollStakesIntervalId);
+        }
+    }
+
+    componentDidMount(){
+        this.startPollingStakes()
+    }
+
+    componentWillUnmount(){
+        this.stopPollingStakes();
     }
 
     render() {

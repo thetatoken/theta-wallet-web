@@ -13,6 +13,7 @@ import MDSpinner from "react-md-spinner";
 import GhostButton from "../components/buttons/GhostButton";
 import {showModal} from "../state/actions/Modals";
 import ModalTypes from "../constants/ModalTypes";
+import {numberWithCommas} from '../utils/Utils';
 
 export class WalletPage extends React.Component {
     constructor(){

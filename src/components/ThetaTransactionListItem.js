@@ -2,7 +2,7 @@ import React from "react";
 import './ThetaTransactionListItem.css';
 import moment from 'moment';
 import TransactionStatus from './TransactionStatus'
-import {truncate} from "../utils/Utils";
+import {numberWithCommas, truncate} from "../utils/Utils";
 import _ from 'lodash';
 
 class ThetaTransactionListItem extends React.Component {
@@ -45,13 +45,13 @@ class ThetaTransactionListItem extends React.Component {
 
                 <div className="ThetaTransactionListItem__right-container">
                     <div className="ThetaTransactionListItem__amount-container">
-                        <div className="ThetaTransactionListItem__amount">{thetaAmount}</div>
+                        <div className="ThetaTransactionListItem__amount">{numberWithCommas(thetaAmount)}</div>
                         <img className="ThetaTransactionListItem__amount-icon"
                              src="/img/tokens/theta_large@2x.png"
                         />
                     </div>
                     <div className="ThetaTransactionListItem__amount-container">
-                        <div className="ThetaTransactionListItem__amount">{tfuelAmount}</div>
+                        <div className="ThetaTransactionListItem__amount">{numberWithCommas(tfuelAmount)}</div>
                         <img className="ThetaTransactionListItem__amount-icon"
                              src="/img/tokens/tfuel_large@2x.png"
                         />

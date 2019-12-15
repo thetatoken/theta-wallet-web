@@ -7,6 +7,7 @@ import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet'
 import {createDepositStakeTransaction} from "../state/actions/Transactions";
 import {tokenTypeToTokenName} from "../constants/TokenTypes";
+import {numberWithCommas} from "../utils/Utils";
 
 export class DepositStakeConfirmationModal extends React.Component {
     constructor(){
@@ -78,7 +79,7 @@ export class DepositStakeConfirmationModal extends React.Component {
                     </div>
 
                     <div className="TxConfirmationModal__amount-title">You are depositing</div>
-                    <div className="TxConfirmationModal__amount">{ amount }</div>
+                    <div className="TxConfirmationModal__amount">{ numberWithCommas(amount) }</div>
                     <div className="TxConfirmationModal__token-name">{ tokenTypeToTokenName(tokenType) }</div>
                     <div className="TxConfirmationModal__holder-title">Guardian Node Holder (Summary)</div>
                     <div className="TxConfirmationModal__holder">{ holder }</div>

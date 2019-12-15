@@ -8,12 +8,11 @@ import TokenTypes from "../../constants/TokenTypes";
 import FormInputContainer from '../FormInputContainer'
 import ValueWithTitle from '../ValueWithTitle'
 import GradientButton from '../buttons/GradientButton';
-import {hasValidDecimalPlaces} from '../../utils/Utils'
+import {hasValidDecimalPlaces, numberWithCommas} from '../../utils/Utils'
 import {BigNumber} from 'bignumber.js';
 import {store} from "../../state";
 import {showModal} from "../../state/actions/Modals";
 import ModalTypes from "../../constants/ModalTypes";
-import Config from "../../Config";
 
 const TRANSACTION_FEE = 0.000001;
 
@@ -191,9 +190,8 @@ export class SendTxForm extends React.Component {
 
     render() {
         let hasToAddress = (this.state.to !== null && this.state.to !== '' && this.state.invalidAddress === false);
-        let thetaTitle = `Theta (${ this.getBalanceOfTokenType(TokenTypes.THETA) })`;
-        let tfuelTitle = `TFuel (${ this.getBalanceOfTokenType(TokenTypes.THETA_FUEL)
-        })`;
+        let thetaTitle = `Theta (${ numberWithCommas(this.getBalanceOfTokenType(TokenTypes.THETA)) })`;
+        let tfuelTitle = `TFuel (${ numberWithCommas(this.getBalanceOfTokenType(TokenTypes.THETA_FUEL)) })`;
         let transactionFeeValueContent = (
             <React.Fragment>
                 <span>Transaction Fee</span>

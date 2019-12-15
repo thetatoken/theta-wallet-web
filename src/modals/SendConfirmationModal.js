@@ -7,6 +7,7 @@ import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet'
 import {createSendTransaction} from "../state/actions/Transactions";
 import {tokenTypeToTokenName} from "../constants/TokenTypes";
+import {numberWithCommas} from "../utils/Utils";
 
 export class SendConfirmationModal extends React.Component {
     constructor(){
@@ -81,7 +82,7 @@ export class SendConfirmationModal extends React.Component {
                     </div>
 
                     <div className="TxConfirmationModal__amount-title">You are sending</div>
-                    <div className="TxConfirmationModal__amount">{ amount }</div>
+                    <div className="TxConfirmationModal__amount">{ numberWithCommas(amount) }</div>
                     <div className="TxConfirmationModal__token-name">{ tokenTypeToTokenName(tokenType) }</div>
                     <div className="TxConfirmationModal__to-title">To recipient</div>
                     <div className="TxConfirmationModal__to">{ to }</div>
