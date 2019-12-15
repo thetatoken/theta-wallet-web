@@ -104,6 +104,9 @@ export function logout(){
         //Clear the wallet
         Wallet.setWallet(null);
 
+        //Restore the default chainId
+        Theta.setChainID(Config.defaultThetaChainID);
+
         //Delete the temp state
         TemporaryState.setWalletData(null);
 
