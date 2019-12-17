@@ -9,7 +9,6 @@ import ModalTypes from "../constants/ModalTypes";
 import StakesTable from "../components/StakesTable";
 import EmptyState from "../components/EmptyState";
 import MDSpinner from "react-md-spinner";
-import TransactionList from "../components/TransactionList";
 
 const sampleStakes = [
     {

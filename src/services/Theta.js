@@ -5,6 +5,7 @@ import TokenTypes from "../constants/TokenTypes";
 import Config from '../Config';
 import RLP from 'eth-lib/lib/rlp';
 import Bytes from 'eth-lib/lib/bytes';
+import {NetworkExplorerUrls} from '../constants/Networks';
 
 export default class Theta {
     static _chainId = Config.defaultThetaChainID;
@@ -15,6 +16,13 @@ export default class Theta {
 
     static getChainID(){
         return this._chainId;
+    }
+
+    static getTransactionExplorerUrl(transaction){
+        const chainId = this.getChainID();
+        const urlBase = NetworkExplorerUrls[chainId];
+
+        return`${urlBase}/txs/${transaction.hash}`;
     }
 
     static getTransactionFee(){

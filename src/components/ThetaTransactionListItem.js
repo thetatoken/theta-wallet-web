@@ -4,6 +4,7 @@ import moment from 'moment';
 import TransactionStatus from './TransactionStatus'
 import {numberWithCommas, truncate} from "../utils/Utils";
 import _ from 'lodash';
+import Theta from '../services/Theta';
 
 class ThetaTransactionListItem extends React.Component {
     render() {
@@ -14,7 +15,7 @@ class ThetaTransactionListItem extends React.Component {
         let from = _.get(input, ['address']);
         let to = _.get(output, ['address']);
         let isReceived = (bound === "inbound");
-        let explorerUrl = `https://explorer.thetatoken.org/txs/${hash}`;
+        let explorerUrl = Theta.getTransactionExplorerUrl(transaction);
 
         //Truncate the addresses to help reduce the run ons
         from = truncate(from, 23, '...');

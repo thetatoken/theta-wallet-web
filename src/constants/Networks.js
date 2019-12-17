@@ -23,6 +23,12 @@ export const NetworksWithDescriptions = [
     }
 ];
 
+export const NetworkExplorerUrls = {
+    [Networks.THETA_MAINNET]: 'https://explorer.thetatoken.org',
+    [Networks.THETA_TESTNET]: 'https://beta-explorer.thetatoken.org',
+    [Networks.THETA_TESTNET_AMBER]: 'https://guardian-testnet-explorer.thetatoken.org'
+};
+
 export function isEthereumNetwork(network) {
     return (network === Networks.__deprecated__ETHEREUM);
 }
