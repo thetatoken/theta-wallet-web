@@ -19,7 +19,7 @@ export const NetworksWithDescriptions = [
     {
         id: Networks.THETA_TESTNET_AMBER,
         name: "Testnet_Amber",
-        description: "THETA testnet for gaurdian nodes"
+        description: "THETA testnet for guardian nodes"
     }
 ];
 

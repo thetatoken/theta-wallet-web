@@ -118,7 +118,7 @@ export class WithdrawStakeTxForm extends React.Component {
 
 const mapStateToProps = state => {
     return {
-
+        walletAddress: state.wallet.address,
     };
 };
 

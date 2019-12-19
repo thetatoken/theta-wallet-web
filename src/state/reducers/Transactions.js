@@ -17,6 +17,10 @@ const INITIAL_STATE = {
 
     localTransactionsByHash: {},
 
+    pendingDepositStakeTransaction: null,
+    pendingWithdrawStakeTransaction: null,
+
+
     //Legacy
     isFetchingERC20Transactions: false,
     isFetchingEthereumTransactions: false,
@@ -206,6 +210,24 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
         case actionTypes.CREATE_DEPOSIT_STAKE_TRANSACTION_SUCCESS: {
             return Object.assign({}, state, {
                 pendingDepositStakeTransaction: null
+            });
+        }
+
+        //Create Withdraw Stake Transaction
+        case actionTypes.CREATE_WITHDRAW_STAKE_TRANSACTION_START: {
+            return Object.assign({}, state, {
+                isCreatingTransaction: true,
+                pendingWithdrawStakeTransaction: action.metadata.txData
+            });
+        }
+        case actionTypes.CREATE_WITHDRAW_STAKE_TRANSACTION_END: {
+            return Object.assign({}, state, {
+                isCreatingTransaction: false
+            });
+        }
+        case actionTypes.CREATE_WITHDRAW_STAKE_TRANSACTION_SUCCESS: {
+            return Object.assign({}, state, {
+                pendingWithdrawStakeTransaction: null
             });
         }
 
