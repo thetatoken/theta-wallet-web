@@ -34,7 +34,7 @@ export function isEthereumNetwork(network) {
 }
 
 export function isThetaNetwork(network) {
-    return (network === Networks.THETA_MAINNET || network === Networks.THETA_TESTNET);
+    return (network !== Networks.__deprecated__ETHEREUM);
 }
 
 export default Networks;
