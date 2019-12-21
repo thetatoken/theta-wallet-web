@@ -9,6 +9,7 @@ import ModalTypes from "../constants/ModalTypes";
 import StakesTable from "../components/StakesTable";
 import EmptyState from "../components/EmptyState";
 import MDSpinner from "react-md-spinner";
+import Wallet from "../services/Wallet";
 
 const sampleStakes = [
     {
@@ -47,15 +48,29 @@ const sampleStakes = [
 
 class StakesPage extends React.Component {
     handleDepositStakeClick = () => {
-        this.props.dispatch(showModal({
-            type: ModalTypes.DEPOSIT_STAKE,
-        }));
+        const hardware = Wallet.getWalletHardware();
+
+        if(hardware === "ledger"){
+            alert("Staking from hardware Ledger Wallet will be supported soon. Stay tuned!");
+        }
+        else{
+            this.props.dispatch(showModal({
+                type: ModalTypes.DEPOSIT_STAKE,
+            }));
+        }
     };
 
     handleWithdrawStakeClick = () => {
-        this.props.dispatch(showModal({
-            type: ModalTypes.WITHDRAW_STAKE,
-        }));
+        const hardware = Wallet.getWalletHardware();
+
+        if(hardware === "ledger"){
+            alert("Staking from hardware Ledger Wallet will be supported soon. Stay tuned!");
+        }
+        else{
+            this.props.dispatch(showModal({
+                type: ModalTypes.WITHDRAW_STAKE,
+            }));
+        }
     };
 
     fetchStakes = () => {
