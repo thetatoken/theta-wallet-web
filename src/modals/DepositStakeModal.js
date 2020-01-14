@@ -5,6 +5,7 @@ import DepositStakeTxForm from '../components/transactions/DepositStakeTxForm'
 import Theta from "../services/Theta";
 import GradientButton from "../components/buttons/GradientButton";
 import Networks from "../constants/Networks";
+import ThetaJS from "../libs/thetajs.esm";
 
 const classNames = require('classnames');
 
@@ -74,19 +75,19 @@ export default class DepositStakeModal extends React.Component {
                         purpose === null &&
                         <div className={"DepositStakePurposeContainer"}>
                             <div className={"DepositStakePurposeContainer__instructions"}>
-                                Please choose the purpose of your stake.
+                                Please choose the staking purpose
                             </div>
                             <div className={"DepositStakePurposeSelector"}>
-                                <DepositStakePurposeSelectorItem purpose={0}
+                                <DepositStakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForValidator}
                                                                  title={"Validator Node"}
-                                                                 subtitle={"Deposit a stake to an existing Validator node"}
-                                                                 isSelected={(selectedPurpose === 0)}
+                                                                 subtitle={"Deposit stake to a Validator node"}
+                                                                 isSelected={(selectedPurpose === ThetaJS.StakePurposes.StakeForValidator)}
                                                                  onClick={this.handlePurposeClick}
                                 />
-                                <DepositStakePurposeSelectorItem purpose={1}
+                                <DepositStakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForGuardian}
                                                                  title={"Guardian Node"}
-                                                                 subtitle={"Deposit a stake to your Guardian node"}
-                                                                 isSelected={(selectedPurpose === 1)}
+                                                                 subtitle={"Deposit stake to your Guardian node"}
+                                                                 isSelected={(selectedPurpose === ThetaJS.StakePurposes.StakeForGuardian)}
                                                                  isDisabled={isGuardianNodeStakingDisabled}
                                                                  onClick={this.handlePurposeClick}
                                 />

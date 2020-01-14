@@ -8,6 +8,7 @@ import Wallet from '../services/Wallet'
 import {createDepositStakeTransaction} from "../state/actions/Transactions";
 import {tokenTypeToTokenName} from "../constants/TokenTypes";
 import {numberWithCommas} from "../utils/Utils";
+import ThetaJS from '../libs/thetajs.esm';
 
 export class DepositStakeConfirmationModal extends React.Component {
     constructor(){
@@ -32,7 +33,8 @@ export class DepositStakeConfirmationModal extends React.Component {
     };
 
     render() {
-        let { tokenType, amount, holder, transactionFee } = this.props.transaction;
+        let {transaction} = this.props;
+        let { tokenType, amount, holder, transactionFee, purpose } = transaction;
         let isValid = Wallet.getWalletHardware() || this.state.password.length > 0;
         let isLoading = this.props.isCreatingTransaction;
         let renderDataRow = (title, value) =>{
@@ -71,6 +73,14 @@ export class DepositStakeConfirmationModal extends React.Component {
             );
         }
 
+        let holderTitle = null;
+        if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+            holderTitle = "Validator Node Holder (Address)"
+        }
+        else if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+            holderTitle = "Guardian Node Holder (Summary)"
+        }
+
         return (
             <Modal>
                 <div className="TxConfirmationModal">
@@ -81,7 +91,7 @@ export class DepositStakeConfirmationModal extends React.Component {
                     <div className="TxConfirmationModal__amount-title">You are depositing</div>
                     <div className="TxConfirmationModal__amount">{ numberWithCommas(amount) }</div>
                     <div className="TxConfirmationModal__token-name">{ tokenTypeToTokenName(tokenType) }</div>
-                    <div className="TxConfirmationModal__holder-title">Guardian Node Holder (Summary)</div>
+                    <div className="TxConfirmationModal__holder-title">{holderTitle}</div>
                     <div className="TxConfirmationModal__holder">{ holder }</div>
 
                     <div className="TxConfirmationModal__rows">

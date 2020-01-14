@@ -8,15 +8,26 @@ import TokenTypes from "../../constants/TokenTypes";
 import FormInputContainer from '../FormInputContainer'
 import ValueWithTitle from '../ValueWithTitle'
 import GradientButton from '../buttons/GradientButton';
-import {hasValidDecimalPlaces} from '../../utils/Utils'
+import {hasValidDecimalPlaces, numberWithCommas} from '../../utils/Utils'
 import {BigNumber} from 'bignumber.js';
 import {store} from "../../state";
 import {showModal} from "../../state/actions/Modals";
 import ModalTypes from "../../constants/ModalTypes";
-import Config from "../../Config";
+import ThetaJS from '../../libs/thetajs.esm';
 
 const TRANSACTION_FEE = 0.000001;
-const MIN_DEPOSIT_STAKE_AMOUNT = 0.0;//TODO this should be 10,000.0
+
+function getMinStakeAmount(purpose){
+    if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+        return 2000000.0;
+    }
+    else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
+        return 10000.0;
+    }
+
+    //Unknown
+    return 0.0;
+}
 
 export class DepositStakeTxForm extends React.Component {
     constructor(props) {
@@ -80,6 +91,8 @@ export class DepositStakeTxForm extends React.Component {
             props: {
                 network: Theta.getChainID(),
                 transaction: {
+                    purpose: this.props.purpose,
+
                     tokenType: this.state.tokenType,
 
                     from: this.props.walletAddress,
@@ -130,7 +143,7 @@ export class DepositStakeTxForm extends React.Component {
 
     validate() {
         if (this.state.holder.length > 0) {
-            this.validateHolderSummary();
+            this.validateHolder();
         }
 
         if (this.state.amount.length > 0) {
@@ -138,13 +151,22 @@ export class DepositStakeTxForm extends React.Component {
         }
     }
 
-    async validateHolderSummary() {
-        let isValid = Theta.isHolderSummary(this.state.holder);
+    async validateHolder() {
+        const {purpose} = this.props;
+        let isValid = false;
+
+        if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+            isValid = Theta.isAddress(this.state.holder);
+        }
+        else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
+            isValid = Theta.isHolderSummary(this.state.holder);
+        }
 
         this.setState({invalidHolder: (isValid === false)});
     }
 
     async validateAmount() {
+        const {purpose} = this.props;
         let amountFloat = parseFloat(this.state.amount);
         let thetaBalance = this.getBalanceOfTokenType(TokenTypes.THETA);
         let balance = null;
@@ -155,15 +177,14 @@ export class DepositStakeTxForm extends React.Component {
 
         this.setState({
             insufficientFunds: (amountFloat > parseFloat(balance)),
-            //TODO this stake amount should be 10,000
-            invalidAmount: (amountFloat === 0.0 || amountFloat < MIN_DEPOSIT_STAKE_AMOUNT),
+            invalidAmount: (amountFloat === 0.0 || amountFloat < getMinStakeAmount(purpose)),
             invalidDecimalPlaces: !hasValidDecimalPlaces(this.state.amount, 18)
         });
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.state.holder !== prevState.holder) {
-            this.validateHolderSummary();
+            this.validateHolder();
         }
 
         if (this.state.amount !== prevState.amount || this.state.gasPrice !== prevState.gasPrice) {
@@ -194,8 +215,17 @@ export class DepositStakeTxForm extends React.Component {
         );
 
         let isValid = this.isValid();
-        let toError = this.state.invalidHolder ? "Invalid holder summary" : null;
+        let toError = null;
         let amountError = null;
+
+        if(this.state.invalidHolder){
+            if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+                toError = "Invalid holder address";
+            }
+            else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
+                toError = "Invalid holder summary";
+            }
+        }
 
         if (this.state.insufficientFunds) {
             amountError = "Insufficient funds";
@@ -204,7 +234,19 @@ export class DepositStakeTxForm extends React.Component {
             amountError = "Invalid denomination";
         }
         else if (this.state.invalidAmount) {
-            amountError = "Invalid amount";
+            amountError = "Invalid amount. Must be at least " + numberWithCommas(getMinStakeAmount(purpose)) + " THETA";
+        }
+
+        let holderTitle = "";
+        let holderPlaceholder = "";
+
+        if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+            holderTitle = "Validator Node Holder (Address)";
+            holderPlaceholder = "Enter validator node address";
+        }
+        else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
+            holderTitle = "Guardian Node Holder (Summary)";
+            holderPlaceholder = "Enter guardian node summary";
         }
 
         return (
@@ -215,11 +257,11 @@ export class DepositStakeTxForm extends React.Component {
                         <option value={TokenTypes.THETA}>{thetaTitle}</option>
                     </select>
                 </FormInputContainer>
-                <FormInputContainer title="Guardian Node Holder (Summary)"
+                <FormInputContainer title={holderTitle}
                                     error={toError}>
                     <input className="BottomBorderInput"
                            name="holder"
-                           placeholder="Enter guardian node summary"
+                           placeholder={holderPlaceholder}
                            value={this.state.holder}
                            onChange={this.handleChange}/>
                 </FormInputContainer>

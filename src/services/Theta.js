@@ -32,10 +32,6 @@ export default class Theta {
 
     static unsignedSendTx(txData, sequence) {
         let { tokenType, from, to, amount, transactionFee} = txData;
-
-        console.log("unsignedSendTx :: txData ==  ");
-        console.log(txData);
-
         const ten18 = (new BigNumber(10)).pow(18); // 10^18, 1 Theta = 10^18 ThetaWei, 1 Gamma = 10^ TFuelWei
         const thetaWeiToSend = (tokenType === TokenTypes.THETA ? (new BigNumber(amount)).multipliedBy(ten18) : (new BigNumber(0)));
         const tfuelWeiToSend = (tokenType === TokenTypes.THETA_FUEL ? (new BigNumber(amount)).multipliedBy(ten18) : (new BigNumber(0)));
@@ -53,23 +49,25 @@ export default class Theta {
 
         let tx = new ThetaJS.SendTx(senderAddr, outputs, feeInTFuelWei, senderSequence);
 
-        console.log("tx ==");
-        console.log(tx);
-
         return tx;
     }
 
     static unsignedDepositStakeTx(txData, sequence) {
-        let { tokenType, from, holder, amount, transactionFee} = txData;
-
+        let { tokenType, from, holder, amount, transactionFee, purpose} = txData;
         const ten18 = (new BigNumber(10)).pow(18); // 10^18, 1 Theta = 10^18 ThetaWei, 1 Gamma = 10^ TFuelWei
         const thetaWeiToSend = (tokenType === TokenTypes.THETA ? (new BigNumber(amount)).multipliedBy(ten18) : (new BigNumber(0)));
         const feeInTFuelWei  = (new BigNumber(transactionFee)).multipliedBy(ten18); // Any fee >= 10^12 TFuelWei should work, higher fee yields higher priority
         const source =  from;
         const senderSequence = sequence;
-        const purpose = ThetaJS.StakePurposes.StakeForGuardian;
 
-        let tx = new ThetaJS.DepositStakeTx(source, holder, thetaWeiToSend, feeInTFuelWei, purpose, senderSequence);
+        let tx = null;
+
+        if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+            tx = new ThetaJS.DepositStakeTx(source, holder, thetaWeiToSend, feeInTFuelWei, purpose, senderSequence);
+        }
+        else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
+            tx = new ThetaJS.DepositStakeV2Tx(source, holder, thetaWeiToSend, feeInTFuelWei, purpose, senderSequence);
+        }
 
         return tx;
     }

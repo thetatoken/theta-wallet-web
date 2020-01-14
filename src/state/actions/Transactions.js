@@ -108,6 +108,9 @@ export async function createDepositStakeTransactionAsync(dispatch, network, txDa
         txData: txData,
     };
 
+    console.log("createDepositStakeTransactionAsync :: txData == ");
+    console.log(txData);
+
     //The decryption can take some time, so start the event early
     dispatch({
         type: CREATE_DEPOSIT_STAKE_TRANSACTION_START,
@@ -121,7 +124,6 @@ export async function createDepositStakeTransactionAsync(dispatch, network, txDa
 
         let address = Wallet.getWalletAddress();
         let sequence = await Wallet.getThetaTxSequence(address, network);
-        //TODO create deposit stake Tx instead
         let unsignedTx = Theta.unsignedDepositStakeTx(txData, sequence);
         let signedTx = await Wallet.signTransaction(network, unsignedTx, password);
 
