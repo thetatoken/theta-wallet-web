@@ -6,6 +6,7 @@ import Modal from '../components/Modal'
 import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet'
 import {createWithdrawStakeTransaction} from "../state/actions/Transactions";
+import ThetaJS from "../libs/thetajs.esm";
 
 export class WithdrawStakeConfirmationModal extends React.Component {
     constructor(){
@@ -30,7 +31,7 @@ export class WithdrawStakeConfirmationModal extends React.Component {
     };
 
     render() {
-        let { holder, transactionFee } = this.props.transaction;
+        let { purpose, holder, transactionFee } = this.props.transaction;
         let isValid = Wallet.getWalletHardware() || this.state.password.length > 0;
         let isLoading = this.props.isCreatingTransaction;
         let renderDataRow = (title, value) =>{
@@ -69,6 +70,15 @@ export class WithdrawStakeConfirmationModal extends React.Component {
             );
         }
 
+        let holderTitle = null;
+        if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+            holderTitle = "Validator Node (Holder)"
+        }
+        else if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+            holderTitle = "Guardian Node (Holder)"
+        }
+
+
         return (
             <Modal>
                 <div className="TxConfirmationModal">
@@ -77,7 +87,7 @@ export class WithdrawStakeConfirmationModal extends React.Component {
                     </div>
 
                     <div className="TxConfirmationModal__amount-title">You are withdrawing stake from</div>
-                    <div className="TxConfirmationModal__holder-title">Guardian Node (Holder)</div>
+                    <div className="TxConfirmationModal__holder-title">{holderTitle}</div>
                     <div className="TxConfirmationModal__holder">{ holder }</div>
 
                     <div className="TxConfirmationModal__rows">

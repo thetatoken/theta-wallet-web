@@ -14,6 +14,7 @@ import {store} from "../../state";
 import {showModal} from "../../state/actions/Modals";
 import ModalTypes from "../../constants/ModalTypes";
 import Config from "../../Config";
+import ThetaJS from "../../libs/thetajs.esm";
 
 export class WithdrawStakeTxForm extends React.Component {
     constructor(props) {
@@ -45,6 +46,8 @@ export class WithdrawStakeTxForm extends React.Component {
             props: {
                 network: Theta.getChainID(),
                 transaction: {
+                    purpose: this.props.purpose,
+
                     from: this.props.walletAddress,
 
                     holder: this.state.holder,
@@ -69,7 +72,9 @@ export class WithdrawStakeTxForm extends React.Component {
     }
 
     async validateHolder() {
-        let isValid = Theta.isAddress(this.state.holder);
+        let isValid = false;
+
+        isValid = Theta.isAddress(this.state.holder);
 
         this.setState({invalidHolder: (isValid === false)});
     }
@@ -81,6 +86,7 @@ export class WithdrawStakeTxForm extends React.Component {
     }
 
     render() {
+        const {purpose} = this.props;
         let transactionFeeValueContent = (
             <React.Fragment>
                 <span>Transaction Fee</span>
@@ -88,15 +94,36 @@ export class WithdrawStakeTxForm extends React.Component {
         );
 
         let isValid = this.isValid();
-        let holderError = this.state.invalidHolder ? "Invalid guardian node address (holder)" : null;
+        let holderError = null;
+
+        if(this.state.invalidHolder){
+            if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+                holderError = "Invalid validator node address (holder)";
+            }
+            else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
+                holderError = "Invalid guardian node address (holder)";
+            }
+        }
+
+        let holderTitle = "";
+        let holderPlaceholder = "";
+
+        if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+            holderTitle = "Validator Node Address (Holder)";
+            holderPlaceholder = "Enter validator node address";
+        }
+        else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
+            holderTitle = "Guardian Node Address (Holder)";
+            holderPlaceholder = "Enter guardian node address";
+        }
 
         return (
             <div className="TxForm">
-                <FormInputContainer title="Guardian Node Address (Holder)"
+                <FormInputContainer title={holderTitle}
                                     error={holderError}>
                     <input className="BottomBorderInput"
                            name="holder"
-                           placeholder="Enter guardian node address"
+                           placeholder={holderPlaceholder}
                            value={this.state.holder}
                            onChange={this.handleChange}/>
                 </FormInputContainer>

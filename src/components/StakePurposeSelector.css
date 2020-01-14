@@ -1,0 +1,55 @@
+.StakePurposeSelector{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.StakePurposeSelectorItem{
+    background-color: transparent;
+    padding: 24px;
+    border: 1px solid #687399;
+    cursor: pointer;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+
+.StakePurposeSelectorItem__title{
+    font-size: 19px;
+    font-weight: normal;
+    line-height: 21px;
+    color: white;
+    text-decoration: none;
+    cursor: inherit;
+}
+
+.StakePurposeSelectorItem__subtitle{
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 16px;
+    color: #92A2D6;
+    text-decoration: none;
+    cursor: inherit;
+}
+
+.StakePurposeSelectorItem--is-selected{
+    border: 1px solid #1BDED0;
+    background-color: rgba(0,0,0,0.1);
+}
+
+.StakePurposeSelectorItem--is-selected .StakePurposeSelectorItem__title{
+    color: #1BDED0;
+}
+
+.StakePurposeSelectorItem--is-selected .StakePurposeSelectorItem__subtitle{
+    color: white;
+}
+
+.StakePurposeSelectorItem--is-disabled{
+    cursor: not-allowed;
+    opacity: 0.3;
+}
+
