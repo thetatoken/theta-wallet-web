@@ -172,6 +172,7 @@ export class DepositStakeTxForm extends React.Component {
     }
 
     render() {
+        const {purpose} = this.props;
         let hasHolder = (this.state.holder !== null && this.state.holder !== '' && this.state.invalidHolder === false);
         let thetaTitle = `Theta (${ this.getBalanceOfTokenType(TokenTypes.THETA) })`;
         let transactionFeeValueContent = (

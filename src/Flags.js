@@ -4,5 +4,6 @@ import Networks from './constants/Networks';
 export function isStakingAvailable(){
     const chainId = Theta.getChainID();
 
+    return true;
     return (chainId === Networks.THETA_TESTNET_AMBER);
 }
