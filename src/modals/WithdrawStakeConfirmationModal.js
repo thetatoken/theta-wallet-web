@@ -74,7 +74,7 @@ export class WithdrawStakeConfirmationModal extends React.Component {
         if(purpose === ThetaJS.StakePurposes.StakeForValidator){
             holderTitle = "Validator Node (Holder)"
         }
-        else if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+        else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
             holderTitle = "Guardian Node (Holder)"
         }
 

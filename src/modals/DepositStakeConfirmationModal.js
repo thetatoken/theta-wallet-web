@@ -77,7 +77,7 @@ export class DepositStakeConfirmationModal extends React.Component {
         if(purpose === ThetaJS.StakePurposes.StakeForValidator){
             holderTitle = "Validator Node Holder (Address)"
         }
-        else if(purpose === ThetaJS.StakePurposes.StakeForValidator){
+        else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
             holderTitle = "Guardian Node Holder (Summary)"
         }
 

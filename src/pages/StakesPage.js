@@ -10,6 +10,7 @@ import StakesTable from "../components/StakesTable";
 import EmptyState from "../components/EmptyState";
 import MDSpinner from "react-md-spinner";
 import Wallet from "../services/Wallet";
+import {canStakeFromHardwareWallet} from '../Flags';
 
 const sampleStakes = [
     {
@@ -50,7 +51,7 @@ class StakesPage extends React.Component {
     handleDepositStakeClick = () => {
         const hardware = Wallet.getWalletHardware();
 
-        if(hardware === "ledger"){
+        if(hardware === "ledger" && canStakeFromHardwareWallet() === false){
             alert("Staking from hardware Ledger Wallet will be supported soon. Stay tuned!");
         }
         else{
@@ -63,7 +64,7 @@ class StakesPage extends React.Component {
     handleWithdrawStakeClick = () => {
         const hardware = Wallet.getWalletHardware();
 
-        if(hardware === "ledger"){
+        if(hardware === "ledger" && canStakeFromHardwareWallet() === false){
             alert("Staking from hardware Ledger Wallet will be supported soon. Stay tuned!");
         }
         else{
