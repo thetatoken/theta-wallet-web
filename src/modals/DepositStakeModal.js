@@ -4,7 +4,7 @@ import Modal from '../components/Modal'
 import DepositStakeTxForm from '../components/transactions/DepositStakeTxForm'
 import Theta from "../services/Theta";
 import GradientButton from "../components/buttons/GradientButton";
-import Networks from "../constants/Networks";
+import Networks, {canGuardianNodeStake} from "../constants/Networks";
 import ThetaJS from "../libs/thetajs.esm";
 import StakePurposeSelector, {StakePurposeSelectorItem} from '../components/StakePurposeSelector';
 
@@ -34,7 +34,7 @@ export default class DepositStakeModal extends React.Component {
     render() {
         const {purpose, selectedPurpose} = this.state;
         const chainId = Theta.getChainID();
-        const isGuardianNodeStakingDisabled = (chainId !== Networks.THETA_TESTNET_AMBER);
+        const isGuardianNodeStakingDisabled = !canGuardianNodeStake(chainId);
 
         return (
             <Modal>

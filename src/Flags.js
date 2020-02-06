@@ -6,8 +6,5 @@ export function isStakingAvailable(){
 }
 
 export function canStakeFromHardwareWallet(){
-    const chainId = Theta.getChainID();
-
-    //Block guardian node staking on amber testnet
-    return true;//(chainId !== Networks.THETA_TESTNET_AMBER);
+    return true;
 }
