@@ -427,7 +427,7 @@ class DepositStakeV2Tx extends StakeTx{
         let ethTxWrapper = new EthereumTx(payload);
         let signedBytes = RLP.encode(ethTxWrapper.rlpInput()); // the signBytes conforms to the Ethereum raw tx format
 
-        console.log("SendTx :: signBytes :: txRawBytes = " + signedBytes);
+        console.log("DepositStakeV2Tx :: signBytes :: txRawBytes = " + signedBytes);
 
         // Attach the original signature back to the source
         this.source.signature = sig;
@@ -489,7 +489,7 @@ class WithdrawStakeTx extends StakeTx{
         let ethTxWrapper = new EthereumTx(payload);
         let signedBytes = RLP.encode(ethTxWrapper.rlpInput()); // the signBytes conforms to the Ethereum raw tx format
 
-        console.log("SendTx :: signBytes :: txRawBytes = " + signedBytes);
+        console.log("WithdrawStakeTx :: signBytes :: txRawBytes = " + signedBytes);
 
         // Attach the original signature back to the source
         this.source.signature = sig;

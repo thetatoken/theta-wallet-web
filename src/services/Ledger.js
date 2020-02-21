@@ -11,23 +11,24 @@ const web3 = new Web3(rpcURL);
 
 export default class Ledger {
     static async signTransaction(unsignedTx){
-        // let unsignedTx = Theta.unsignedSendTx(txData, sequence);
-        let payload = Theta.prepareTxPayload(unsignedTx);
+        // let payload = Theta.prepareTxPayload(unsignedTx);
 
-        let txParams = {
-            nonce: web3.utils.toHex(0),
-            gasPrice: web3.utils.toHex(0),
-            gasLimit: web3.utils.toHex(0),
-            to: '0x0000000000000000000000000000000000000000',
-            value: web3.utils.toHex(0),
-            // chainId: 1,
-            data: payload,
-        };
+        // let txParams = {
+        //     nonce: web3.utils.toHex(0),
+        //     gasPrice: web3.utils.toHex(0),
+        //     gasLimit: web3.utils.toHex(0),
+        //     to: '0x0000000000000000000000000000000000000000',
+        //     value: web3.utils.toHex(0),
+        //     data: payload,
+        // };
 
-        let serializedTx = new Tx(txParams).serialize();
-        serializedTx[1] -= 3;
-        serializedTx = serializedTx.slice(0, serializedTx.length - 3);
-        let ethTxWrapper = serializedTx.toString("hex");
+        // let serializedTx = new Tx(txParams).serialize();
+        // serializedTx[1] -= 3;
+        // serializedTx = serializedTx.slice(0, serializedTx.length - 3);
+        // let ethTxWrapper = serializedTx.toString("hex");
+
+        let chainID = Theta.getChainID();
+        let ethTxWrapper = unsignedTx.signBytes(chainID).slice(2); // remove the '0x' prefix
 
         const transport = await TransportU2F.create();
         const eth = new Eth(transport);
