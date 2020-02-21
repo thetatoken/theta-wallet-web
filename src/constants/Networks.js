@@ -17,11 +17,11 @@ export const NetworksWithDescriptions = [
         name: "Testnet",
         description: "THETA testnet"
     },
-    {
-        id: Networks.THETA_TESTNET_AMBER,
-        name: "Testnet_Amber",
-        description: "THETA testnet for guardian nodes (Dec 2019)"
-    },
+    // {
+    //     id: Networks.THETA_TESTNET_AMBER,
+    //     name: "Testnet_Amber",
+    //     description: "THETA testnet for guardian nodes (Dec 2019)"
+    // },
     {
         id: Networks.THETA_TESTNET_SAPPHIRE,
         name: "Testnet_Sapphire",
