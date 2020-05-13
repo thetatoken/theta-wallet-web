@@ -6,6 +6,7 @@ import {App, WalletApp} from './App'
 import {Provider as AlertProvider} from 'react-alert'
 import Alerts from './services/Alerts'
 import Alert from './components/Alert'
+import { hot } from 'react-hot-loader/root'
 
 // optional cofiguration
 const options = {
@@ -38,4 +39,6 @@ class AppWrapper extends Component {
     }
 }
 
-export default AppWrapper;
+// export default AppWrapper;
+export default process.env.NODE_ENV === "development" ? hot(AppWrapper) : AppWrapper;
+

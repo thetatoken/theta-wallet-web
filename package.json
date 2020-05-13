@@ -15,8 +15,11 @@
     "react": "^16.8.2",
     "react-alert": "4.0.4",
     "react-alert-template-basic": "^1.0.0",
+    "react-app-rewire-hot-loader": "^2.0.1",
+    "react-app-rewired": "^2.1.6",
     "react-dom": "^16.8.2",
     "react-hook-form": "^5.7.2",
+    "react-hot-loader": "^4.12.21",
     "react-md-spinner": "^0.3.0",
     "react-modal": "^3.8.1",
     "react-redux": "^5.0.6",
@@ -32,7 +35,10 @@
     "web3": "^1.0.0-beta.52"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-app-rewired start",
+    "build-new": "react-app-rewired build",
+    "test-new": "react-app-rewired test --env=jsdom",
+    "start-old": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

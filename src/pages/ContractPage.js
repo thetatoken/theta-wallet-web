@@ -62,7 +62,7 @@ function parseJSON(value){
 function isValidByteCode(value){
     const json = parseJSON(value);
 
-    console.log("isValidByteCode :: json ddddddddf== " + json);
+    console.log("isValidByteCode :: json ddddddddfddddddWOOF== " + json);
     return (_.isNil((json && json['object'])) === false);
 }
 
