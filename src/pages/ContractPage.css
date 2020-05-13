@@ -1,0 +1,26 @@
+.ContractPage{
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+}
+
+.ContractPage__detail-view{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background-color: #242b45;
+    padding-left: 32px;
+    padding-right: 32px;
+    overflow-y: auto;
+    position: relative;
+}
+
+.ContractPage textarea{
+    height: 130px;
+    padding-top: 10px;
+    margin-bottom: 20px !important;
+}
+
+.ContractPage input{
+    margin-bottom: 20px !important;
+}

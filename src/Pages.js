@@ -9,7 +9,8 @@ import UnlockWalletPage from './pages/UnlockWalletPage'
 import StakesPage from './pages/StakesPage'
 import Wallet from './services/Wallet'
 import OfflinePage from "./pages/OfflinePage";
-import Config from "./Config";
+import ContractPage from "./pages/ContractPage";
+import ContractModes from "./constants/ContractModes";
 
 export class Pages extends React.Component {
     render() {
@@ -41,11 +42,18 @@ export class WalletPages extends React.Component {
                     {
                         Wallet.unlocked() === false && <Redirect to='/unlock'/>
                     }
+
+                    <Redirect from='/wallet/contract/' to={('/wallet/contract/' + ContractModes.DEPLOY)} exact={true}/>
+                    <Route path="/wallet/contract/:contractMode" component={ContractPage}/>
+
                     <Route path="/wallet/settings" component={SettingsPage}/>
+
                     <Route path="/wallet/stakes" component={StakesPage}/>
+
                     <Redirect from='/wallet' to='/wallet/tokens/theta' exact={true}/>
                     <Redirect from='/wallet/tokens' to='/wallet/tokens/theta' exact={true}/>
                     <Route path="/wallet/tokens/:tokenType" component={WalletPage}/>
+
                     <Route path="/offline" component={OfflinePage}/>
                 </Switch>
             </div>

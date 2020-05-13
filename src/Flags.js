@@ -8,3 +8,7 @@ export function isStakingAvailable(){
 export function canStakeFromHardwareWallet(){
     return true;
 }
+
+export function isSmartContractAvailable(){
+    return true;
+}
