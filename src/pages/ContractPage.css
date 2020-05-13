@@ -24,3 +24,8 @@
 .ContractPage input{
     margin-bottom: 20px !important;
 }
+
+.ContractPage form .InputError{
+    margin-top: -20px;
+    margin-bottom: 20px;
+}

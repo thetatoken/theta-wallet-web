@@ -7,13 +7,16 @@ import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
 import ContractModes from "../constants/ContractModes";
 import Web3 from "web3";
+import { useForm } from 'react-hook-form';
+
+const web3 = new Web3("http://localhost");
+
+
 
 function initContract(abiStr, address){
     try {
         console.log("initContract :: abiStr == ");
         console.log(abiStr);
-
-        const web3 = new Web3("http://localhost");
 
         const abiJSON = JSON.parse(abiStr);
 
@@ -24,6 +27,105 @@ function initContract(abiStr, address){
         console.log(e);
         return null;
     }
+}
+
+function DeployContractFormExample(props) {
+    const {onSubmit} = props;
+    const { register, handleSubmit, errors } = useForm();
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <input name="firstname" ref={register} /> {/* register an input */}
+
+            <input name="lastname" ref={register({ required: true })} />
+            {errors.lastname && 'Last name is required.'}
+
+            <input name="age" ref={register({ pattern: /\d+/ })} />
+            {errors.age && 'Please enter number for age.'}
+
+            <input type="submit" />
+        </form>
+    );
+}
+
+function parseJSON(value){
+    try {
+        const json = JSON.parse(value);
+
+        return json;
+    }
+    catch (e) {
+        return null;
+    }
+}
+
+function isValidByteCode(value){
+    const json = parseJSON(value);
+
+    console.log("isValidByteCode :: json ddddddddf== " + json);
+    return (_.isNil((json && json['object'])) === false);
+}
+
+function isValidABI(value){
+    const json = parseJSON(value);
+
+    try{
+        return (_.isNil((json && (new web3.eth.Contract(json, null)))) === false);
+    }
+    catch (e) {
+        return false;
+    }
+}
+
+function DeployContractForm(props) {
+    const {onSubmit} = props;
+    const { register, handleSubmit, errors, watch } = useForm(); // initialise the hook
+    const abi = watch("abi");
+
+    console.log("abi == " + abi);
+    //TODO parse the abi and find the constructor!...loop over the constructor inputs to build inputs!
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="InputTitle">Byte Code</div>
+            <textarea className="RoundedInput"
+                      placeholder="Enter byte code"
+                      name="byteCode"
+                      ref={register({
+                          required: true,
+                          validate: isValidByteCode
+                      })}
+            />
+            {errors.byteCode && <div className="InputError">Please enter valid Byte Code.</div>}
+
+            <div className="InputTitle">ABI/JSON Interface</div>
+            <textarea className="RoundedInput"
+                      placeholder="Enter ABI/JSON interface"
+                      name="abi"
+                      ref={register({
+                          required: true,
+                          validate: isValidABI
+                      })}
+            />
+            {errors.abi && <div className="InputError">Please enter a valid ABI/JSON Interface.</div>}
+
+
+
+            <div className="InputTitle">Contract Name</div>
+            <input className="RoundedInput"
+                   placeholder="Enter contract name"
+                   name="name"
+                   ref={register({ required: false })}
+            />
+
+            <GradientButton title="Deploy Contract"
+                            style={{marginTop: 15}}
+                            // loading={this.state.loading}
+                            // disabled={(this.state.loading)}
+                            onClick={handleSubmit(onSubmit)}
+            />
+        </form>
+    );
 }
 
 class InteractWithContractContent extends React.Component {
@@ -144,6 +246,11 @@ class DeployContractContent extends React.Component {
     render() {
         return (
             <div className="DeployContractContent">
+                <DeployContractForm onSubmit={(formData)=>{
+                    console.log("Submitted...");
+                    console.log(formData);
+                }}/>
+
                 <div className="InputTitle">Byte Code</div>
                 <textarea className="RoundedInput"
                        placeholder="Enter byte code"

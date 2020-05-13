@@ -16,6 +16,7 @@
     "react-alert": "4.0.4",
     "react-alert-template-basic": "^1.0.0",
     "react-dom": "^16.8.2",
+    "react-hook-form": "^5.7.2",
     "react-md-spinner": "^0.3.0",
     "react-modal": "^3.8.1",
     "react-redux": "^5.0.6",
