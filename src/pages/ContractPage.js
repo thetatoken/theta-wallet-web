@@ -8,6 +8,24 @@ import TabBar from "../components/TabBar";
 import ContractModes from "../constants/ContractModes";
 import Web3 from "web3";
 
+function initContract(abiStr, address){
+    try {
+        console.log("initContract :: abiStr == ");
+        console.log(abiStr);
+
+        const web3 = new Web3("http://localhost");
+
+        const abiJSON = JSON.parse(abiStr);
+
+        return new web3.eth.Contract(abiJSON, address);
+    }
+    catch (e) {
+        console.log("Caught!");
+        console.log(e);
+        return null;
+    }
+}
+
 class InteractWithContractContent extends React.Component {
     constructor(){
         super();
@@ -93,6 +111,8 @@ class DeployContractContent extends React.Component {
             },
 
             loading: false,
+
+            contract: null
         };
 
         this.state = this.defaultState;
@@ -106,7 +126,19 @@ class DeployContractContent extends React.Component {
     };
 
     validate = () => {
+        const {abi, byteCode, name} = this.state;
 
+        if(_.isEmpty(abi) === false){
+            const contract = initContract(abi, null);
+
+            window.MYYcontract = contract;
+
+            if(contract){
+                this.setState({
+                    contract: contract
+                });
+            }
+        }
     };
 
     render() {
