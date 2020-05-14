@@ -1,8 +1,8 @@
-import Bytes from 'eth-lib/lib/bytes';
-import BigNumber from 'bignumber.js';
-import RLP from 'eth-lib/lib/rlp';
 import isString from 'lodash/isString';
 import isNumber from 'lodash/isNumber';
+import BigNumber from 'bignumber.js';
+import Bytes from 'eth-lib/lib/bytes';
+import RLP from 'eth-lib/lib/rlp';
 import Hash from 'eth-lib/lib/hash';
 
 class Tx{
@@ -23,29 +23,105 @@ class Tx{
     }
 }
 
+// /**
+//  * Check if string is HEX, requires a 0x in front
+//  *
+//  * @method isHexStrict
+//  *
+//  * @param {String} hex to be checked
+//  *
+//  * @returns {Boolean}
+//  */
+const isHexStrict = (hex) => {
+    return (isString(hex) || isNumber(hex)) && /^(-)?0x[0-9a-f]*$/i.test(hex);
+};
+
+/**
+ * Convert a hex string to a byte array
+ *
+ * Note: Implementation from crypto-js
+ *
+ * @method hexToBytes
+ *
+ * @param {String} hex
+ *
+ * @returns {Array} the byte array
+ */
+const hexToBytes = (hex) => {
+    hex = hex.toString(16);
+
+    if (!isHexStrict(hex)) {
+        throw new Error(`Given value "${hex}" is not a valid hex string.`);
+    }
+
+    hex = hex.replace(/^0x/i, '');
+    hex = hex.length % 2 ? '0' + hex : hex;
+
+    let bytes = [];
+    for (let c = 0; c < hex.length; c += 2) {
+        bytes.push(parseInt(hex.substr(c, 2), 16));
+    }
+
+    return bytes;
+};
+
+// Convert a byte array to a hex string
+const bytesToHex = function(bytes) {
+    for (var hex = [], i = 0; i < bytes.length; i++) {
+        hex.push((bytes[i] >>> 4).toString(16));
+        hex.push((bytes[i] & 0xF).toString(16));
+    }
+    return hex.join("");
+};
+
+BigNumber.prototype.pad = function(size) {
+    var s = String(this);
+    while (s.length < (size || 2)) {s = "0" + s;}
+    return s;
+};
+
+const bnFromString = str => {
+    const base = str.slice(0, 2) === "0x" ? 16 : 10;
+    const bigNum = new BigNumber(str, base);
+    const bigNumWithPad = "0x" + bigNum.pad(2);
+    return bigNumWithPad; // Jieyi: return "0x00" instead of "0x" to be compatible with the Golang/Java signature
+};
+
+const encodeWei = (wei) =>{
+    if(wei === null || wei === undefined){
+        return Bytes.fromNat("0x0");
+    }
+    else if(wei.isEqualTo(new BigNumber(0))){
+        return Bytes.fromNat("0x0");
+    }
+    else{
+        return Bytes.fromNumber(wei);
+    }
+};
+
 class Coins{
     constructor(thetaWei, tfuelWei){
         this.thetaWei = thetaWei;
         this.tfuelWei = tfuelWei;
     }
 
-    encodeWei(wei){
-        if(wei === null || wei === undefined){
-            return Bytes.fromNat("0x0");
-        }
-        else if(wei.isEqualTo(new BigNumber(0))){
-            return Bytes.fromNat("0x0");
-        }
-        else{
-            return Bytes.fromNumber(wei);
-        }
-    }
+    // encodeWei(wei){
+    //     if(wei === null || wei === undefined){
+    //         return Bytes.fromNat("0x0");
+    //     }
+    //     else if(wei.isEqualTo(new BigNumber(0))){
+    //         return Bytes.fromNat("0x0");
+    //     }
+    //     else{
+    //         return Bytes.fromNumber(wei);
+    //     }
+    // }
 
     rlpInput(){
 
         let rlpInput = [
-            this.encodeWei(this.thetaWei),
-            this.encodeWei(this.tfuelWei),
+            encodeWei(this.thetaWei),
+            encodeWei(this.tfuelWei),
             //(this.thetaWei.isEqualTo(new BigNumber(0))) ? Bytes.fromNat("0x0") : Bytes.fromNumber(this.thetaWei),
             //(this.tfuelWei.isEqualTo(new BigNumber(0))) ? Bytes.fromNat("0x0") : Bytes.fromNumber(this.tfuelWei)
         ];
@@ -70,16 +146,21 @@ class TxInput{
     }
 
     setSignature(signature) {
-        console.log("TxInput :: setSignature :: signature == " + signature);
-
         this.signature = signature;
     }
 
     rlpInput(){
-        console.log("TxInput :: this.signature == " + this.signature);
+        let address = null;
+
+        if(this.address){
+            address = this.address.toLowerCase();
+        }
+        else{
+            address = Bytes.fromNat("0x0");
+        }
 
         let rplInput = [
-            this.address.toLowerCase(),
+            address,
             this.coins.rlpInput(),
             Bytes.fromNumber(this.sequence),
             this.signature
@@ -103,8 +184,18 @@ class TxOutput {
     }
 
     rlpInput(){
+        let address = null;
+
+        if(this.address){
+            address = this.address.toLowerCase();
+        }
+        else{
+            //Empty address
+            address = "0x0000000000000000000000000000000000000000";
+        }
+
         let rplInput = [
-            this.address.toLowerCase(),
+            address,
             this.coins.rlpInput()
         ];
 
@@ -427,7 +518,7 @@ class DepositStakeV2Tx extends StakeTx{
         let ethTxWrapper = new EthereumTx(payload);
         let signedBytes = RLP.encode(ethTxWrapper.rlpInput()); // the signBytes conforms to the Ethereum raw tx format
 
-        console.log("DepositStakeV2Tx :: signBytes :: txRawBytes = " + signedBytes);
+        console.log("SendTx :: signBytes :: txRawBytes = " + signedBytes);
 
         // Attach the original signature back to the source
         this.source.signature = sig;
@@ -489,7 +580,7 @@ class WithdrawStakeTx extends StakeTx{
         let ethTxWrapper = new EthereumTx(payload);
         let signedBytes = RLP.encode(ethTxWrapper.rlpInput()); // the signBytes conforms to the Ethereum raw tx format
 
-        console.log("WithdrawStakeTx :: signBytes :: txRawBytes = " + signedBytes);
+        console.log("SendTx :: signBytes :: txRawBytes = " + signedBytes);
 
         // Attach the original signature back to the source
         this.source.signature = sig;
@@ -513,70 +604,6 @@ class WithdrawStakeTx extends StakeTx{
         return rlpInput;
     }
 }
-
-// /**
-//  * Check if string is HEX, requires a 0x in front
-//  *
-//  * @method isHexStrict
-//  *
-//  * @param {String} hex to be checked
-//  *
-//  * @returns {Boolean}
-//  */
-const isHexStrict = (hex) => {
-    return (isString(hex) || isNumber(hex)) && /^(-)?0x[0-9a-f]*$/i.test(hex);
-};
-
-/**
- * Convert a hex string to a byte array
- *
- * Note: Implementation from crypto-js
- *
- * @method hexToBytes
- *
- * @param {String} hex
- *
- * @returns {Array} the byte array
- */
-const hexToBytes = (hex) => {
-    hex = hex.toString(16);
-
-    if (!isHexStrict(hex)) {
-        throw new Error(`Given value "${hex}" is not a valid hex string.`);
-    }
-
-    hex = hex.replace(/^0x/i, '');
-    hex = hex.length % 2 ? '0' + hex : hex;
-
-    let bytes = [];
-    for (let c = 0; c < hex.length; c += 2) {
-        bytes.push(parseInt(hex.substr(c, 2), 16));
-    }
-
-    return bytes;
-};
-
-// Convert a byte array to a hex string
-const bytesToHex = function(bytes) {
-    for (var hex = [], i = 0; i < bytes.length; i++) {
-        hex.push((bytes[i] >>> 4).toString(16));
-        hex.push((bytes[i] & 0xF).toString(16));
-    }
-    return hex.join("");
-};
-
-BigNumber.prototype.pad = function(size) {
-    var s = String(this);
-    while (s.length < (size || 2)) {s = "0" + s;}
-    return s;
-};
-
-const bnFromString = str => {
-    const base = str.slice(0, 2) === "0x" ? 16 : 10;
-    const bigNum = new BigNumber(str, base);
-    const bigNumWithPad = "0x" + bigNum.pad(2);
-    return bigNumWithPad; // Jieyi: return "0x00" instead of "0x" to be compatible with the Golang/Java signature
-};
 
 const elliptic = (window.elliptic || require("elliptic"));
 const secp256k1 = new elliptic.ec("secp256k1"); // eslint-disable-line
@@ -625,10 +652,6 @@ class TxSigner {
         let signature = sign(txHash, privateKey);
         tx.setSignature(signature);
 
-        console.log("signTx :: txRawBytes = " + txRawBytes);
-        console.log("signTx :: txHash = " + txHash);
-        console.log("signTx :: txSig = " + signature);
-
         return tx
     }
 
@@ -641,11 +664,78 @@ class TxSigner {
     }
 }
 
+var Web3Utils = require('web3-utils');
+
+class SmartContractTx extends Tx{
+    constructor(fromAddress, toAddress, gasLimit, gasPrice, data, value, senderSequence){
+        super();
+
+        let valueWeiBN = BigNumber.isBigNumber(value) ? value : (new BigNumber(value));
+
+        this.from = new TxInput(fromAddress, null, valueWeiBN, senderSequence);
+        this.to = new TxOutput(toAddress, null, null);
+
+        this.gasLimit = gasLimit;
+        this.gasPrice = gasPrice;
+
+        if(data.toLowerCase().startsWith("0x") === false){
+            data = "0x" + data;
+        }
+
+        this.data = Bytes.toArray(data);
+    }
+
+    setSignature(signature){
+        let input = this.from;
+        input.setSignature(signature);
+    }
+
+    signBytes(chainID){
+        // Detach the existing signature from the source if any, so that we don't sign the signature
+        let sig = this.from.signature;
+
+        this.from.signature = "";
+
+        let encodedChainID = RLP.encode(Bytes.fromString(chainID));
+        let encodedTxType = RLP.encode(Bytes.fromNumber(this.getType()));
+        let encodedTx = RLP.encode(this.rlpInput());
+        let payload = encodedChainID + encodedTxType.slice(2) + encodedTx.slice(2);
+
+        // For ethereum tx compatibility, encode the tx as the payload
+        let ethTxWrapper = new EthereumTx(payload);
+        let signedBytes = RLP.encode(ethTxWrapper.rlpInput()); // the signBytes conforms to the Ethereum raw tx format
+
+        // Attach the original signature back to the source
+        this.from.signature = sig;
+
+        return signedBytes;
+    }
+
+    getType(){
+        return TxType.TxTypeSmartContract;
+    }
+
+    rlpInput(){
+        let rlpInput = [
+            this.from.rlpInput(),
+            this.to.rlpInput(),
+
+            Bytes.fromNumber(this.gasLimit),
+            encodeWei(this.gasPrice),
+
+            Bytes.fromArray(this.data)
+        ];
+
+        return rlpInput;
+    }
+}
+
 var index = {
     SendTx,
     DepositStakeTx: DepositStakeTx,
     DepositStakeV2Tx: DepositStakeV2Tx,
     WithdrawStakeTx,
+    SmartContractTx,
     TxSigner,
     StakePurposes,
     Utils: {

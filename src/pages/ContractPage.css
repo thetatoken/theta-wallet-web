@@ -15,6 +15,10 @@
     position: relative;
 }
 
+.DeployContractContent{
+    padding-bottom: 44px;
+}
+
 .ContractPage textarea{
     height: 130px;
     padding-top: 10px;

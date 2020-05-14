@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React from "react";
+import React, {Fragment} from "react";
 import {connect} from 'react-redux'
 import './ContractPage.css';
 import GradientButton from "../components/buttons/GradientButton";
@@ -7,121 +7,154 @@ import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
 import ContractModes from "../constants/ContractModes";
 import Web3 from "web3";
-import { useForm } from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 
 const web3 = new Web3("http://localhost");
 
 
-
-function initContract(abiStr, address){
+function initContract(abiStr, address) {
     try {
-        console.log("initContract :: abiStr == ");
-        console.log(abiStr);
-
-        const abiJSON = JSON.parse(abiStr);
+        const abiJSON = parseJSON(abiStr);
 
         return new web3.eth.Contract(abiJSON, address);
-    }
-    catch (e) {
-        console.log("Caught!");
-        console.log(e);
+    } catch (e) {
         return null;
     }
 }
 
-function DeployContractFormExample(props) {
-    const {onSubmit} = props;
-    const { register, handleSubmit, errors } = useForm();
-
-    return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <input name="firstname" ref={register} /> {/* register an input */}
-
-            <input name="lastname" ref={register({ required: true })} />
-            {errors.lastname && 'Last name is required.'}
-
-            <input name="age" ref={register({ pattern: /\d+/ })} />
-            {errors.age && 'Please enter number for age.'}
-
-            <input type="submit" />
-        </form>
-    );
-}
-
-function parseJSON(value){
+function parseJSON(value) {
     try {
         const json = JSON.parse(value);
 
         return json;
-    }
-    catch (e) {
+    } catch (e) {
         return null;
     }
 }
 
-function isValidByteCode(value){
+function isValidByteCode(value) {
     const json = parseJSON(value);
 
-    console.log("isValidByteCode :: json ddddddddfddddddWOOF== " + json);
     return (_.isNil((json && json['object'])) === false);
 }
 
-function isValidABI(value){
+function validateByteCode(value){
+    return (isValidByteCode(value) || "Invalid byte code");
+}
+
+function isValidABI(value) {
     const json = parseJSON(value);
 
-    try{
+    try {
         return (_.isNil((json && (new web3.eth.Contract(json, null)))) === false);
-    }
-    catch (e) {
+    } catch (e) {
         return false;
     }
 }
 
+function validateABI(value){
+    return (isValidABI(value) || "Invalid ABI/JSON interface");
+}
+
+function validateInput(type, value){
+    try {
+        return _.isNil(web3.eth.abi.encodeParameter(type, JSON.parse(value))) === false;
+    }
+    catch (e) {
+        return "Invalid value for type of " + type;
+    }
+}
+
+function getConstructor(jsonInterface) {
+    const constructors = _.filter(jsonInterface, function (o) {
+        return (o.type === "constructor");
+    });
+
+    return _.first(constructors);
+}
+
 function DeployContractForm(props) {
     const {onSubmit} = props;
-    const { register, handleSubmit, errors, watch } = useForm(); // initialise the hook
+    const {register, handleSubmit, errors, watch} = useForm({
+        mode: 'onChange',
+    });
     const abi = watch("abi");
+    const contract = initContract(abi, null);
+    const jsonInterface = _.get(contract, ['options', 'jsonInterface']);
+    const constructor = getConstructor(jsonInterface);
+    const constructorInputs = _.get(constructor, ['inputs'], []);
 
-    console.log("abi == " + abi);
-    //TODO parse the abi and find the constructor!...loop over the constructor inputs to build inputs!
+    window.contract = contract;
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="InputTitle">Byte Code</div>
+
+            {/*Byte Code Section*/}
+            <div className="FormSectionTitle">Byte Code</div>
             <textarea className="RoundedInput"
-                      placeholder="Enter byte code"
+                      placeholder="Paste byte code"
                       name="byteCode"
                       ref={register({
-                          required: true,
-                          validate: isValidByteCode
+                          required: "Contract byte code is required.",
+                          validate: validateByteCode
                       })}
             />
-            {errors.byteCode && <div className="InputError">Please enter valid Byte Code.</div>}
+            {errors.byteCode && <div className="InputError">{errors.byteCode.message}</div>}
 
-            <div className="InputTitle">ABI/JSON Interface</div>
+
+            {/*ABI/JSON Interface Section*/}
+            <div className="FormSectionTitle">ABI/JSON Interface</div>
             <textarea className="RoundedInput"
-                      placeholder="Enter ABI/JSON interface"
+                      placeholder="Paste ABI/JSON interface"
                       name="abi"
                       ref={register({
-                          required: true,
-                          validate: isValidABI
+                          required: "Contract ABI/JSON interface is required.",
+                          validate: validateABI
                       })}
             />
-            {errors.abi && <div className="InputError">Please enter a valid ABI/JSON Interface.</div>}
+            {errors.abi && <div className="InputError">{errors.abi.message}</div>}
 
 
+            {/*Constructor Inputs Section*/}
+            {
+                constructorInputs.length > 0 &&
+                    <div className="FormSectionTitle">Constructor Inputs</div>
+            }
+            {
+                constructorInputs.map((value, index) => {
+                    const {name, type} = value;
+                    return (
+                        <Fragment key={name}>
+                            <div className="InputTitle">{name + " (" + type +")"}</div>
+                            <input className="RoundedInput"
+                                   placeholder={"Enter " + name}
+                                   name={"inputs." + name}
+                                   ref={register({
+                                       required: "Input " + name + " is required",
+                                       validate: (val) => {
+                                           return validateInput(type, val)
+                                       }
+                                   })}
+                            />
+                            {_.get(errors, ['inputs', name]) && <div className="InputError">{_.get(errors, ['inputs', name, 'message'])}</div>}
+                        </Fragment>
+                    );
+                })
+            }
 
-            <div className="InputTitle">Contract Name</div>
+
+            {/*Contract Name Section*/}
+            <div className="FormSectionTitle">Contract Name</div>
             <input className="RoundedInput"
                    placeholder="Enter contract name"
                    name="name"
-                   ref={register({ required: false })}
+                   ref={register({required: false})}
             />
+
 
             <GradientButton title="Deploy Contract"
                             style={{marginTop: 15}}
-                            // loading={this.state.loading}
-                            // disabled={(this.state.loading)}
+                            disabled={(_.size(errors) > 0)}
                             onClick={handleSubmit(onSubmit)}
             />
         </form>
@@ -129,16 +162,14 @@ function DeployContractForm(props) {
 }
 
 class InteractWithContractContent extends React.Component {
-    constructor(){
+    constructor() {
         super();
 
         this.defaultState = {
             address: '',
             abi: '',
 
-            formErrors: {
-
-            },
+            formErrors: {},
 
             loading: false,
         };
@@ -155,19 +186,6 @@ class InteractWithContractContent extends React.Component {
 
     validate = () => {
 
-    };
-
-    initContract = () => {
-        const {abi, address} = this.state;
-        const web3 = new Web3("http://localhost");
-
-        const thetaContract = new web3.eth.Contract(abi, address);
-
-        //For testing :)
-        let data = thetaContract.methods.SetValue(3).encodeABI();
-        console.log("data == " + data);
-        console.log("thetaContract.methods['SetValue'](3) == " + thetaContract.methods['SetValue'](3));
-        window.MYContract = thetaContract;
     };
 
     render() {
@@ -200,86 +218,42 @@ class InteractWithContractContent extends React.Component {
 }
 
 class DeployContractContent extends React.Component {
-    constructor(){
+    constructor() {
         super();
 
         this.defaultState = {
-            byteCode: '',
-            abi: '',
-            name:  '',
-
-            formErrors: {
-
-            },
-
             loading: false,
-
-            contract: null
         };
 
         this.state = this.defaultState;
     }
 
-    handleChange = (event) => {
-        let name = event.target.name;
-        let value = event.target.value;
+    onSubmit = (formData) => {
+        console.log("Submitted...");
+        console.log(formData);
+        //TODO create the Tx and open the confirm modal
+        const {abi, byteCode, inputs} = formData;
+        const contract = initContract(abi, null);
+        const jsonInterface = _.get(contract, ['options', 'jsonInterface']);
+        const constructor = getConstructor(jsonInterface);
+        const constructorInputs = _.get(constructor, ['inputs'], []);
 
-        this.setState({[name]: value}, this.validate);
-    };
+        const encodedInputs = _.map(constructorInputs, ({name, type}) => {
+            //TODO might need to JSON.parse inputs.name
+            //return web3.eth.abi.encodeParameter(type, JSON.parse(inputs[name]));
+            return web3.eth.abi.encodeParameter(type, inputs[name]);
+        });
 
-    validate = () => {
-        const {abi, byteCode, name} = this.state;
+        console.log("encodedInputs == ");
+        console.log(encodedInputs);
 
-        if(_.isEmpty(abi) === false){
-            const contract = initContract(abi, null);
-
-            window.MYYcontract = contract;
-
-            if(contract){
-                this.setState({
-                    contract: contract
-                });
-            }
-        }
+        //web3.eth.abi.encodeParameter('uint256', '2345675643');
     };
 
     render() {
         return (
             <div className="DeployContractContent">
-                <DeployContractForm onSubmit={(formData)=>{
-                    console.log("Submitted...");
-                    console.log(formData);
-                }}/>
-
-                <div className="InputTitle">Byte Code</div>
-                <textarea className="RoundedInput"
-                       placeholder="Enter byte code"
-                       name="byteCode"
-                       value={this.state.byteCode}
-                       onChange={this.handleChange}
-                />
-
-                <div className="InputTitle">ABI/JSON Interface</div>
-                <textarea className="RoundedInput"
-                          placeholder="Enter ABI/JSON interface"
-                          name="abi"
-                          value={this.state.abi}
-                          onChange={this.handleChange}
-                />
-
-                <div className="InputTitle">Contract Name</div>
-                <input className="RoundedInput"
-                       placeholder="Enter contract name"
-                       name="name"
-                       value={this.state.name}
-                       onChange={this.handleChange}
-                />
-
-                <GradientButton title="Deploy Contract"
-                                style={{marginTop: 15}}
-                                loading={this.state.loading}
-                                disabled={(this.state.loading)}
-                />
+                <DeployContractForm onSubmit={this.onSubmit}/>
             </div>
         );
     }
@@ -318,9 +292,7 @@ class ContractPage extends React.Component {
 }
 
 const mapStateToProps = state => {
-    return {
-
-    };
+    return {};
 };
 
 export default connect(mapStateToProps)(ContractPage);
