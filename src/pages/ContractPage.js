@@ -1,3 +1,4 @@
+import {BigNumber} from 'bignumber.js';
 import _ from 'lodash';
 import React, {Fragment} from "react";
 import {connect} from 'react-redux'
@@ -8,6 +9,9 @@ import TabBar from "../components/TabBar";
 import ContractModes from "../constants/ContractModes";
 import Web3 from "web3";
 import {useForm} from 'react-hook-form';
+import Theta from "../services/Theta";
+import Wallet from "../services/Wallet";
+import ThetaJS from "../libs/thetajs.esm";
 
 const web3 = new Web3("http://localhost");
 
@@ -231,8 +235,10 @@ class DeployContractContent extends React.Component {
     onSubmit = (formData) => {
         console.log("Submitted...");
         console.log(formData);
+
         //TODO create the Tx and open the confirm modal
         const {abi, byteCode, inputs} = formData;
+        const byteCodeJson = parseJSON(byteCode);
         const contract = initContract(abi, null);
         const jsonInterface = _.get(contract, ['options', 'jsonInterface']);
         const constructor = getConstructor(jsonInterface);
@@ -240,14 +246,41 @@ class DeployContractContent extends React.Component {
 
         const encodedInputs = _.map(constructorInputs, ({name, type}) => {
             //TODO might need to JSON.parse inputs.name
-            //return web3.eth.abi.encodeParameter(type, JSON.parse(inputs[name]));
-            return web3.eth.abi.encodeParameter(type, inputs[name]);
+            return web3.eth.abi.encodeParameter(type, inputs[name]).replace("0x", "");
         });
+        const joinedEncodedInputs = _.reduce(encodedInputs, function(str, encodedInput) {
+            return str + encodedInput;
+        }, "");
 
         console.log("encodedInputs == ");
         console.log(encodedInputs);
 
-        //web3.eth.abi.encodeParameter('uint256', '2345675643');
+        console.log("joinedEncodedInputs == ");
+        console.log(joinedEncodedInputs);
+
+        //TODO should be real sequence...
+        const feeInTFuelWei  = (new BigNumber(10)).pow(12);
+        const from =  Wallet.getWalletAddress();
+        const gasPrice = feeInTFuelWei;
+        const gasLimit = 200000;
+        const data = byteCodeJson.object + joinedEncodedInputs;
+        const value = 0;
+        const senderSequence = 1;
+
+        let tx = Theta.unsignedSmartContractTx({
+            from: from,
+            to: null,
+            data: data,
+            value: value,
+            transactionFee: gasPrice,
+            gasLimit: gasLimit
+        }, senderSequence);
+
+        const rawTxBytes = ThetaJS.TxSigner.serializeTx(tx);
+
+        console.log("rawTxBytes.toString('hex') = " + rawTxBytes.toString('hex'));
+
+        //TODO open the confirm Tx modal...
     };
 
     render() {
