@@ -1,4 +1,4 @@
-const BASE_URL = "https://api-wallet.thetatoken.org";
+const BASE_URL = "http://aa01e64343b8911e9a1e80a36cb5f0f9-1355901417.us-east-2.elb.amazonaws.com";//https://api-wallet.thetatoken.org";
 const DEFAULT_HEADERS = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -44,7 +44,16 @@ function buildHeaders(additionalHeaders) {
 }
 
 function buildURL(path, queryParams) {
-    return BASE_URL + path + objectToQueryString(queryParams);
+    let url = null;
+
+    if(path.startsWith("http://") || path.startsWith("https://")){
+        url = path + objectToQueryString(queryParams);
+    }
+    else{
+        url = BASE_URL + path + objectToQueryString(queryParams);
+    }
+
+    return url;
 }
 
 function sendRequest(path, method, additionalHeaders, queryParams, body) {
@@ -132,5 +141,25 @@ export default class Api {
         return GET(path, null, queryParams);
     }
 
+    //
+    //Smart Contract
+    //
+
+    static callSmartContract(body, queryParams) {
+        //let path = `/smart-contract/call`;
+
+        //FIXME: this is only for testing...once the backend is deployed, we can call the API as normal...but the privatenet does not have
+        let path = "http://aa01e64343b8911e9a1e80a36cb5f0f9-1355901417.us-east-2.elb.amazonaws.com/smart-contract/call";
+        path = "/smart-contract/call";
+
+        return POST(path, null, queryParams, body);
+    }
+
+    static executeSmartContract(body, queryParams) {
+        let path = "http://aa01e64343b8911e9a1e80a36cb5f0f9-1355901417.us-east-2.elb.amazonaws.com/tx";
+        path = "/tx";
+
+        return POST(path, null, queryParams, body);
+    }
 }
 

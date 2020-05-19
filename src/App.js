@@ -12,7 +12,7 @@ import Router from "./services/Router";
 import Transactions from './services/Transactions'
 import UnsupportedDevice from './components/UnsupportedDevice'
 import Wallet from "./services/Wallet";
-import {isStakingAvailable, isSmartContractAvailable} from './Flags';
+import {isStakingAvailable, areSmartContractsAvailable} from './Flags';
 
 class WalletTabBar extends Component {
     constructor() {
@@ -67,7 +67,7 @@ class WalletTabBar extends Component {
                     />
                 }
                 {
-                    isSmartContractAvailable() &&
+                    areSmartContractsAvailable() &&
                     <TabBarItem
                         title="Contract"
                         href="/wallet/contract"

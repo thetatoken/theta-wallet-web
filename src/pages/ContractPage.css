@@ -15,7 +15,9 @@
     position: relative;
 }
 
-.DeployContractContent{
+.DeployContractContent,
+.InteractWithContractContent{
+    padding-top: 22px;
     padding-bottom: 44px;
 }
 
@@ -26,6 +28,10 @@
 }
 
 .ContractPage input{
+    margin-bottom: 20px !important;
+}
+
+.ContractPage select{
     margin-bottom: 20px !important;
 }
 

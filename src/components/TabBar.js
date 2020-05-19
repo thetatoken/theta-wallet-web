@@ -12,7 +12,9 @@ class TabBar extends React.Component {
         });
 
         return (
-            <div className={className}>
+            <div className={className}
+                 style={this.props.style}
+            >
                 {this.props.children}
             </div>
         );

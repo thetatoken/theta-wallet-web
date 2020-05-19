@@ -12,9 +12,12 @@ class PageHeader extends React.Component {
 
         return (
             <div className={className}>
-                <div className="PageHeader__title">
-                    {this.props.title}
-                </div>
+                {
+                    this.props.title &&
+                    <div className="PageHeader__title">
+                        {this.props.title}
+                    </div>
+                }
                 {this.props.children}
             </div>
         );

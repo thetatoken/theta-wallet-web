@@ -1,5 +1,5 @@
 import Theta from './services/Theta';
-import Networks from './constants/Networks';
+import Networks, {canViewSmartContracts} from './constants/Networks';
 
 export function isStakingAvailable(){
     return true;
@@ -9,6 +9,8 @@ export function canStakeFromHardwareWallet(){
     return true;
 }
 
-export function isSmartContractAvailable(){
-    return true;
+export function areSmartContractsAvailable(){
+    const network = Theta.getChainID();
+
+    return canViewSmartContracts(network);
 }

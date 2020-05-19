@@ -14,6 +14,7 @@ import DepositStakeModal from "../modals/DepositStakeModal";
 import DepositStakeConfirmationModal from "../modals/DepositStakeConfirmationModal";
 import WithdrawStakeModal from "../modals/WithdrawStakeModal";
 import WithdrawStakeConfirmationModal from "../modals/WithdrawStakeConfirmationModal";
+import SmartContractConfirmationModal from "../modals/SmartContractConfirmationModal";
 import NetworkSelectorModal from "../modals/NetworkSelectorModal";
 
 const ModalComponentByType = {
@@ -26,6 +27,7 @@ const ModalComponentByType = {
     [ModalTypes.DEPOSIT_STAKE_CONFIRMATION]: DepositStakeConfirmationModal,
     [ModalTypes.WITHDRAW_STAKE]: WithdrawStakeModal,
     [ModalTypes.WITHDRAW_STAKE_CONFIRMATION]: WithdrawStakeConfirmationModal,
+    [ModalTypes.SMART_CONTRACT_CONFIRMATION]: SmartContractConfirmationModal,
     [ModalTypes.NETWORK_SELECTOR]: NetworkSelectorModal
 };
 

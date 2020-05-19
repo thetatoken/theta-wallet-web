@@ -103,3 +103,14 @@ export function numberWithCommas(x) {
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return parts.join(".");
 }
+
+export function getQueryParameters(str) {
+    const searchStr = (str || document.location.search);
+
+    if(_.isNil(searchStr) || searchStr.length === 0){
+        return {};
+    }
+    else{
+        return searchStr.replace(/(^\?)/,'').split("&").map(function(n){return n = n.split("="),this[n[0]] = n[1],this}.bind({}))[0];
+    }
+}

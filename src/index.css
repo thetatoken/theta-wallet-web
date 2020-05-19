@@ -117,3 +117,19 @@ a{
   color: white;
   margin-bottom: 15px;
 }
+
+.FormColumns{
+  display: flex;
+  flex-direction: row;
+  margin-left: -6px;
+  margin-right: -6px;
+}
+
+.FormColumn{
+  display: flex;
+  flex-direction: column;
+  flex: 50%;
+  margin-left: 6px;
+  margin-right: 6px;
+  max-width: calc(50% - 12px);
+}

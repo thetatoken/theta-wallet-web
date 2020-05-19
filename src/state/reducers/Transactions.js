@@ -231,6 +231,26 @@ export const transactionsReducer = (state = INITIAL_STATE, action) => {
             });
         }
 
+        //Create Smart Contract Transaction
+        case actionTypes.CREATE_SMART_CONTRACT_TRANSACTION_START: {
+            return Object.assign({}, state, {
+                isCreatingTransaction: true
+            });
+        }
+        case actionTypes.CREATE_SMART_CONTRACT_TRANSACTION_END: {
+            return Object.assign({}, state, {
+                isCreatingTransaction: false
+            });
+        }
+        case actionTypes.CREATE_SMART_CONTRACT_TRANSACTION_SUCCESS: {
+            let body = action.response.body;
+            let hash = body.hash;
+            let network = action.metadata.network;
+            //TODO grab the contract address here if it was a deploy, otherwise show a popup of the result?
+
+            return state;
+        }
+
         //Fetch Transaction
         case actionTypes.FETCH_TRANSACTION_SUCCESS: {
             let metadata = action.metadata;

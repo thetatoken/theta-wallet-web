@@ -1,6 +1,6 @@
 import {BigNumber} from 'bignumber.js';
 import _ from 'lodash';
-import React, {Fragment} from "react";
+import React, {Fragment, useState, useEffect} from "react";
 import {connect} from 'react-redux'
 import './ContractPage.css';
 import GradientButton from "../components/buttons/GradientButton";
@@ -12,6 +12,14 @@ import {useForm} from 'react-hook-form';
 import Theta from "../services/Theta";
 import Wallet from "../services/Wallet";
 import ThetaJS from "../libs/thetajs.esm";
+import {store} from "../state";
+import {showModal} from "../state/actions/Modals";
+import ModalTypes from "../constants/ModalTypes";
+import GhostButton from "../components/buttons/GhostButton";
+import PageHeader from "../components/PageHeader";
+import {getQueryParameters, zipMap} from "../utils/Utils";
+import {NetworksWithDescriptions} from "../constants/Networks";
+import Api from "../services/Api";
 
 const web3 = new Web3("http://localhost");
 
@@ -42,7 +50,7 @@ function isValidByteCode(value) {
     return (_.isNil((json && json['object'])) === false);
 }
 
-function validateByteCode(value){
+function validateByteCode(value) {
     return (isValidByteCode(value) || "Invalid byte code");
 }
 
@@ -56,17 +64,38 @@ function isValidABI(value) {
     }
 }
 
-function validateABI(value){
+function validateAddress(value) {
+    return (web3.utils.isAddress(value) || "Invalid address");
+}
+
+function validateABI(value) {
     return (isValidABI(value) || "Invalid ABI/JSON interface");
 }
 
-function validateInput(type, value){
+function validateFunctionName(value) {
+    if (_.isNil(value) || value.length === 0) {
+        return "Function is required"
+    } else {
+        return true;
+    }
+}
+
+function validateInput(type, value) {
+    return true;
+
     try {
         return _.isNil(web3.eth.abi.encodeParameter(type, JSON.parse(value))) === false;
-    }
-    catch (e) {
+    } catch (e) {
         return "Invalid value for type of " + type;
     }
+}
+
+function getFunctions(jsonInterface) {
+    const functions = _.filter(jsonInterface, function (o) {
+        return (o.type === "function");
+    });
+
+    return functions;
 }
 
 function getConstructor(jsonInterface) {
@@ -77,12 +106,54 @@ function getConstructor(jsonInterface) {
     return _.first(constructors);
 }
 
+function Inputs(inputs, formHook) {
+    const {register, errors} = formHook;
+
+    return (
+        <div>
+            {
+                inputs.length > 0 &&
+                <div>
+                    <div className="FormSectionTitle">Constructor Inputs</div>
+                    <div className="FormColumns">
+                        {
+                            inputs.map((value, index) => {
+                                const {name, type} = value;
+                                return (
+                                    <Fragment key={name}>
+                                        <div className="FormColumn">
+                                            <div className="InputTitle">{name + " (" + type + ")"}</div>
+                                            <input className="RoundedInput"
+                                                   placeholder={"Enter " + name}
+                                                   name={"inputs." + name}
+                                                   ref={register({
+                                                       required: "Input " + name + " is required",
+                                                       validate: (val) => {
+                                                           return validateInput(type, val)
+                                                       }
+                                                   })}
+                                            />
+                                            {_.get(errors, ['inputs', name]) && <div
+                                                className="InputError">{_.get(errors, ['inputs', name, 'message'])}</div>}
+                                        </div>
+                                    </Fragment>
+                                );
+                            })
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    )
+}
+
 function DeployContractForm(props) {
     const {onSubmit} = props;
     const {register, handleSubmit, errors, watch} = useForm({
         mode: 'onChange',
     });
     const abi = watch("abi");
+    const byteCode = watch("byteCode");
     const contract = initContract(abi, null);
     const jsonInterface = _.get(contract, ['options', 'jsonInterface']);
     const constructor = getConstructor(jsonInterface);
@@ -93,133 +164,168 @@ function DeployContractForm(props) {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
 
-            {/*Byte Code Section*/}
-            <div className="FormSectionTitle">Byte Code</div>
-            <textarea className="RoundedInput"
-                      placeholder="Paste byte code"
-                      name="byteCode"
-                      ref={register({
-                          required: "Contract byte code is required.",
-                          validate: validateByteCode
-                      })}
-            />
-            {errors.byteCode && <div className="InputError">{errors.byteCode.message}</div>}
+            <div className="FormColumns">
+                {/*ABI/JSON Interface Section*/}
+                <div className="FormColumn">
+                    <div className="FormSectionTitle">ABI/JSON Interface</div>
+                    <textarea className="RoundedInput"
+                              placeholder="Paste ABI/JSON interface"
+                              name="abi"
+                              ref={register({
+                                  required: "Contract ABI/JSON interface is required.",
+                                  validate: validateABI
+                              })}
+                    />
+                    {errors.abi && <div className="InputError">{errors.abi.message}</div>}
+                </div>
 
+                {/*Byte Code Section*/}
+                <div className="FormColumn">
+                    <div className="FormSectionTitle">Byte Code</div>
+                    <textarea className="RoundedInput"
+                              placeholder="Paste byte code"
+                              name="byteCode"
+                              ref={register({
+                                  required: "Contract byte code is required.",
+                                  validate: validateByteCode
+                              })}
+                    />
+                    {errors.byteCode && <div className="InputError">{errors.byteCode.message}</div>}
+                </div>
+            </div>
 
-            {/*ABI/JSON Interface Section*/}
-            <div className="FormSectionTitle">ABI/JSON Interface</div>
-            <textarea className="RoundedInput"
-                      placeholder="Paste ABI/JSON interface"
-                      name="abi"
-                      ref={register({
-                          required: "Contract ABI/JSON interface is required.",
-                          validate: validateABI
-                      })}
-            />
-            {errors.abi && <div className="InputError">{errors.abi.message}</div>}
-
-
-            {/*Constructor Inputs Section*/}
             {
-                constructorInputs.length > 0 &&
-                    <div className="FormSectionTitle">Constructor Inputs</div>
-            }
-            {
-                constructorInputs.map((value, index) => {
-                    const {name, type} = value;
-                    return (
-                        <Fragment key={name}>
-                            <div className="InputTitle">{name + " (" + type +")"}</div>
-                            <input className="RoundedInput"
-                                   placeholder={"Enter " + name}
-                                   name={"inputs." + name}
-                                   ref={register({
-                                       required: "Input " + name + " is required",
-                                       validate: (val) => {
-                                           return validateInput(type, val)
-                                       }
-                                   })}
-                            />
-                            {_.get(errors, ['inputs', name]) && <div className="InputError">{_.get(errors, ['inputs', name, 'message'])}</div>}
-                        </Fragment>
-                    );
+                Inputs(constructorInputs, {
+                    register: register,
+                    errors: errors
                 })
             }
 
-
-            {/*Contract Name Section*/}
-            <div className="FormSectionTitle">Contract Name</div>
-            <input className="RoundedInput"
-                   placeholder="Enter contract name"
-                   name="name"
-                   ref={register({required: false})}
-            />
-
-
             <GradientButton title="Deploy Contract"
                             style={{marginTop: 15}}
-                            disabled={(_.size(errors) > 0)}
+                            disabled={(_.size(errors) > 0) || _.isNil(abi) || _.isNil(byteCode)}
                             onClick={handleSubmit(onSubmit)}
             />
         </form>
     );
 }
 
-class InteractWithContractContent extends React.Component {
-    constructor() {
-        super();
+function InteractWithContractForm(props) {
+    const {defaultFormValues, disabled, loading, onSubmit, onChange} = props;
+    const defaultValues = _.merge({
+        functionName: ""
+    }, defaultFormValues);
 
-        this.defaultState = {
-            address: '',
-            abi: '',
+    const {register, handleSubmit, errors, watch} = useForm({
+        mode: 'onChange',
+        defaultValues: defaultValues
+    });
+    const [lastFormState, setLastFormState] = useState(defaultValues);
+    const formState = watch(); // watching every fields in the form
+    const isDirty = (_.isEqual(lastFormState, formState) === false);
 
-            formErrors: {},
+    useEffect(() => {
+        if (isDirty) {
+            setLastFormState(formState);
 
-            loading: false,
-        };
+            if (onChange) {
+                onChange();
+            }
+        }
+    });
 
-        this.state = this.defaultState;
-    }
+    const abi = watch("abi");
+    const address = watch("address");
+    const functionName = watch("functionName");
+    const contract = initContract(abi, null);
+    const jsonInterface = _.get(contract, ['options', 'jsonInterface']);
+    const functions = getFunctions(jsonInterface) || [];
+    const functionsByName = zipMap(functions.map(({name}) => name), functions);
+    const functionData = _.get(functionsByName, [functionName]);
+    const functionInputs = _.get(functionData, ['inputs'], []);
+    const functionStateMutability = _.get(functionData, ['stateMutability'], null);
 
-    handleChange = (event) => {
-        let name = event.target.name;
-        let value = event.target.value;
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
 
-        this.setState({[name]: value}, this.validate);
-    };
+            {/*Contract Name Section*/}
+            <div className="FormSectionTitle">Contract Address</div>
+            <input className="RoundedInput"
+                   placeholder="Enter contract address"
+                   name="address"
+                   ref={register({
+                       required: "Contract address is required.",
+                       validate: validateAddress
+                   })}
+            />
+            {errors.address && <div className="InputError">{errors.address.message}</div>}
 
-    validate = () => {
 
-    };
+            {/*ABI/JSON Interface Section*/}
+            <div className="FormColumns">
 
-    render() {
-        return (
-            <div className="InteractWithContractContent">
-                <div className="InputTitle">Contract Address</div>
-                <input className="RoundedInput"
-                       placeholder="Enter contract address"
-                       name="address"
-                       value={this.state.address}
-                       onChange={this.handleChange}
-                />
+                <div className="FormColumn">
+                    <div className="FormSectionTitle">ABI/JSON Interface</div>
+                    <textarea className="RoundedInput"
+                              placeholder="Paste ABI/JSON interface"
+                              name="abi"
+                              ref={register({
+                                  required: "Contract ABI/JSON interface is required.",
+                                  validate: validateABI
+                              })}
+                    />
+                    {errors.abi && <div className="InputError">{errors.abi.message}</div>}
+                </div>
 
-                <div className="InputTitle">ABI/JSON Interface</div>
-                <textarea className="RoundedInput"
-                          placeholder="Enter ABI/JSON interface"
-                          name="abi"
-                          value={this.state.abi}
-                          onChange={this.handleChange}
-                />
+                {
+                    functions.length > 0 &&
+                    <div className="FormColumn">
+                        <div className="FormSectionTitle">Function</div>
+                        <select name="functionName"
+                                className="RoundedInput"
+                                placeholder="Choose function"
+                                ref={register({
+                                    required: "Function is required.",
+                                    validate: validateFunctionName
+                                })}>
+                            <option value={""}
+                                    key={"__placeholder__"}>
+                                Choose function
+                            </option>
+                            {
+                                functions.map((value, index) => {
+                                    const {name, type} = value;
+                                    return (
+                                        <option value={name}
+                                                key={name}
+                                        >{name}</option>
+                                    );
+                                })
+                            }
+                        </select>
+                        {errors.functionName && <div className="InputError">{errors.functionName.message}</div>}
+                    </div>
+                }
 
-                <GradientButton title="Continue"
-                                style={{marginTop: 15}}
-                                loading={this.state.loading}
-                                disabled={(this.state.loading)}
-                />
             </div>
-        );
-    }
+
+            {
+                Inputs(functionInputs, {
+                    register: register,
+                    errors: errors
+                })
+            }
+
+            <GradientButton title={(functionStateMutability === "view") ? "Read" : "Write"}
+                            style={{marginTop: 15}}
+                            disabled={disabled || (_.size(errors) > 0) || _.isNil(abi) || _.isNil(address) || _.isNil(functionName)}
+                            loading={loading}
+                            onClick={handleSubmit(onSubmit)}
+            />
+        </form>
+    );
 }
+
 
 class DeployContractContent extends React.Component {
     constructor() {
@@ -233,10 +339,6 @@ class DeployContractContent extends React.Component {
     }
 
     onSubmit = (formData) => {
-        console.log("Submitted...");
-        console.log(formData);
-
-        //TODO create the Tx and open the confirm modal
         const {abi, byteCode, inputs} = formData;
         const byteCodeJson = parseJSON(byteCode);
         const contract = initContract(abi, null);
@@ -244,43 +346,38 @@ class DeployContractContent extends React.Component {
         const constructor = getConstructor(jsonInterface);
         const constructorInputs = _.get(constructor, ['inputs'], []);
 
-        const encodedInputs = _.map(constructorInputs, ({name, type}) => {
-            //TODO might need to JSON.parse inputs.name
-            return web3.eth.abi.encodeParameter(type, inputs[name]).replace("0x", "");
+        const constructorInputTypes = _.map(constructorInputs, ({name, type}) => {
+            return type;
         });
-        const joinedEncodedInputs = _.reduce(encodedInputs, function(str, encodedInput) {
-            return str + encodedInput;
-        }, "");
-
-        console.log("encodedInputs == ");
-        console.log(encodedInputs);
-
-        console.log("joinedEncodedInputs == ");
-        console.log(joinedEncodedInputs);
+        const constructorInputValues = _.map(constructorInputs, ({name, type}) => {
+            return inputs[name];
+        });
+        const encodedParameters = web3.eth.abi.encodeParameters(constructorInputTypes, constructorInputValues).slice(2);
 
         //TODO should be real sequence...
-        const feeInTFuelWei  = (new BigNumber(10)).pow(12);
-        const from =  Wallet.getWalletAddress();
-        const gasPrice = feeInTFuelWei;
-        const gasLimit = 200000;
-        const data = byteCodeJson.object + joinedEncodedInputs;
+        const feeInTFuelWei = (new BigNumber(10)).pow(12);
+        const from = Wallet.getWalletAddress();
+        const gasPrice = Theta.getTransactionFee(); //feeInTFuelWei;
+        const gasLimit = 2000000;
+        const data = byteCodeJson.object + encodedParameters;
         const value = 0;
-        const senderSequence = 1;
 
-        let tx = Theta.unsignedSmartContractTx({
-            from: from,
-            to: null,
-            data: data,
-            value: value,
-            transactionFee: gasPrice,
-            gasLimit: gasLimit
-        }, senderSequence);
-
-        const rawTxBytes = ThetaJS.TxSigner.serializeTx(tx);
-
-        console.log("rawTxBytes.toString('hex') = " + rawTxBytes.toString('hex'));
-
-        //TODO open the confirm Tx modal...
+        store.dispatch(showModal({
+            type: ModalTypes.SMART_CONTRACT_CONFIRMATION,
+            props: {
+                network: Theta.getChainID(),
+                contractMode: ContractModes.DEPLOY,
+                contractAbi: abi,
+                transaction: {
+                    from: from,
+                    to: null,
+                    data: data,
+                    value: value,
+                    transactionFee: gasPrice,
+                    gasLimit: gasLimit
+                }
+            }
+        }));
     };
 
     render() {
@@ -292,31 +389,172 @@ class DeployContractContent extends React.Component {
     }
 }
 
+class InteractWithContractContent extends React.Component {
+    constructor() {
+        super();
+
+        this.defaultState = {
+            loading: false,
+
+            result: null
+        };
+
+        this.state = this.defaultState;
+    }
+
+    onSubmit = async (formData) => {
+        const {address, abi, functionName, inputs} = formData;
+        const contract = initContract(abi, address);
+        const jsonInterface = _.get(contract, ['options', 'jsonInterface']);
+        const functions = getFunctions(jsonInterface) || [];
+        const functionsByName = zipMap(functions.map(({name}) => name), functions);
+        const functionData = _.get(functionsByName, [functionName]);
+        const functionInputs = _.get(functionData, ['inputs'], []);
+        const functionSignature = _.get(functionData, ['signature']).slice(2);
+        const functionStateMutability = _.get(functionData, ['stateMutability'], null);
+
+        const inputTypes = _.map(functionInputs, ({name, type}) => {
+            return type;
+        });
+        const inputValues = _.map(functionInputs, ({name, type}) => {
+            return inputs[name];
+        });
+        const encodedParameters = web3.eth.abi.encodeParameters(inputTypes, inputValues).slice(2);
+
+        const feeInTFuelWei = (new BigNumber(10)).pow(12);
+        const from = Wallet.getWalletAddress();
+        const gasPrice = Theta.getTransactionFee(); //feeInTFuelWei;
+        const gasLimit = 2000000;
+        const data = functionSignature + encodedParameters;
+        const value = 0;
+        const senderSequence = 1;
+
+
+        if (functionStateMutability === "view") {
+            this.setState({
+                isLoading: true
+            });
+
+            //Call smart contract (no signing)
+            const senderSequence = 1;
+            const tx = Theta.unsignedSmartContractTx({
+                from: from,
+                to: address,
+                data: data,
+                value: value,
+                transactionFee: gasPrice,
+                gasLimit: gasLimit
+            }, senderSequence);
+            const rawTxBytes = ThetaJS.TxSigner.serializeTx(tx);
+            const callResponse = await Api.callSmartContract({data: rawTxBytes.toString('hex').slice(2)}, {network: Theta.getChainID()});
+            const callResponseJSON = await callResponse.json();
+
+            this.setState({
+                callResult: _.get(callResponseJSON, 'result'),
+                isLoading: false
+            });
+        } else {
+            store.dispatch(showModal({
+                type: ModalTypes.SMART_CONTRACT_CONFIRMATION,
+                props: {
+                    network: Theta.getChainID(),
+                    contractMode: ContractModes.EXECUTE,
+                    contractAbi: abi,
+                    transaction: {
+                        from: from,
+                        to: address,
+                        data: data,
+                        value: value,
+                        transactionFee: gasPrice,
+                        gasLimit: gasLimit
+                    }
+                }
+            }));
+        }
+    };
+
+    onChange = () => {
+        this.setState({
+            callResult: null
+        });
+    };
+
+    render() {
+        const {defaultFormValues} = this.props;
+        const {isLoading, callResult} = this.state;
+
+        return (
+            <div className="InteractWithContractContent">
+                <InteractWithContractForm defaultFormValues={defaultFormValues}
+                                          onSubmit={this.onSubmit}
+                                          onChange={this.onChange}
+                                          loading={isLoading}
+                                          disabled={isLoading}
+                />
+                {
+                    callResult &&
+                    <div style={{
+                        marginTop: 20
+                    }}>
+                        <div>
+                            <div className="InputTitle">Result</div>
+                            <input className="RoundedInput"
+                                   name={"inputs." + name}
+                                   value={_.get(callResult, 'vm_return')}
+                                   readOnly
+                            />
+                        </div>
+
+                        <div className="InputError">{_.get(callResult, 'vm_error')}</div>
+                    </div>
+                }
+            </div>
+        );
+    }
+}
+
+
 class ContractPage extends React.Component {
     render() {
         let contractMode = this.props.match.params.contractMode;
 
+        console.log("this.props.history ==");
+        console.log(this.props.history);
+
+        let queryParams = getQueryParameters(this.props.history.location.search);
+        if (queryParams['abi']) {
+            queryParams['abi'] = atob(queryParams['abi']);
+        }
+        console.log("queryParams == ");
+        console.log(queryParams);
+
         return (
             <div className="ContractPage">
                 <div className="ContractPage__detail-view">
-                    <TabBar centered={true}
-                            condensed={false}>
-                        <TabBarItem
-                            title="Deploy Contract"
-                            href={"/wallet/contract/" + ContractModes.DEPLOY}
-                        />
-                        <TabBarItem
-                            title="Interact with Contract"
-                            href={"/wallet/contract/" + ContractModes.INTERACT}
-                        />
-                    </TabBar>
+                    <PageHeader title={null}
+                                sticky={true}>
+                        <TabBar centered={true}
+                                condensed={false}
+                                style={{width: "100%"}}
+                        >
+                            <TabBarItem
+                                title="Deploy Contract"
+                                href={"/wallet/contract/" + ContractModes.DEPLOY}
+                            />
+                            <TabBarItem
+                                title="Interact with Contract"
+                                href={"/wallet/contract/" + ContractModes.INTERACT}
+                            />
+                        </TabBar>
+                    </PageHeader>
+
                     {
                         (contractMode === ContractModes.DEPLOY) &&
                         <DeployContractContent/>
                     }
                     {
                         (contractMode === ContractModes.INTERACT) &&
-                        <InteractWithContractContent/>
+                        <InteractWithContractContent defaultFormValues={queryParams}/>
                     }
                 </div>
             </div>

@@ -9,6 +9,7 @@ import {copyToClipboard} from "../utils/Utils";
 import Alerts from "../services/Alerts";
 import {showModal} from "../state/actions/Modals";
 import ModalTypes from "../constants/ModalTypes";
+import {getNetworkName} from "../constants/Networks";
 
 const classNames = require('classnames');
 
@@ -80,8 +81,6 @@ class NavBar extends React.Component {
         const {network} = this.props;
         const address = Wallet.getWalletAddress();
 
-        console.log("Navbar :: network == " + network);
-
         return (
             <div className={classNames("NavBar", { 'NavBar--is-centered': this.props.centered })}>
                 <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -89,7 +88,7 @@ class NavBar extends React.Component {
                     <a className={classNames("NavBar__network-badge", {"NavBar__network-badge--is-disabled": !_.isNil(address)})}
                        onClick={this.onNetworkBadgeClick}
                     >
-                        {network}
+                        {getNetworkName(network)}
                     </a>
                 </div>
 
