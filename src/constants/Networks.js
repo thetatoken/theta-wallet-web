@@ -43,7 +43,8 @@ export const NetworkExplorerUrls = {
     [Networks.THETA_MAINNET]: 'https://explorer.thetatoken.org',
     [Networks.THETA_TESTNET]: 'https://beta-explorer.thetatoken.org',
     [Networks.THETA_TESTNET_AMBER]: 'https://guardian-testnet-explorer-amber.thetatoken.org',
-    [Networks.THETA_TESTNET_SAPPHIRE]: 'https://guardian-testnet-explorer.thetatoken.org'
+    [Networks.THETA_TESTNET_SAPPHIRE]: 'https://guardian-testnet-explorer.thetatoken.org',
+    [Networks.THETA_PRIVATENET]: 'https://smart-contracts-sandbox-explorer.thetatoken.org'
 };
 
 export function isEthereumNetwork(network) {

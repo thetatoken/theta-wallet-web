@@ -416,6 +416,7 @@ class InteractWithContractContent extends React.Component {
         const functionsByName = zipMap(functions.map(({name}) => name), functions);
         const functionData = _.get(functionsByName, [functionName]);
         const functionInputs = _.get(functionData, ['inputs'], []);
+        const functionOutputs = _.get(functionData, ['outputs'], []);
         const functionSignature = _.get(functionData, ['signature']).slice(2);
         const isFunctionReadOnly = isReadFunction(functionData);
 
@@ -453,9 +454,13 @@ class InteractWithContractContent extends React.Component {
             const rawTxBytes = ThetaJS.TxSigner.serializeTx(tx);
             const callResponse = await Api.callSmartContract({data: rawTxBytes.toString('hex').slice(2)}, {network: Theta.getChainID()});
             const callResponseJSON = await callResponse.json();
+            const result = _.get(callResponseJSON, 'result');
 
             this.setState({
-                callResult: _.get(callResponseJSON, 'result'),
+                callResult: _.merge(result, {
+                    outputs: functionOutputs,
+                    decodedParameters: web3.eth.abi.decodeParameters(functionOutputs, _.get(result, 'vm_return'))
+                }),
                 isLoading: false
             });
         } else {
@@ -487,6 +492,10 @@ class InteractWithContractContent extends React.Component {
     render() {
         const {defaultFormValues} = this.props;
         const {isLoading, callResult} = this.state;
+        const error = _.get(callResult, 'vm_error');
+
+        console.log("decodedParameters == ");
+        console.log(_.get(callResult, ['decodedParameters']));
 
         return (
             <div className="InteractWithContractContent">
@@ -497,20 +506,43 @@ class InteractWithContractContent extends React.Component {
                                           disabled={isLoading}
                 />
                 {
+                    error &&
+                    <div className="InputError">{error}</div>
+                }
+                {
                     callResult &&
                     <div style={{
                         marginTop: 20
                     }}>
                         <div>
-                            <div className="InputTitle">Result</div>
+                            <div className="InputTitle">Raw Result</div>
                             <input className="RoundedInput"
                                    name={"inputs." + name}
                                    value={_.get(callResult, 'vm_return')}
                                    readOnly
                             />
                         </div>
-
-                        <div className="InputError">{_.get(callResult, 'vm_error')}</div>
+                    </div>
+                }
+                {
+                    callResult &&
+                    <div className="FormColumns">
+                        {
+                            _.get(callResult, 'outputs', []).map((value, index) => {
+                                const {name, type} = value;
+                                return (
+                                    <Fragment key={name}>
+                                        <div className="FormColumn">
+                                            <div className="InputTitle">{name + " (" + type + ")"}</div>
+                                            <input className="RoundedInput"
+                                                   value={_.get(callResult, ['decodedParameters', index])}
+                                                   readOnly
+                                            />
+                                        </div>
+                                    </Fragment>
+                                );
+                            })
+                        }
                     </div>
                 }
             </div>
