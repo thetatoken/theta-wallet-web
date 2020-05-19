@@ -1,4 +1,4 @@
-const BASE_URL = "http://aa01e64343b8911e9a1e80a36cb5f0f9-1355901417.us-east-2.elb.amazonaws.com";//https://api-wallet.thetatoken.org";
+const BASE_URL = "https://api-wallet.thetatoken.org";
 const DEFAULT_HEADERS = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',

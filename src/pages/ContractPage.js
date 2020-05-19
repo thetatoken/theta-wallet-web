@@ -23,6 +23,12 @@ import Api from "../services/Api";
 
 const web3 = new Web3("http://localhost");
 
+function isReadFunction(functionData){
+    const constant = _.get(functionData, ['constant'], null);
+    const stateMutability = _.get(functionData, ['stateMutability'], null);
+
+    return (stateMutability === "view" || stateMutability === "pure" || constant === true);
+}
 
 function initContract(abiStr, address) {
     try {
@@ -106,7 +112,7 @@ function getConstructor(jsonInterface) {
     return _.first(constructors);
 }
 
-function Inputs(inputs, formHook) {
+function Inputs(title, inputs, formHook) {
     const {register, errors} = formHook;
 
     return (
@@ -114,7 +120,7 @@ function Inputs(inputs, formHook) {
             {
                 inputs.length > 0 &&
                 <div>
-                    <div className="FormSectionTitle">Constructor Inputs</div>
+                    <div className="FormSectionTitle">{ title }</div>
                     <div className="FormColumns">
                         {
                             inputs.map((value, index) => {
@@ -195,7 +201,7 @@ function DeployContractForm(props) {
             </div>
 
             {
-                Inputs(constructorInputs, {
+                Inputs("Constructor Inputs", constructorInputs, {
                     register: register,
                     errors: errors
                 })
@@ -243,7 +249,7 @@ function InteractWithContractForm(props) {
     const functionsByName = zipMap(functions.map(({name}) => name), functions);
     const functionData = _.get(functionsByName, [functionName]);
     const functionInputs = _.get(functionData, ['inputs'], []);
-    const functionStateMutability = _.get(functionData, ['stateMutability'], null);
+    const isFunctionReadOnly = isReadFunction(functionData);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -310,13 +316,13 @@ function InteractWithContractForm(props) {
             </div>
 
             {
-                Inputs(functionInputs, {
+                Inputs("Function Inputs", functionInputs, {
                     register: register,
                     errors: errors
                 })
             }
 
-            <GradientButton title={(functionStateMutability === "view") ? "Read" : "Write"}
+            <GradientButton title={isFunctionReadOnly ? "Read" : "Write"}
                             style={{marginTop: 15}}
                             disabled={disabled || (_.size(errors) > 0) || _.isNil(abi) || _.isNil(address) || _.isNil(functionName)}
                             loading={loading}
@@ -411,7 +417,7 @@ class InteractWithContractContent extends React.Component {
         const functionData = _.get(functionsByName, [functionName]);
         const functionInputs = _.get(functionData, ['inputs'], []);
         const functionSignature = _.get(functionData, ['signature']).slice(2);
-        const functionStateMutability = _.get(functionData, ['stateMutability'], null);
+        const isFunctionReadOnly = isReadFunction(functionData);
 
         const inputTypes = _.map(functionInputs, ({name, type}) => {
             return type;
@@ -429,8 +435,7 @@ class InteractWithContractContent extends React.Component {
         const value = 0;
         const senderSequence = 1;
 
-
-        if (functionStateMutability === "view") {
+        if (isFunctionReadOnly) {
             this.setState({
                 isLoading: true
             });
