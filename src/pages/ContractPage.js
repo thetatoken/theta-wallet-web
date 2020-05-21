@@ -438,7 +438,8 @@ class InteractWithContractContent extends React.Component {
 
         if (isFunctionReadOnly) {
             this.setState({
-                isLoading: true
+                isLoading: true,
+                callResult: null
             });
 
             //Call smart contract (no signing)
