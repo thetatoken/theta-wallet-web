@@ -1,5 +1,11 @@
 ## Theta Wallet for Web
 
+### Setup
+
+```yarn install```
+
+```yarn upgrade```
+
 ### Development
 
 ```yarn start```
