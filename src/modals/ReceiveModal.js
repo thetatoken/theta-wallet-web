@@ -11,16 +11,30 @@ export default class ReceiveModal extends React.Component {
     constructor(){
         super();
 
-        this.handleCopyAddressClick = this.handleCopyAddressClick.bind(this);
+        this.state = {
+            isLoading: false
+        };
     }
 
-    handleCopyAddressClick(){
+    handleCopyAddressClick = () => {
         let address = Wallet.getWalletAddress();
 
         copyToClipboard(address);
 
         Alerts.showSuccess("Your address has been copied");
-    }
+    };
+
+    handleFaucetClick = () => {
+        this.setState({
+            isLoading: true
+        });
+
+        //TODO call API here...
+
+        this.setState({
+            isLoading: false
+        });
+    };
 
     render() {
         let address = Wallet.getWalletAddress();
@@ -48,6 +62,16 @@ export default class ReceiveModal extends React.Component {
                     <img src={qrCodeURL}
                          className="ReceiveModal__qr"
                     />
+
+                    <div className="ReceiveModal__faucet">
+                        <GhostButton title="Faucet"
+                                     iconUrl="/img/icons/copy@2x.png"
+                                     onClick={this.handleFaucetClick}
+                        />
+                        <div className="ReceiveModal__faucet-message">
+                            Receive a small amount of TFUEL on mainnet
+                        </div>
+                    </div>
                 </div>
             </Modal>
         )

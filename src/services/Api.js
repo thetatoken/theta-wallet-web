@@ -132,5 +132,17 @@ export default class Api {
         return GET(path, null, queryParams);
     }
 
+    //
+    //Faucet
+    //
+
+    static callFaucet(address, network) {
+        let url = `https://faucet.thetatoken.org/faucet/${ address }`;
+
+        return sendRequest(url, "POST", null, null, {
+            address: address,
+            chain: network
+        });
+    }
 }
 
