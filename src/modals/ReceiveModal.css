@@ -55,10 +55,15 @@
     padding: 40px;
 }
 
+.ReceiveModal__faucet-button{
+    width: 110px;
+}
+
 .ReceiveModal__faucet-message{
-    font-size: 16px;
+    font-size: 14px;
     font-weight: normal;
     text-align: center;
     color: white;
-    margin-bottom: 20px;
+    margin-top: 12px;
+    margin-bottom: 12px;
 }

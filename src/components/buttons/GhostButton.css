@@ -26,3 +26,13 @@
     color: white;
     cursor: pointer;
 }
+
+.GhostButton__spinner{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.GhostButton--is-disabled{
+    cursor: not-allowed;
+    pointer-events:none;
+}

@@ -162,7 +162,7 @@ export default class Api {
     //
 
     static callFaucet(address, network) {
-        let url = `https://faucet.thetatoken.org/faucet/${ address }`;
+        let url = `https://api-wallet.thetatoken.org/faucet`;
 
         return sendRequest(url, "POST", null, null, {
             address: address,

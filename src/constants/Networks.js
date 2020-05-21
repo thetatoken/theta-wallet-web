@@ -30,11 +30,11 @@ export const NetworksWithDescriptions = [
         name: "Testnet (Sapphire)",
         description: "THETA testnet for guardian nodes (Feb 2020)"
     },
-    {
-        id: Networks.THETA_PRIVATENET,
-        name: "Smart Contracts Sandbox",
-        description: "THETA testnet for Smart Contracts (ALPHA)"
-    }
+    // {
+    //     id: Networks.THETA_PRIVATENET,
+    //     name: "Smart Contracts Sandbox",
+    //     description: "THETA testnet for Smart Contracts (ALPHA)"
+    // }
 ];
 
 export const NetworksById = zipMap(NetworksWithDescriptions.map(({ id }) => id), NetworksWithDescriptions);
