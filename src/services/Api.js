@@ -161,13 +161,12 @@ export default class Api {
     //Faucet
     //
 
-    static callFaucet(address, network) {
-        let url = `https://api-wallet.thetatoken.org/faucet`;
+    static callFaucet(address, faucetId) {
+        let url = `https://public-faucet.thetatoken.org/tfuel_faucet`;
 
-        return sendRequest(url, "POST", null, null, {
-            address: address,
-            chain: network
-        });
+        return sendRequest(url, "GET", null, {
+            address: address.toLowerCase(),
+            chain: faucetId
+        }, null);
     }
 }
-
