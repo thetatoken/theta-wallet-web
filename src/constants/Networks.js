@@ -60,7 +60,7 @@ export function isThetaNetwork(network) {
 }
 
 export function canGuardianNodeStake(network) {
-    return (network === Networks.THETA_TESTNET_AMBER || network === Networks.THETA_TESTNET_SAPPHIRE || network === Networks.THETA_PRIVATENET);
+    return true;
 }
 
 export function canViewSmartContracts(network) {
