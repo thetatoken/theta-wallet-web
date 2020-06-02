@@ -14,7 +14,7 @@ export const NetworksWithDescriptions = [
         id: Networks.THETA_MAINNET,
         name: "Mainnet",
         description: "THETA mainnet (Default)",
-        faucetId: null//"mainnet"
+        faucetId: "mainnet"
     },
     {
         id: Networks.THETA_TESTNET,
