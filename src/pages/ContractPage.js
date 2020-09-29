@@ -460,17 +460,31 @@ class InteractWithContractContent extends React.Component {
                 gasLimit: gasLimit
             }, senderSequence);
             const rawTxBytes = ThetaJS.TxSigner.serializeTx(tx);
-            const callResponse = await Api.callSmartContract({data: rawTxBytes.toString('hex').slice(2)}, {network: Theta.getChainID()});
-            const callResponseJSON = await callResponse.json();
-            const result = _.get(callResponseJSON, 'result');
 
-            this.setState({
-                callResult: _.merge(result, {
-                    outputs: functionOutputs,
-                    decodedParameters: web3.eth.abi.decodeParameters(functionOutputs, _.get(result, 'vm_return'))
-                }),
-                isLoading: false
-            });
+            try{
+                const callResponse = await Api.callSmartContract({data: rawTxBytes.toString('hex').slice(2)}, {network: Theta.getChainID()});
+                const callResponseJSON = await callResponse.json();
+                const result = _.get(callResponseJSON, 'result');
+                const errorMessage  = _.get(result, 'vm_error');
+
+                this.setState({
+                    callResult: _.merge(result, {
+                        outputs: functionOutputs,
+                        decodedParameters: web3.eth.abi.decodeParameters(functionOutputs, _.get(result, 'vm_return'))
+                    }),
+                    isLoading: false
+                });
+            }
+            catch (e) {
+                //Stop loading and put the error message in the vm_error like it came fromm the blockchain.
+                this.setState({
+                    isLoading: false,
+                    callResult: {
+                        vm_error: e.message
+                    }
+                });
+            }
+
         } else {
             store.dispatch(showModal({
                 type: ModalTypes.SMART_CONTRACT_CONFIRMATION,
@@ -502,9 +516,6 @@ class InteractWithContractContent extends React.Component {
         const {isLoading, callResult} = this.state;
         const error = _.get(callResult, 'vm_error');
 
-        console.log("decodedParameters == ");
-        console.log(_.get(callResult, ['decodedParameters']));
-
         return (
             <div className="InteractWithContractContent">
                 <InteractWithContractForm defaultFormValues={defaultFormValues}
@@ -515,7 +526,12 @@ class InteractWithContractContent extends React.Component {
                 />
                 {
                     error &&
-                    <div className="InputError">{error}</div>
+                    <div className="InputError"
+                         style={{
+                             marginTop: 20
+                         }}>
+                        {error}
+                    </div>
                 }
                 {
                     callResult &&
@@ -562,16 +578,10 @@ class InteractWithContractContent extends React.Component {
 class ContractPage extends React.Component {
     render() {
         let contractMode = this.props.match.params.contractMode;
-
-        console.log("this.props.history ==");
-        console.log(this.props.history);
-
         let queryParams = getQueryParameters(this.props.history.location.search);
         if (queryParams['abi']) {
             queryParams['abi'] = atob(queryParams['abi']);
         }
-        console.log("queryParams == ");
-        console.log(queryParams);
 
         return (
             <div className="ContractPage">
