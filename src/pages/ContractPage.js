@@ -356,15 +356,18 @@ class DeployContractContent extends React.Component {
             return type;
         });
         const constructorInputValues = _.map(constructorInputs, ({name, type}) => {
+            if(type.includes('[]')){
+                return parseJSON(inputs[name]);
+            }
+
             return inputs[name];
         });
         const encodedParameters = web3.eth.abi.encodeParameters(constructorInputTypes, constructorInputValues).slice(2);
 
-        //TODO should be real sequence...
         const feeInTFuelWei = (new BigNumber(10)).pow(12);
         const from = Wallet.getWalletAddress();
         const gasPrice = Theta.getTransactionFee(); //feeInTFuelWei;
-        const gasLimit = 2000000;
+        const gasLimit = 10000000;
         const data = byteCodeJson.object + encodedParameters;
         const value = 0;
 
@@ -424,6 +427,10 @@ class InteractWithContractContent extends React.Component {
             return type;
         });
         const inputValues = _.map(functionInputs, ({name, type}) => {
+            if(type.includes('[]')){
+                return parseJSON(inputs[name]);
+            }
+
             return inputs[name];
         });
         const encodedParameters = web3.eth.abi.encodeParameters(inputTypes, inputValues).slice(2);

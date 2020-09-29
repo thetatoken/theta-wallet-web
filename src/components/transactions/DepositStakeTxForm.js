@@ -14,20 +14,9 @@ import {store} from "../../state";
 import {showModal} from "../../state/actions/Modals";
 import ModalTypes from "../../constants/ModalTypes";
 import ThetaJS from '../../libs/thetajs.esm';
+import {getMinStakeAmount} from "../../Flags";
 
 const TRANSACTION_FEE = 0.000001;
-
-function getMinStakeAmount(purpose){
-    if(purpose === ThetaJS.StakePurposes.StakeForValidator){
-        return 2000000.0;
-    }
-    else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
-        return 10000.0;
-    }
-
-    //Unknown
-    return 0.0;
-}
 
 export class DepositStakeTxForm extends React.Component {
     constructor(props) {

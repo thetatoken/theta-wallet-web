@@ -1,4 +1,5 @@
 const BASE_URL = "https://api-wallet.thetatoken.org";
+
 const DEFAULT_HEADERS = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
