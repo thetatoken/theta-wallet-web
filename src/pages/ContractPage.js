@@ -359,6 +359,9 @@ class DeployContractContent extends React.Component {
             if(type.includes('[]')){
                 return parseJSON(inputs[name]);
             }
+            else if(type === "boolean" || type === "bool"){
+                return Boolean(parseJSON(inputs[name]));
+            }
 
             return inputs[name];
         });
@@ -429,6 +432,9 @@ class InteractWithContractContent extends React.Component {
         const inputValues = _.map(functionInputs, ({name, type}) => {
             if(type.includes('[]')){
                 return parseJSON(inputs[name]);
+            }
+            else if(type === "boolean" || type === "bool"){
+                return Boolean(parseJSON(inputs[name]));
             }
 
             return inputs[name];
