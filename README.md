@@ -1,5 +1,7 @@
 ## Theta Wallet for Web
 
+Reference implementation of the Theta Web Wallet. In addition to the standard wallet functionalities like sending and receiving Theta/TFuel, it also allows the user to deploy and interact with smart contracts running on the Theta blockchain. To see the Theta Web Wallet in action, please visit [https://wallet.thetatoken.org/](https://wallet.thetatoken.org/).
+
 ### Setup
 
 ```yarn install```
@@ -35,3 +37,7 @@ The build is minified and the filenames include the hashes.<br>
 #### Production
 
 ```s3_website push --config-dir configs/prod```
+
+### License
+
+The Theta Web Wallet reference implementation is licensed under the [GNU License](./LICENSE).
