@@ -28,16 +28,6 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br>
 
-### Deployment
-
-#### Beta
-
-```s3_website push --config-dir configs/beta```
-
-#### Production
-
-```s3_website push --config-dir configs/prod```
-
 ### License
 
 The Theta Web Wallet reference implementation is licensed under the [GNU License](./LICENSE).
