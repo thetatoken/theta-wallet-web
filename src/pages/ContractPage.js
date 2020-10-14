@@ -444,7 +444,7 @@ class InteractWithContractContent extends React.Component {
         const feeInTFuelWei = (new BigNumber(10)).pow(12);
         const from = Wallet.getWalletAddress();
         const gasPrice = Theta.getTransactionFee(); //feeInTFuelWei;
-        const gasLimit = 2000000;
+        const gasLimit = 10000000;
         const data = functionSignature + encodedParameters;
         const value = 0;
         const senderSequence = 1;
