@@ -547,7 +547,7 @@ class InteractWithContractContent extends React.Component {
                         <div>
                             <div className="InputTitle">Raw Result</div>
                             <input className="RoundedInput"
-                                   name={"inputs." + name}
+                                   name={"vm_return"}
                                    value={_.get(callResult, 'vm_return')}
                                    readOnly
                             />
