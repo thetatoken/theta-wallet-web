@@ -125,13 +125,16 @@ function Inputs(title, inputs, formHook) {
                         {
                             inputs.map((value, index) => {
                                 const {name, type} = value;
+                                const argName = `arg${index}`;
+                                const key = `inputs.${argName}`;
+
                                 return (
-                                    <Fragment key={name}>
+                                    <Fragment key={key}>
                                         <div className="FormColumn">
                                             <div className="InputTitle">{name + " (" + type + ")"}</div>
                                             <input className="RoundedInput"
                                                    placeholder={"Enter " + name}
-                                                   name={"inputs." + name}
+                                                   name={key}
                                                    ref={register({
                                                        required: "Input " + name + " is required",
                                                        validate: (val) => {
@@ -139,8 +142,8 @@ function Inputs(title, inputs, formHook) {
                                                        }
                                                    })}
                                             />
-                                            {_.get(errors, ['inputs', name]) && <div
-                                                className="InputError">{_.get(errors, ['inputs', name, 'message'])}</div>}
+                                            {_.get(errors, ['inputs', argName]) && <div
+                                                className="InputError">{_.get(errors, ['inputs', argName, 'message'])}</div>}
                                         </div>
                                     </Fragment>
                                 );
@@ -355,15 +358,17 @@ class DeployContractContent extends React.Component {
         const constructorInputTypes = _.map(constructorInputs, ({name, type}) => {
             return type;
         });
-        const constructorInputValues = _.map(constructorInputs, ({name, type}) => {
+        const constructorInputValues = _.map(constructorInputs, ({name, type}, index) => {
+            let val = inputs[`arg${index}`];
+
             if(type.includes('[]')){
-                return parseJSON(inputs[name]);
+                return parseJSON(val);
             }
             else if(type === "boolean" || type === "bool"){
-                return Boolean(parseJSON(inputs[name]));
+                return Boolean(parseJSON(val));
             }
 
-            return inputs[name];
+            return val;
         });
         const encodedParameters = web3.eth.abi.encodeParameters(constructorInputTypes, constructorInputValues).slice(2);
 
@@ -429,15 +434,16 @@ class InteractWithContractContent extends React.Component {
         const inputTypes = _.map(functionInputs, ({name, type}) => {
             return type;
         });
-        const inputValues = _.map(functionInputs, ({name, type}) => {
+        const inputValues = _.map(functionInputs, ({name, type}, index) => {
+            let val = inputs[`arg${index}`];
             if(type.includes('[]')){
-                return parseJSON(inputs[name]);
+                return parseJSON(val);
             }
             else if(type === "boolean" || type === "bool"){
-                return Boolean(parseJSON(inputs[name]));
+                return Boolean(parseJSON(val));
             }
 
-            return inputs[name];
+            return val;
         });
         const encodedParameters = web3.eth.abi.encodeParameters(inputTypes, inputValues).slice(2);
 
