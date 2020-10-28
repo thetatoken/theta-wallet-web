@@ -225,7 +225,7 @@ function InteractWithContractForm(props) {
         functionName: ""
     }, defaultFormValues);
 
-    const {register, handleSubmit, errors, watch} = useForm({
+    const {register, handleSubmit, errors, watch, setValue} = useForm({
         mode: 'onChange',
         defaultValues: defaultValues
     });
@@ -241,7 +241,7 @@ function InteractWithContractForm(props) {
                 onChange();
             }
         }
-    });
+    }, [isDirty, formState, onChange, setValue]);
 
     const abi = watch("abi");
     const address = watch("address");
@@ -296,7 +296,10 @@ function InteractWithContractForm(props) {
                                 ref={register({
                                     required: "Function is required.",
                                     validate: validateFunctionName
-                                })}>
+                                })}
+                        onChange={() => {
+
+                        }}>
                             <option value={""}
                                     key={"__placeholder__"}>
                                 Choose function
