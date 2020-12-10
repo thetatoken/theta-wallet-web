@@ -23,7 +23,7 @@ export function getMinStakeAmount(purpose){
         return 2000000.0;
     }
     else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
-        return ((network === Networks.THETA_TESTNET_SAPPHIRE) ? 1000.0 : 10000.0);
+        return 1000.0;
     }
 
     //Unknown
