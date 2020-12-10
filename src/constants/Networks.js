@@ -65,7 +65,7 @@ export function canGuardianNodeStake(network) {
 }
 
 export function canViewSmartContracts(network) {
-    return (network === Networks.THETA_PRIVATENET || network === Networks.THETA_TESTNET);
+    return true;
 }
 
 export function getNetworkName(networkId){

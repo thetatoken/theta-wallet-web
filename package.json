@@ -43,6 +43,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy--beta": "s3_website push --config-dir configs/beta",
+    "deploy--staging": "s3_website push --config-dir configs/staging",
     "deploy--prod": "s3_website push --config-dir configs/prod"
   },
   "eslintConfig": {
