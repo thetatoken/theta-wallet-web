@@ -9,6 +9,8 @@ import {getNetworkFaucetId, getNetworkName} from "../constants/Networks";
 import Theta from "../services/Theta";
 import Api from "../services/Api";
 import _ from 'lodash';
+import Warning from "../components/Warning";
+import {Urls} from "../constants/Urls";
 
 export default class ReceiveModal extends React.Component {
     constructor(props) {
@@ -60,6 +62,10 @@ export default class ReceiveModal extends React.Component {
                     <div className="ReceiveModal__title">
                         Receive
                     </div>
+                    <Warning message={'Do not send ETH or ERC20 tokens to this address.'}
+                             learnMoreHref={Urls.PreventingLostTokens}
+                             style={{marginBottom: 30}}
+                    />
                     <div className="ReceiveModal__public-address-title">
                         My Public Address
                     </div>
