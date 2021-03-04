@@ -15,7 +15,7 @@ const Warning = ({ message, learnMoreHref, style, className }) => {
                rel='noopener noreferrer'
             >Learn more</a>
         </div>
-    )
+    );
 };
 
 export default Warning;

@@ -1,12 +1,10 @@
 .Warning{
-    background-color: red;
     padding: 6px 12px;
     display: block;
     margin-left: auto;
     margin-right: auto;
     border-radius: 6px;
     background-color: rgba(255, 48, 86, 0.30);
-    color:white;
     color:#FF3056;
     font-size: 14px;
 }

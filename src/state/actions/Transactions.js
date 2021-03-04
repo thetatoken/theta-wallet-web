@@ -27,6 +27,8 @@ import ThetaJS from "../../libs/thetajs.esm";
 import ContractModes from "../../constants/ContractModes";
 import Router from "../../services/Router";
 
+const DefaultTransactionErrorMessage = "An error occurred while sending your transaction. Please wait and try again.";
+
 export function fetchThetaTransactions() {
     let address = Wallet.getWalletAddress();
 
@@ -73,7 +75,8 @@ export async function createSendTransactionAsync(dispatch, network, txData, pass
                     dispatch(hideModals());
                 },
                 onError: function (dispatch, response) {
-                    Alerts.showError(response.body.message);
+                    const errorMessage = _.get(response, ['body', 'message'], DefaultTransactionErrorMessage)
+                    Alerts.showError(errorMessage);
                 }
             };
 
@@ -115,9 +118,6 @@ export async function createDepositStakeTransactionAsync(dispatch, network, txDa
         txData: txData,
     };
 
-    console.log("createDepositStakeTransactionAsync :: txData == ");
-    console.log(txData);
-
     //The decryption can take some time, so start the event early
     dispatch({
         type: CREATE_DEPOSIT_STAKE_TRANSACTION_START,
@@ -144,7 +144,8 @@ export async function createDepositStakeTransactionAsync(dispatch, network, txDa
                     dispatch(hideModals());
                 },
                 onError: function (dispatch, response) {
-                    Alerts.showError(response.body.message);
+                    const errorMessage = _.get(response, ['body', 'message'], DefaultTransactionErrorMessage)
+                    Alerts.showError(errorMessage);
                 }
             };
 
@@ -211,7 +212,8 @@ export async function createWithdrawStakeTransactionAsync(dispatch, network, txD
                     dispatch(hideModals());
                 },
                 onError: function (dispatch, response) {
-                    Alerts.showError(response.body.message);
+                    const errorMessage = _.get(response, ['body', 'message'], DefaultTransactionErrorMessage)
+                    Alerts.showError(errorMessage);
                 }
             };
 
