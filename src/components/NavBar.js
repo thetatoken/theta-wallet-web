@@ -62,7 +62,7 @@ class NavBar extends React.Component {
                         <a className="NavBar__wallet-copy-address-icon"
                            onClick={this.copyAddress}
                         >
-                            <img src="/img/icons/copy@2x.png"/>
+                            <img src="/img/icons/copy@2x.png" alt=""/>
                         </a>
                     </div>
                     <a className="NavBar__logout"
@@ -84,7 +84,7 @@ class NavBar extends React.Component {
         return (
             <div className={classNames("NavBar", { 'NavBar--is-centered': this.props.centered })}>
                 <div style={{display: 'flex', flexDirection: 'column'}}>
-                    <img className="NavBar__logo" src={'/img/logo/theta_wallet_logo@2x.png'}/>
+                    <img className="NavBar__logo" src={'/img/logo/theta_wallet_logo@2x.png'} alt="Theta Wallet"/>
                     <a className={classNames("NavBar__network-badge", {"NavBar__network-badge--is-disabled": !_.isNil(address)})}
                        onClick={this.onNetworkBadgeClick}
                     >

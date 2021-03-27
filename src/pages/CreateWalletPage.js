@@ -17,7 +17,7 @@ class WalletCreationCompleteCard extends React.Component {
                     <div className="WalletCreationCompleteCard__header"/>
 
                     <div className="WalletCreationCompleteCard__success">
-                        <img className="WalletCreationCompleteCard__icon" src={'/img/icons/wallet-success@2x.png'}/>
+                        <img className="WalletCreationCompleteCard__icon" alt="" src={'/img/icons/wallet-success@2x.png'}/>
 
                         <div className="WalletCreationCompleteCard__success-title">
                             You're ready!
@@ -111,7 +111,7 @@ class MnemonicWarningCard extends React.Component {
                         </div>
                     </div>
 
-                    <img className="MnemonicWarningCard__icon" src={'/img/icons/word-blocks@2x.png'}/>
+                    <img className="MnemonicWarningCard__icon" alt="" src={'/img/icons/word-blocks@2x.png'}/>
 
                     <div className="MnemonicWarningCard__warning">
                         <div className="MnemonicWarningCard__warning-title">

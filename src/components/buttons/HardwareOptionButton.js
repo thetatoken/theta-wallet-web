@@ -6,6 +6,7 @@ const classNames = require('classnames');
 class HardwareOptionButton extends React.Component {
     render() {
         let icon = this.props.iconUrl && <img className="HardwareOptionButton__icon"
+                                              alt=""
                                               src={this.props.iconUrl}
         />;
 

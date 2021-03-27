@@ -43,6 +43,7 @@ class EthereumTransactionListItem extends React.Component {
                         <div className="EthereumTransactionListItem__token-symbol">{token_symbol}</div>
                         {iconUrl &&
                         <img src={iconUrl}
+                             alt="ethereum token icon"
                              className="EthereumTransactionListItem__token-icon"/>
                         }
                     </div>

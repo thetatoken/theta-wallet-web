@@ -69,6 +69,7 @@ export default class DropZone extends React.PureComponent {
                 {
                     this.props.icon &&
                     <img className="DropZone__icon"
+                         alt="drag and drop area"
                          src={this.props.icon}/>
                 }
                 <div className="DropZone__title">{this.props.title}</div>

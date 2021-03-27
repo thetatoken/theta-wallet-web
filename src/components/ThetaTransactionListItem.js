@@ -48,12 +48,14 @@ class ThetaTransactionListItem extends React.Component {
                     <div className="ThetaTransactionListItem__amount-container">
                         <div className="ThetaTransactionListItem__amount">{numberWithCommas(thetaAmount)}</div>
                         <img className="ThetaTransactionListItem__amount-icon"
+                             alt=""
                              src="/img/tokens/theta_large@2x.png"
                         />
                     </div>
                     <div className="ThetaTransactionListItem__amount-container">
                         <div className="ThetaTransactionListItem__amount">{numberWithCommas(tfuelAmount)}</div>
                         <img className="ThetaTransactionListItem__amount-icon"
+                             alt=""
                              src="/img/tokens/tfuel_large@2x.png"
                         />
                     </div>

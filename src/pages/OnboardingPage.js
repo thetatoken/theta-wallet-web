@@ -50,6 +50,7 @@ class OnboardingPage extends React.Component {
                 <div className="OnboardingPage__wrapper">
                     <div className="OnboardingPage__title">{title}</div>
                     <img src={onboardingImageUrl}
+                         alt=""
                          className="OnboardingPage__image"
                     />
                     <div className="OnboardingPage__description">{description}</div>
