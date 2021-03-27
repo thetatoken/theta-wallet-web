@@ -564,7 +564,7 @@ export class UnlockWalletPage extends React.Component {
             <div className="UnlockWalletPage">
                 <div className="UnlockWalletPage__wrapper">
                     <div className="UnlockWalletPage__title">
-                        Unlock Your Wallet
+                        <h2>Unlock Your Wallet</h2>
                     </div>
 
                     <UnlockWalletCard unlockStrategy={unlockStrategy}

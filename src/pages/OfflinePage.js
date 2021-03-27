@@ -13,7 +13,7 @@ class OfflineCard extends React.Component {
                     <div className="OfflineCard__header"/>
 
                     <div className="OfflineCard__body">
-                        <img className="OfflineCard__icon" src={OfflineIcon}/>
+                        <img className="OfflineCard__icon" alt="" src={OfflineIcon}/>
 
                         <div className="OfflineCard__title">
                             You're offline!

@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { Wallet as ethersWallet, utils as ethersUtils } from 'ethers/ethers';
 import _ from "lodash";
 import Ethereum from './Ethereum'
 import Theta from "./Theta";
@@ -83,7 +83,7 @@ export default class Wallet {
     }
 
     static walletFromMnemonic(mnemonic){
-        return ethers.Wallet.fromMnemonic(mnemonic, MnemonicPath);
+        return ethersWallet.fromMnemonic(mnemonic, MnemonicPath);
     }
 
     static walletFromPrivateKey(privateKey){
@@ -142,7 +142,7 @@ export default class Wallet {
     }
 
     static createWallet(password){
-        let mnemonic = ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
+        let mnemonic = ethersUtils.HDNode.entropyToMnemonic(ethersUtils.randomBytes(16));
         let wallet = this.walletFromMnemonic(mnemonic);
         let keystore = this.encryptToKeystore(wallet.privateKey, password);
 

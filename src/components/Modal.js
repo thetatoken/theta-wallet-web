@@ -8,7 +8,7 @@ export default class Modal extends React.Component {
                 <a className="Modal__close-button" onClick={(e) =>{
                    e.preventDefault();
                 }}>
-                    <img src="/img/icons/modal-x@2x.png"/>
+                    <img src="/img/icons/modal-x@2x.png" alt=""/>
                 </a>
                 {this.props.children}
             </div>

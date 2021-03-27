@@ -16,6 +16,7 @@ class WalletTokenListItem extends React.Component {
                 <div className="WalletTokenListItem__token-container">
                     <div className="WalletTokenListItem__active-indicator"/>
                     <img src={this.props.token.iconUrl}
+                         alt=""
                          className="WalletTokenListItem__token-icon"
                     />
                     <div className="WalletTokenListItem__token-balance-container">

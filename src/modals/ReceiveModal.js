@@ -80,6 +80,7 @@ export default class ReceiveModal extends React.Component {
                     </div>
 
                     <img src={qrCodeURL}
+                         alt=""
                          className="ReceiveModal__qr"
                     />
 

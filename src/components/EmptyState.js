@@ -8,6 +8,7 @@ export default class EmptyState extends React.PureComponent {
                 {
                     this.props.icon &&
                     <img className="EmptyState__icon"
+                         alt=""
                          src={this.props.icon}/>
                 }
                 <div className="EmptyState__title">{this.props.title}</div>

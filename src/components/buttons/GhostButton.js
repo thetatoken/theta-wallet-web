@@ -7,6 +7,7 @@ const classNames = require('classnames');
 class GhostButton extends React.Component {
     render() {
         let icon = this.props.iconUrl && <img className="GhostButton__icon"
+                                              alt=""
                                               src={this.props.iconUrl}
         />;
         let innerContent = null;

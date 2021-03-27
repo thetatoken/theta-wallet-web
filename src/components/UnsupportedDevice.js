@@ -12,15 +12,17 @@ class UnsupportedDevice extends React.Component {
                     </div>
                     <a className="UnsupportedDevice__app-store-badge"
                        href="https://itunes.apple.com/app/theta-wallet/id1451094550?mt=8"
+                       rel="noreferrer"
                        target="_blank"
                     >
-                        <img src="/img/badges/app-store@2x.png"/>
+                        <img src="/img/badges/app-store@2x.png" alt=""/>
                     </a>
                     <a className="UnsupportedDevice__app-store-badge"
                        href="https://play.google.com/store/apps/details?id=org.theta.wallet"
+                       rel="noreferrer"
                        target="_blank"
                     >
-                        <img src="/img/badges/google-play@2x.png"/>
+                        <img src="/img/badges/google-play@2x.png" alt=""/>
                     </a>
                 </div>
             </div>
