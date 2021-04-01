@@ -3,15 +3,15 @@ import TransportU2F from "@ledgerhq/hw-transport-u2f";
 import Eth from "@ledgerhq/hw-app-eth";
 import Wallet from './Wallet';
 import Theta from "./Theta.js";
+import { ThetaDevDerivationPath } from './Wallet';
 
 export default class Ledger {
     static async signTransaction(unsignedTx){
         let chainID = Theta.getChainID();
         let ethTxWrapper = unsignedTx.signBytes(chainID).slice(2); // remove the '0x' prefix
-
+        let path = Wallet.getWalletPath();
         const transport = await TransportU2F.create();
-        const eth = new Eth(transport);
-
+        var eth = path.startsWith(ThetaDevDerivationPath) ? new Eth(transport, 'tfuel') : new Eth(transport);
         let sig = await eth.signTransaction(Wallet.getWalletPath(), ethTxWrapper);
         // transport.close();
 
