@@ -14,6 +14,7 @@ const INITIAL_STATE = {
     //Theta
     balances: [],
     balancesByType: {},
+    balancesRefreshedAt: null,
 
     //Legacy
     ethereumBalances:[],
@@ -63,7 +64,8 @@ export const walletReducer = (state = INITIAL_STATE, action) => {
 
             return Object.assign({}, state, {
                 balances: balances,
-                balancesByType: zipMap(balances.map(({ type }) => type), balances.map(({ value }) => value))
+                balancesByType: zipMap(balances.map(({ type }) => type), balances.map(({ value }) => value)),
+                balancesRefreshedAt: new Date()
             });
         }
 

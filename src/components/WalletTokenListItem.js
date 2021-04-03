@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from "react";
 import './WalletTokenListItem.css';
 import {NavLink} from 'react-router-dom'
@@ -6,8 +7,12 @@ import {numberWithCommas} from "../utils/Utils";
 
 class WalletTokenListItem extends React.Component {
     render() {
-        let tokenBalance = (this.props.tokenBalance || "0");
-        tokenBalance = new BigNumber(tokenBalance).toString();
+        let tokenBalanceStr = "-";
+
+        if(!_.isNil(this.props.tokenBalance)){
+            const tokenBalance = (this.props.tokenBalance || "0");
+            tokenBalanceStr = numberWithCommas(new BigNumber(tokenBalance).toString());
+        }
 
         return (
             <NavLink to={this.props.token.href}
@@ -23,7 +28,7 @@ class WalletTokenListItem extends React.Component {
                             {this.props.token.name}
                         </div>
                         <div className="WalletTokenListItem__token-balance">
-                            {numberWithCommas(tokenBalance)}
+                            {tokenBalanceStr}
                         </div>
                     </div>
                 </div>

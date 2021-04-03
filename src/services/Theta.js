@@ -25,6 +25,13 @@ export default class Theta {
         return`${urlBase}/txs/${transaction.hash}`;
     }
 
+    static getAccountExplorerUrl(account){
+        const chainId = this.getChainID();
+        const urlBase = NetworkExplorerUrls[chainId];
+
+        return`${urlBase}/account/${account}`;
+    }
+
     static getTransactionFee(){
         //10^12 TFuelWei
         return 0.000001;

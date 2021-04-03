@@ -2,10 +2,10 @@
 
 }
 
-.WalletTokenList__ethereum-balances-toggle{
+.WalletTokenList__explorer-link{
     display: block;
     margin-top: 12px;
-    color: white;
+    color: #10EDBD;
     margin-left: 21px;
     font-size: 13px;
     cursor: pointer;
@@ -18,4 +18,12 @@
     font-size: 13px;
     color: #ED1E5C;
     max-width: 290px;
+}
+
+.WalletTokenList__refreshed-message{
+    margin-top: 12px;
+    margin-bottom: 12px;
+    color: white;
+    margin-left: 21px;
+    font-size: 11px;
 }
