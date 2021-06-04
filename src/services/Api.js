@@ -170,4 +170,14 @@ export default class Api {
             chain: faucetId
         }, null);
     }
+
+    //
+    //Guardian Node Delegates
+    //
+
+    static fetchGuardianNodeDelegates() {
+        let url = `https://api.thetatoken.org/v1/guardian/delegated-nodes`;
+
+        return sendRequest(url, "GET", null, null);
+    }
 }

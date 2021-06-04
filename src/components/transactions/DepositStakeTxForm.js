@@ -75,6 +75,8 @@ export class DepositStakeTxForm extends React.Component {
     }
 
     handleDepositStakeClick = () => {
+        const holderSummary = this.getHolderSummary();
+
         store.dispatch(showModal({
             type: ModalTypes.DEPOSIT_STAKE_CONFIRMATION,
             props: {
@@ -86,23 +88,27 @@ export class DepositStakeTxForm extends React.Component {
 
                     from: this.props.walletAddress,
 
-                    holder: this.state.holder,
+                    holder: holderSummary,
                     amount: this.state.amount,
 
                     transactionFee: this.state.transactionFee
-                }
+                },
+                guardianNodeDelegate: this.props.guardianNodeDelegate
             }
         }));
     };
 
     isValid() {
+        const holderSummary = this.getHolderSummary();
+
         return (
-            this.state.holder.length > 0 &&
+            holderSummary.length > 0 &&
             this.state.amount.length > 0 &&
             this.state.invalidHolder === false &&
             this.state.insufficientFunds === false &&
             this.state.invalidDecimalPlaces === false &&
-            this.state.invalidAmount === false);
+            this.state.invalidAmount === false
+        );
     }
 
     async calculateEntireTFuelBalance() {
@@ -130,6 +136,10 @@ export class DepositStakeTxForm extends React.Component {
         }
     }
 
+    getHolderSummary(){
+        return (this.state.holder || _.get(this.props.guardianNodeDelegate, 'node_summary', ''));
+    }
+
     validate() {
         if (this.state.holder.length > 0) {
             this.validateHolder();
@@ -148,7 +158,7 @@ export class DepositStakeTxForm extends React.Component {
             isValid = Theta.isAddress(this.state.holder);
         }
         else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
-            isValid = Theta.isHolderSummary(this.state.holder);
+            isValid = Theta.isHolderSummary(this.getHolderSummary());
         }
 
         this.setState({invalidHolder: (isValid === false)});
@@ -182,7 +192,7 @@ export class DepositStakeTxForm extends React.Component {
     }
 
     render() {
-        const {purpose} = this.props;
+        const {purpose, guardianNodeDelegate} = this.props;
         let hasHolder = (this.state.holder !== null && this.state.holder !== '' && this.state.invalidHolder === false);
         let thetaTitle = `Theta (${ this.getBalanceOfTokenType(TokenTypes.THETA) })`;
         let transactionFeeValueContent = (
@@ -246,14 +256,18 @@ export class DepositStakeTxForm extends React.Component {
                         <option value={TokenTypes.THETA}>{thetaTitle}</option>
                     </select>
                 </FormInputContainer>
-                <FormInputContainer title={holderTitle}
-                                    error={toError}>
-                    <input className="BottomBorderInput"
-                           name="holder"
-                           placeholder={holderPlaceholder}
-                           value={this.state.holder}
-                           onChange={this.handleChange}/>
-                </FormInputContainer>
+                {
+                    _.isNil(guardianNodeDelegate) &&
+                    <FormInputContainer title={holderTitle}
+                                        error={toError}>
+                        <input className="BottomBorderInput"
+                               name="holder"
+                               placeholder={holderPlaceholder}
+                               value={this.state.holder}
+                               onChange={this.handleChange}/>
+                    </FormInputContainer>
+                }
+
                 <FormInputContainer title={amountTitleContent}
                                     error={amountError}>
                     <input className="BottomBorderInput" type="text" value={this.state.amount}

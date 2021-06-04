@@ -1,14 +1,15 @@
-.DepositStakeModal{
+.GuardianNodeDelegatesModal{
     display: flex;
     flex-direction: column;
     background-color: #242F4B;
     width: 500px;
     min-height: 551px;
-    padding: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     box-sizing: border-box;
 }
 
-.DepositStakeModal__title{
+.GuardianNodeDelegatesModal__title{
     font-size: 20px;
     font-weight: 600;
     text-align: center;
@@ -16,22 +17,27 @@
     margin-bottom: 2px;
 }
 
-.StakePurposeContainer{
+.GuardianNodeDelegatesContainer{
     display: flex;
     flex-direction: column;
     flex: 1;
 }
 
-.StakePurposeContainer__instructions{
-    font-size: 16px;
+.GuardianNodeDelegatesContainer__instructions{
+    font-size: 15px;
     font-weight: normal;
     line-height: 21px;
     color: white;
     text-decoration: none;
     cursor: inherit;
-    margin-bottom: 20px;
 }
 
-.StakePurposeContainer__footer{
+.GuardianNodeDelegatesContainer__footer{
     margin-top: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.GuardianNodeDelegatesContainer .Notification{
+    margin: 20px;
 }

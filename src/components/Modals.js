@@ -16,6 +16,7 @@ import WithdrawStakeModal from "../modals/WithdrawStakeModal";
 import WithdrawStakeConfirmationModal from "../modals/WithdrawStakeConfirmationModal";
 import SmartContractConfirmationModal from "../modals/SmartContractConfirmationModal";
 import NetworkSelectorModal from "../modals/NetworkSelectorModal";
+import GuardianNodeDelegatesModal from "../modals/GuardianNodeDelegatesModal";
 
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
@@ -28,7 +29,8 @@ const ModalComponentByType = {
     [ModalTypes.WITHDRAW_STAKE]: WithdrawStakeModal,
     [ModalTypes.WITHDRAW_STAKE_CONFIRMATION]: WithdrawStakeConfirmationModal,
     [ModalTypes.SMART_CONTRACT_CONFIRMATION]: SmartContractConfirmationModal,
-    [ModalTypes.NETWORK_SELECTOR]: NetworkSelectorModal
+    [ModalTypes.NETWORK_SELECTOR]: NetworkSelectorModal,
+    [ModalTypes.GUARDIAN_NODE_DELEGATE_SELECTOR]: GuardianNodeDelegatesModal
 };
 
 class ModalContainer extends React.Component {

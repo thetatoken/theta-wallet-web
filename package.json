@@ -10,6 +10,7 @@
     "classnames": "^2.2.6",
     "ethereumjs-util": "^6.1.0",
     "ethers": "^4.0.26",
+    "identicon.js": "^2.3.3",
     "lodash": "^4.17.11",
     "moment": "^2.23.0",
     "react": "^16.8.2",
