@@ -37,6 +37,7 @@ export default class Theta {
         return 0.000001;
     }
 
+
     static unsignedSendTx(txData, sequence) {
         let { tokenType, from, to, amount, transactionFee} = txData;
         const ten18 = (new BigNumber(10)).pow(18); // 10^18, 1 Theta = 10^18 ThetaWei, 1 Gamma = 10^ TFuelWei
