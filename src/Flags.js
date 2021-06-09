@@ -29,3 +29,14 @@ export function getMinStakeAmount(purpose){
     //Unknown
     return 0.0;
 }
+
+export function getMaxDelegatedStakeAmount(purpose){
+    const network = Theta.getChainID();
+
+    if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
+        return 10000.0;
+    }
+
+    //Unknown
+    return 0.0;
+}

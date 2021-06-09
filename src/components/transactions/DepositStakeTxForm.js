@@ -14,7 +14,7 @@ import {store} from "../../state";
 import {showModal} from "../../state/actions/Modals";
 import ModalTypes from "../../constants/ModalTypes";
 import ThetaJS from '../../libs/thetajs.esm';
-import {getMinStakeAmount} from "../../Flags";
+import {getMaxDelegatedStakeAmount, getMinStakeAmount} from "../../Flags";
 
 const TRANSACTION_FEE = 0.000001;
 
@@ -58,6 +58,7 @@ export class DepositStakeTxForm extends React.Component {
                 invalidHolder: false,
                 invalidDecimalPlaces: false,
                 invalidAmount: false,
+                invalidDelegatedAmount: false,
                 insufficientFunds: false,
             };
 
@@ -107,7 +108,8 @@ export class DepositStakeTxForm extends React.Component {
             this.state.invalidHolder === false &&
             this.state.insufficientFunds === false &&
             this.state.invalidDecimalPlaces === false &&
-            this.state.invalidAmount === false
+            this.state.invalidAmount === false &&
+            this.state.invalidDelegatedAmount === false
         );
     }
 
@@ -165,7 +167,7 @@ export class DepositStakeTxForm extends React.Component {
     }
 
     async validateAmount() {
-        const {purpose} = this.props;
+        const {purpose, guardianNodeDelegate} = this.props;
         let amountFloat = parseFloat(this.state.amount);
         let thetaBalance = this.getBalanceOfTokenType(TokenTypes.THETA);
         let balance = null;
@@ -177,7 +179,8 @@ export class DepositStakeTxForm extends React.Component {
         this.setState({
             insufficientFunds: (amountFloat > parseFloat(balance)),
             invalidAmount: (amountFloat === 0.0 || amountFloat < getMinStakeAmount(purpose)),
-            invalidDecimalPlaces: !hasValidDecimalPlaces(this.state.amount, 18)
+            invalidDecimalPlaces: !hasValidDecimalPlaces(this.state.amount, 18),
+            invalidDelegatedAmount: (!_.isNil(guardianNodeDelegate) &&  amountFloat > getMaxDelegatedStakeAmount(purpose))
         });
     }
 
@@ -234,6 +237,9 @@ export class DepositStakeTxForm extends React.Component {
         }
         else if (this.state.invalidAmount) {
             amountError = "Invalid amount. Must be at least " + numberWithCommas(getMinStakeAmount(purpose)) + " THETA";
+        }
+        else if (this.state.invalidDelegatedAmount) {
+            amountError = `Invalid amount. There's a max of ${ numberWithCommas(getMaxDelegatedStakeAmount(purpose)) } THETA. Please download and run your own Guardian Node to stake more.`
         }
 
         let holderTitle = "";
