@@ -14,8 +14,6 @@ import {store} from "../../state";
 import {showModal} from "../../state/actions/Modals";
 import ModalTypes from "../../constants/ModalTypes";
 
-const TRANSACTION_FEE = 0.000001;
-
 export class SendTxForm extends React.Component {
     constructor(props) {
         super(props);
@@ -52,7 +50,7 @@ export class SendTxForm extends React.Component {
                 to: '',
                 amount: '',
 
-                transactionFee: TRANSACTION_FEE,
+                transactionFee: Theta.getTransactionFee(),
 
                 invalidAddress: false,
                 invalidDecimalPlaces: false,
