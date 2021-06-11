@@ -16,8 +16,6 @@ import ModalTypes from "../../constants/ModalTypes";
 import ThetaJS from '../../libs/thetajs.esm';
 import {getMaxDelegatedStakeAmount, getMinStakeAmount} from "../../Flags";
 
-const TRANSACTION_FEE = 0.000001;
-
 export class DepositStakeTxForm extends React.Component {
     constructor(props) {
         super(props);
@@ -53,7 +51,7 @@ export class DepositStakeTxForm extends React.Component {
                 holder: '',
                 amount: '',
 
-                transactionFee: TRANSACTION_FEE,
+                transactionFee: Theta.getTransactionFee(),
 
                 invalidHolder: false,
                 invalidDecimalPlaces: false,
