@@ -34,7 +34,13 @@ export default class Theta {
 
     static getTransactionFee(){
         //10^12 TFuelWei
-        return 0.000001;
+        // return 0.000001;
+        return 0.3;
+    }
+
+    static getSmartContractGasPrice(){
+        //10^12 TFuelWei
+        return 0.000004;
     }
 
 

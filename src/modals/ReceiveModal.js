@@ -11,6 +11,7 @@ import Api from "../services/Api";
 import _ from 'lodash';
 import Warning from "../components/Warning";
 import {Urls} from "../constants/Urls";
+import Config from '../Config';
 
 export default class ReceiveModal extends React.Component {
     constructor(props) {
@@ -84,7 +85,7 @@ export default class ReceiveModal extends React.Component {
                     />
 
                     {
-                        hasFaucet &&
+                        hasFaucet && Config.faucetAvailable &&
                         <div className="ReceiveModal__faucet">
                             <GhostButton title="Faucet"
                                          disabled={isLoading}
