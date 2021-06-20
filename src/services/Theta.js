@@ -114,19 +114,8 @@ export default class Theta {
         return Ethereum.isAddress(address);
     }
 
-    static isHolderSummary(holderSummary){
-        if(holderSummary){
-            let expectedLen = 458;
-
-            if(holderSummary.startsWith('0x')){
-                expectedLen = expectedLen + 2;
-            }
-
-            return (holderSummary.length === expectedLen);
-        }
-        else{
-            return false;
-        }
+    static isValidHolderSummary(purpose, holderSummary){
+        return ThetaJS.DepositStakeV2Tx.isValidHolderSummary(purpose, holderSummary);
     }
 
     static async signTransaction(unsignedTx, privateKey){

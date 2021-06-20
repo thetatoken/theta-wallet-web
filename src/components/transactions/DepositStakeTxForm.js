@@ -177,10 +177,10 @@ export class DepositStakeTxForm extends React.Component {
             isValid = Theta.isAddress(this.state.holder);
         }
         else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
-            isValid = Theta.isHolderSummary(this.getHolderSummary());
+            isValid = Theta.isValidHolderSummary(purpose, this.getHolderSummary());
         }
         else if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
-            isValid = Theta.isHolderSummary(this.getHolderSummary());
+            isValid = Theta.isValidHolderSummary(purpose, this.getHolderSummary());
         }
 
         this.setState({invalidHolder: (isValid === false)});

@@ -436,6 +436,25 @@ class DepositStakeTx extends StakeTx{
 }
 
 class DepositStakeV2Tx extends StakeTx{
+    static isValidHolderSummary(purpose, holderSummary){
+        if(holderSummary){
+            let summary = holderSummary;
+            if(!holderSummary.startsWith('0x')){
+                summary = "0x" + holderSummary;
+            }
+
+            let expectedLen = 460; // Guardian Nodes
+            if(purpose === StakePurposes.StakeForEliteEdge){
+                expectedLen = 524;
+            }
+
+            return (summary.length === expectedLen);
+        }
+        else{
+            return false;
+        }
+    }
+
     constructor(source, holderSummary, amount, feeInTFuelWei, purpose, senderSequence){
         super();
 
@@ -461,9 +480,9 @@ class DepositStakeV2Tx extends StakeTx{
         }
 
         //Ensure correct size
-        if(holderSummary.length !== 460) {
+        if(!DepositStakeV2Tx.isValidHolderSummary(purpose, holderSummary)) {
             //TODO: throw error
-            console.log("Holder must be a valid guardian address");
+            console.log("Holder must be a valid node summary");
         }
 
         //let guardianKeyBytes = Bytes.fromString(holderSummary);
