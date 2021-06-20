@@ -4,7 +4,7 @@ import Modal from '../components/Modal'
 import DepositStakeTxForm from '../components/transactions/DepositStakeTxForm'
 import Theta from "../services/Theta";
 import GradientButton from "../components/buttons/GradientButton";
-import Networks, {canGuardianNodeStake} from "../constants/Networks";
+import Networks, {canEdgeNodeStake, canGuardianNodeStake} from "../constants/Networks";
 import ThetaJS from "../libs/thetajs.esm";
 import StakePurposeSelector, {StakePurposeSelectorItem} from '../components/StakePurposeSelector';
 import {store} from "../state";
@@ -53,6 +53,7 @@ export default class DepositStakeModal extends React.Component {
         const {purpose, selectedPurpose, selectedGuardianNodeDelegate, guardianNodeDelegate} = this.state;
         const chainId = Theta.getChainID();
         const isGuardianNodeStakingDisabled = !canGuardianNodeStake(chainId);
+        const isEdgeNodeStakingDisabled = !canEdgeNodeStake(chainId);
 
         return (
             <Modal>
@@ -80,6 +81,13 @@ export default class DepositStakeModal extends React.Component {
                                 Please choose the staking purpose
                             </div>
                             <StakePurposeSelector>
+                                <StakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForEliteEdge}
+                                                          title={"My Edge Node"}
+                                                          subtitle={"Deposit stake to your Edge node"}
+                                                          isSelected={(selectedPurpose === ThetaJS.StakePurposes.StakeForEliteEdge)}
+                                                          isDisabled={isEdgeNodeStakingDisabled}
+                                                          onClick={this.handlePurposeClick}
+                                />
                                 <StakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForValidator}
                                                           title={"My Validator Node"}
                                                           subtitle={"Deposit stake to your Validator node"}

@@ -358,7 +358,8 @@ class SendTx extends Tx{
 
 const StakePurposes = {
     StakeForValidator: 0,
-    StakeForGuardian: 1
+    StakeForGuardian: 1,
+    StakeForEliteEdge: 2
 };
 
 class StakeTx extends Tx{
@@ -435,28 +436,29 @@ class DepositStakeTx extends StakeTx{
 }
 
 class DepositStakeV2Tx extends StakeTx{
-    constructor(source, holderSummary, stakeInThetaWei, feeInTFuelWei, purpose, senderSequence){
+    constructor(source, holderSummary, amount, feeInTFuelWei, purpose, senderSequence){
         super();
 
         let feeInTFuelWeiBN = BigNumber.isBigNumber(feeInTFuelWei) ? feeInTFuelWei : (new BigNumber(feeInTFuelWei));
         this.fee = new Coins(new BigNumber(0), feeInTFuelWeiBN);
 
-        let stakeInThetaWeiBN = BigNumber.isBigNumber(stakeInThetaWei) ? stakeInThetaWei : (new BigNumber(stakeInThetaWei));
-        this.source = new TxInput(source, stakeInThetaWeiBN, null, senderSequence);
+        let stakeInWeiBN = BigNumber.isBigNumber(amount) ? amount : (new BigNumber(amount));
+
+        if(purpose === StakePurposes.StakeForEliteEdge){
+            // TFUEL staking
+            this.source = new TxInput(source, null, stakeInWeiBN, senderSequence);
+        }
+        else{
+            // THETA staking
+            this.source = new TxInput(source, stakeInWeiBN, null, senderSequence);
+        }
 
         this.purpose = purpose;
-
-
-        console.log("BEFORE :: holderSummary == " );
-        console.log(holderSummary);
 
         //Parse out the info from the holder (summary) param
         if(!holderSummary.startsWith('0x')){
             holderSummary = "0x" + holderSummary;
         }
-
-        console.log("AFTER :: holderSummary == " );
-        console.log(holderSummary);
 
         //Ensure correct size
         if(holderSummary.length !== 460) {
@@ -465,46 +467,28 @@ class DepositStakeV2Tx extends StakeTx{
         }
 
         //let guardianKeyBytes = Bytes.fromString(holderSummary);
-        let guardianKeyBytes = Bytes.toArray(holderSummary);
-
-        console.log("guardianKeyBytes == " );
-        //console.log(guardianKeyBytes);
-        console.log(typeof guardianKeyBytes);
+        let nodeKeyBytes = Bytes.toArray(holderSummary);
 
         //slice instead of subarray
-        let holderAddressBytes = guardianKeyBytes.slice(0, 20);
+        let holderAddressBytes = nodeKeyBytes.slice(0, 20);
 
-        this.blsPubkeyBytes = guardianKeyBytes.slice(20, 68);
-        this.blsPopBytes = guardianKeyBytes.slice(68, 164);
-        this.holderSigBytes = guardianKeyBytes.slice(164);
+        this.blsPubkeyBytes = nodeKeyBytes.slice(20, 68);
+        this.blsPopBytes = nodeKeyBytes.slice(68, 164);
+        this.holderSigBytes = nodeKeyBytes.slice(164);
 
         let holderAddress = Bytes.fromArray(holderAddressBytes);
-
-        console.log("holderAddress == ");
-        console.log(holderAddress);
 
         this.holder = new TxOutput(holderAddress, null, null);
     }
 
     setSignature(signature){
-        console.log("setSignature :: signature == " + signature);
-
         let input = this.source;
         input.setSignature(signature);
     }
 
     signBytes(chainID){
-        console.log("DepositStakeTx :: signBytes :: chainId == " + chainID);
-
-        console.log("DepositStakeTx :: signBytes :: this.source == " + this.source);
-
-        console.log("DepositStakeTx :: signBytes :: this.source.signature == " + this.source.signature);
-
         // Detach the existing signature from the source if any, so that we don't sign the signature
         let sig = this.source.signature;
-
-        console.log("DepositStakeTx :: signBytes :: sig == '" + sig + "'");
-        console.log("DepositStakeTx :: signBytes :: sig type == " + typeof sig);
 
 
         this.source.signature = "";
@@ -517,8 +501,6 @@ class DepositStakeV2Tx extends StakeTx{
         // For ethereum tx compatibility, encode the tx as the payload
         let ethTxWrapper = new EthereumTx(payload);
         let signedBytes = RLP.encode(ethTxWrapper.rlpInput()); // the signBytes conforms to the Ethereum raw tx format
-
-        console.log("SendTx :: signBytes :: txRawBytes = " + signedBytes);
 
         // Attach the original signature back to the source
         this.source.signature = sig;
