@@ -147,6 +147,7 @@ export class DepositStakeTxForm extends React.Component {
                 let tfuelBalanceBN = new BigNumber(balance);
                 let amountToStakeBN = tfuelBalanceBN.minus(transactionFeeBN);
                 amountToStakeBN = BigNumber.minimum(amountToStakeBN, new BigNumber(getMaxStakeAmount(purpose)));
+                amountToStakeBN = BigNumber.maximum(amountToStakeBN, new BigNumber(0));
 
                 this.setState({
                     amount: amountToStakeBN.toString()

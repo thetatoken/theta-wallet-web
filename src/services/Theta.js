@@ -80,6 +80,9 @@ export default class Theta {
         else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
             tx = new ThetaJS.DepositStakeV2Tx(source, holder, thetaWeiToSend, feeInTFuelWei, purpose, senderSequence);
         }
+        else if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
+            tx = new ThetaJS.DepositStakeV2Tx(source, holder, thetaWeiToSend, feeInTFuelWei, purpose, senderSequence);
+        }
 
         return tx;
     }

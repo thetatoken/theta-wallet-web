@@ -82,20 +82,20 @@ export default class DepositStakeModal extends React.Component {
                             </div>
                             <StakePurposeSelector>
                                 <StakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForEliteEdge}
-                                                          title={"My Edge Node"}
+                                                          title={"Edge Node"}
                                                           subtitle={"Deposit stake to your Edge node"}
                                                           isSelected={(selectedPurpose === ThetaJS.StakePurposes.StakeForEliteEdge)}
                                                           isDisabled={isEdgeNodeStakingDisabled}
                                                           onClick={this.handlePurposeClick}
                                 />
                                 <StakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForValidator}
-                                                          title={"My Validator Node"}
+                                                          title={"Validator Node"}
                                                           subtitle={"Deposit stake to your Validator node"}
                                                           isSelected={(selectedPurpose === ThetaJS.StakePurposes.StakeForValidator)}
                                                           onClick={this.handlePurposeClick}
                                 />
                                 <StakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForGuardian}
-                                                          title={"My Guardian Node"}
+                                                          title={"Guardian Node"}
                                                           subtitle={"Deposit stake to your Guardian node"}
                                                           isSelected={(selectedPurpose === ThetaJS.StakePurposes.StakeForGuardian)}
                                                           isDisabled={isGuardianNodeStakingDisabled}
