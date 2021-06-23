@@ -226,7 +226,7 @@ class EthereumTx{
         this.value = "0x0";
         this.input = payload;
     }
-    
+
     rlpInput() {
         let rplInput= [
             Bytes.fromNat(this.nonce),
@@ -493,7 +493,7 @@ class DepositStakeV2Tx extends StakeTx{
 
         this.blsPubkeyBytes = nodeKeyBytes.slice(20, 68);
         this.blsPopBytes = nodeKeyBytes.slice(68, 164);
-        this.holderSigBytes = nodeKeyBytes.slice(164);
+        this.holderSigBytes = nodeKeyBytes.slice(164, 229);
 
         let holderAddress = Bytes.fromArray(holderAddressBytes);
 
@@ -630,8 +630,8 @@ const makeSigner = addToV => (hash, privateKey) => {
   const ecKey = secp256k1.keyFromPrivate(new Buffer(privateKey.slice(2), "hex"));
   const signature = ecKey.sign(new Buffer(hash.slice(2), "hex"), { canonical: true });
   return encodeSignature([
-      bnFromString(Bytes.fromNumber(addToV + signature.recoveryParam)), 
-      Bytes.pad(32, Bytes.fromNat("0x" + signature.r.toString(16))), 
+      bnFromString(Bytes.fromNumber(addToV + signature.recoveryParam)),
+      Bytes.pad(32, Bytes.fromNat("0x" + signature.r.toString(16))),
       Bytes.pad(32, Bytes.fromNat("0x" + signature.s.toString(16)))
     ]);
 };
