@@ -77,6 +77,9 @@ export class WithdrawStakeConfirmationModal extends React.Component {
         else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
             holderTitle = "Guardian Node (Holder)"
         }
+        else if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
+            holderTitle = "Edge Node (Holder)"
+        }
 
 
         return (

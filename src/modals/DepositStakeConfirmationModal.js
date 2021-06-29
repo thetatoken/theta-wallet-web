@@ -86,6 +86,9 @@ export class DepositStakeConfirmationModal extends React.Component {
                 holderTitle = "Guardian Node Holder (Summary)";
             }
         }
+        else if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
+            holderTitle = "Edge Node Holder (Summary)"
+        }
 
         return (
             <Modal>

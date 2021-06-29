@@ -53,6 +53,12 @@ export default class WithdrawStakeModal extends React.Component {
                                 Please choose the staking purpose
                             </div>
                             <StakePurposeSelector>
+                                <StakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForEliteEdge}
+                                                          title={"Edge Node"}
+                                                          subtitle={"Withdraw stake from a Edge node"}
+                                                          isSelected={(selectedPurpose === ThetaJS.StakePurposes.StakeForEliteEdge)}
+                                                          onClick={this.handlePurposeClick}
+                                />
                                 <StakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForValidator}
                                                           title={"Validator Node"}
                                                           subtitle={"Withdraw stake from a Validator node"}

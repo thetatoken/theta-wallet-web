@@ -23,11 +23,11 @@ export const NetworksWithDescriptions = [
         description: "THETA testnet",
         faucetId: "testnet"
     },
-    // {
-    //     id: Networks.THETA_TESTNET_AMBER,
-    //     name: "Testnet_Amber",
-    //     description: "THETA testnet for guardian nodes (Dec 2019)"
-    // },
+    {
+        id: Networks.THETA_TESTNET_AMBER,
+        name: "Testnet_Amber",
+        description: "THETA testnet for elite edge nodes (Apr 2021)"
+    },
     {
         id: Networks.THETA_TESTNET_SAPPHIRE,
         name: "Testnet (Sapphire)",
@@ -47,7 +47,7 @@ export const NetworksById = zipMap(NetworksWithDescriptions.map(({ id }) => id),
 export const NetworkExplorerUrls = {
     [Networks.THETA_MAINNET]: 'https://explorer.thetatoken.org',
     [Networks.THETA_TESTNET]: 'https://beta-explorer.thetatoken.org',
-    [Networks.THETA_TESTNET_AMBER]: 'https://guardian-testnet-explorer-amber.thetatoken.org',
+    [Networks.THETA_TESTNET_AMBER]: 'https://elite-edge-testnet-explorer.thetatoken.org',
     [Networks.THETA_TESTNET_SAPPHIRE]: 'https://guardian-testnet-explorer.thetatoken.org',
     [Networks.THETA_PRIVATENET]: 'https://smart-contracts-sandbox-explorer.thetatoken.org'
 };
@@ -58,6 +58,11 @@ export function isEthereumNetwork(network) {
 
 export function isThetaNetwork(network) {
     return (network !== Networks.__deprecated__ETHEREUM);
+}
+
+export function canEdgeNodeStake(network) {
+    return true;
+    return (network === Networks.THETA_TESTNET_AMBER);
 }
 
 export function canGuardianNodeStake(network) {

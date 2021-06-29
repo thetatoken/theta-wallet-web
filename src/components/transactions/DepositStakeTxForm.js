@@ -14,14 +14,16 @@ import {store} from "../../state";
 import {showModal} from "../../state/actions/Modals";
 import ModalTypes from "../../constants/ModalTypes";
 import ThetaJS from '../../libs/thetajs.esm';
-import {getMaxDelegatedStakeAmount, getMinStakeAmount} from "../../Flags";
+import {getMaxDelegatedStakeAmount, getMaxStakeAmount, getMinStakeAmount} from "../../Flags";
 
 export class DepositStakeTxForm extends React.Component {
     constructor(props) {
         super(props);
 
+        const tokenType = (props.purpose === ThetaJS.StakePurposes.StakeForEliteEdge) ? TokenTypes.THETA_FUEL : TokenTypes.THETA;
+
         this.state = {
-            tokenType: (props.defaultTokenType || TokenTypes.THETA),
+            tokenType: tokenType,
             holder: '',
             amount: '',
 
@@ -127,12 +129,30 @@ export class DepositStakeTxForm extends React.Component {
     }
 
     async handleEntireBalanceClick() {
+        const purpose = this.props.purpose;
+
         if (this.state.tokenType === TokenTypes.THETA) {
             let balance = this.getBalanceOfTokenType(TokenTypes.THETA);
 
             this.setState({
                 amount: balance
             });
+        }
+        else if (this.state.tokenType === TokenTypes.THETA_FUEL) {
+            let balance = this.getBalanceOfTokenType(TokenTypes.THETA_FUEL);
+            let transactionFee = this.state.transactionFee;
+
+            if (transactionFee) {
+                let transactionFeeBN = new BigNumber(transactionFee);
+                let tfuelBalanceBN = new BigNumber(balance);
+                let amountToStakeBN = tfuelBalanceBN.minus(transactionFeeBN);
+                amountToStakeBN = BigNumber.minimum(amountToStakeBN, new BigNumber(getMaxStakeAmount(purpose)));
+                amountToStakeBN = BigNumber.maximum(amountToStakeBN, new BigNumber(0));
+
+                this.setState({
+                    amount: amountToStakeBN.toString()
+                });
+            }
         }
     }
 
@@ -158,7 +178,10 @@ export class DepositStakeTxForm extends React.Component {
             isValid = Theta.isAddress(this.state.holder);
         }
         else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
-            isValid = Theta.isHolderSummary(this.getHolderSummary());
+            isValid = Theta.isValidHolderSummary(purpose, this.getHolderSummary());
+        }
+        else if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
+            isValid = Theta.isValidHolderSummary(purpose, this.getHolderSummary());
         }
 
         this.setState({invalidHolder: (isValid === false)});
@@ -168,15 +191,19 @@ export class DepositStakeTxForm extends React.Component {
         const {purpose, guardianNodeDelegate} = this.props;
         let amountFloat = parseFloat(this.state.amount);
         let thetaBalance = this.getBalanceOfTokenType(TokenTypes.THETA);
+        let tfuelBalance = this.getBalanceOfTokenType(TokenTypes.THETA_FUEL);
         let balance = null;
 
         if (this.state.tokenType === TokenTypes.THETA) {
             balance = thetaBalance;
         }
+        else if (this.state.tokenType === TokenTypes.THETA_FUEL) {
+            balance = tfuelBalance;
+        }
 
         this.setState({
             insufficientFunds: (amountFloat > parseFloat(balance)),
-            invalidAmount: (amountFloat === 0.0 || amountFloat < getMinStakeAmount(purpose)),
+            invalidAmount: (amountFloat === 0.0 || amountFloat < getMinStakeAmount(purpose) || amountFloat > getMaxStakeAmount(purpose)),
             invalidDecimalPlaces: !hasValidDecimalPlaces(this.state.amount, 18),
             invalidDelegatedAmount: (!_.isNil(guardianNodeDelegate) &&  amountFloat > getMaxDelegatedStakeAmount(purpose))
         });
@@ -193,9 +220,10 @@ export class DepositStakeTxForm extends React.Component {
     }
 
     render() {
-        const {purpose, guardianNodeDelegate} = this.props;
+        const {purpose, guardianNodeDelegate, balancesLoaded} = this.props;
         let hasHolder = (this.state.holder !== null && this.state.holder !== '' && this.state.invalidHolder === false);
-        let thetaTitle = `Theta (${ this.getBalanceOfTokenType(TokenTypes.THETA) })`;
+        let thetaTitle =  (balancesLoaded ? `Theta (${ numberWithCommas(this.getBalanceOfTokenType(TokenTypes.THETA)) })` : 'Theta (Loading...)') ;
+        let tfuelTitle = (balancesLoaded ? `TFuel (${ numberWithCommas(this.getBalanceOfTokenType(TokenTypes.THETA_FUEL)) })` : 'TFuel (loading...)');
         let transactionFeeValueContent = (
             <React.Fragment>
                 <span>Transaction Fee</span>
@@ -234,7 +262,12 @@ export class DepositStakeTxForm extends React.Component {
             amountError = "Invalid denomination";
         }
         else if (this.state.invalidAmount) {
-            amountError = "Invalid amount. Must be at least " + numberWithCommas(getMinStakeAmount(purpose)) + " THETA";
+            if(this.props.purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
+                amountError = "Invalid amount. Must be at least " + numberWithCommas(getMinStakeAmount(purpose)) + " TFUEL and no more than " + numberWithCommas(getMaxStakeAmount(purpose)) + " TFUEL";
+            }
+            else{
+                amountError = "Invalid amount. Must be at least " + numberWithCommas(getMinStakeAmount(purpose)) + " THETA";
+            }
         }
         else if (this.state.invalidDelegatedAmount) {
             amountError = `Invalid amount. There's a max of ${ numberWithCommas(getMaxDelegatedStakeAmount(purpose)) } THETA. Please download and run your own Guardian Node to stake more.`
@@ -251,13 +284,24 @@ export class DepositStakeTxForm extends React.Component {
             holderTitle = "Guardian Node Holder (Summary)";
             holderPlaceholder = "Enter guardian node summary";
         }
+        else if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
+            holderTitle = "Edge Node Holder (Summary)";
+            holderPlaceholder = "Enter edge node summary";
+        }
 
         return (
             <div className="TxForm">
                 <FormInputContainer title="Token">
                     <select className="BottomBorderInput" value={this.state.tokenType} onChange={this.handleChange}
                             name="tokenType">
-                        <option value={TokenTypes.THETA}>{thetaTitle}</option>
+                        {
+                            (purpose === ThetaJS.StakePurposes.StakeForEliteEdge) &&
+                            <option value={TokenTypes.THETA_FUEL}>{tfuelTitle}</option>
+                        }
+                        {
+                            (purpose !== ThetaJS.StakePurposes.StakeForEliteEdge) &&
+                            <option value={TokenTypes.THETA}>{thetaTitle}</option>
+                        }
                     </select>
                 </FormInputContainer>
                 {
@@ -299,6 +343,7 @@ const mapStateToProps = state => {
     return {
         balancesByType: state.wallet.balancesByType,
         walletAddress: state.wallet.address,
+        balancesLoaded: !_.isNil(state.wallet.balancesRefreshedAt)
     };
 };
 
