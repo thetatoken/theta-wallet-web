@@ -61,6 +61,7 @@ export function isThetaNetwork(network) {
 }
 
 export function canEdgeNodeStake(network) {
+    return true;
     return (network === Networks.THETA_TESTNET_AMBER);
 }
 
