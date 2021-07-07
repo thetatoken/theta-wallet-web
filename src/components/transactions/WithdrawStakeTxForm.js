@@ -103,6 +103,9 @@ export class WithdrawStakeTxForm extends React.Component {
             else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
                 holderError = "Invalid guardian node address (holder)";
             }
+            else if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
+                holderError = "Invalid guardian node address (holder)";
+            }
         }
 
         let holderTitle = "";
@@ -115,6 +118,10 @@ export class WithdrawStakeTxForm extends React.Component {
         else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
             holderTitle = "Guardian Node Address (Holder)";
             holderPlaceholder = "Enter guardian node address";
+        }
+        else if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
+            holderTitle = "Edge Node Address (Holder)";
+            holderPlaceholder = "Enter edge node address";
         }
 
         return (

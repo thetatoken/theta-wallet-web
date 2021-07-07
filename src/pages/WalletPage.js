@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from "react";
 import './WalletPage.css';
 import {connect} from 'react-redux'
@@ -13,7 +14,6 @@ import MDSpinner from "react-md-spinner";
 import GhostButton from "../components/buttons/GhostButton";
 import {showModal} from "../state/actions/Modals";
 import ModalTypes from "../constants/ModalTypes";
-import {numberWithCommas} from '../utils/Utils';
 
 export class WalletPage extends React.Component {
     constructor(){
@@ -84,10 +84,21 @@ export class WalletPage extends React.Component {
     }
 
     render() {
+        const { isFetchingBalances, balancesByType, balancesRefreshedAt } = this.props;
+
         return (
             <div className="WalletPage">
                 <div className="WalletPage__master-view">
-                    <WalletTokenList balancesByType={this.props.balancesByType}/>
+                    {
+                        isFetchingBalances && _.isEmpty(balancesByType) &&
+                        <MDSpinner singleColor="#ffffff"
+                                   className="WalletPage__master-view-spinner"
+                                   size={20}/>
+                    }
+
+                    <WalletTokenList balancesByType={this.props.balancesByType}
+                                     balancesRefreshedAt={balancesRefreshedAt}
+                    />
                 </div>
                 <div className="WalletPage__detail-view">
                     <PageHeader title="Transactions"
@@ -151,7 +162,10 @@ const mapStateToProps = (state, ownProps) => {
 
         transactions: transactions,
 
-        isLoadingTransactions: isLoadingTransactions
+        isLoadingTransactions: isLoadingTransactions,
+        isFetchingBalances: state.wallet.isFetchingBalances,
+
+        balancesRefreshedAt: state.wallet.balancesRefreshedAt
     };
 };
 

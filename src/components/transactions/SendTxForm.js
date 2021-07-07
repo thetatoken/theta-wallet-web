@@ -14,8 +14,6 @@ import {store} from "../../state";
 import {showModal} from "../../state/actions/Modals";
 import ModalTypes from "../../constants/ModalTypes";
 
-const TRANSACTION_FEE = 0.000001;
-
 export class SendTxForm extends React.Component {
     constructor(props) {
         super(props);
@@ -52,7 +50,7 @@ export class SendTxForm extends React.Component {
                 to: '',
                 amount: '',
 
-                transactionFee: TRANSACTION_FEE,
+                transactionFee: Theta.getTransactionFee(),
 
                 invalidAddress: false,
                 invalidDecimalPlaces: false,
@@ -189,9 +187,10 @@ export class SendTxForm extends React.Component {
     }
 
     render() {
+        const { balancesLoaded } = this.props;
         let hasToAddress = (this.state.to !== null && this.state.to !== '' && this.state.invalidAddress === false);
-        let thetaTitle = `Theta (${ numberWithCommas(this.getBalanceOfTokenType(TokenTypes.THETA)) })`;
-        let tfuelTitle = `TFuel (${ numberWithCommas(this.getBalanceOfTokenType(TokenTypes.THETA_FUEL)) })`;
+        let thetaTitle =  (balancesLoaded ? `Theta (${ numberWithCommas(this.getBalanceOfTokenType(TokenTypes.THETA)) })` : 'Theta (Loading...)') ;
+        let tfuelTitle = (balancesLoaded ? `TFuel (${ numberWithCommas(this.getBalanceOfTokenType(TokenTypes.THETA_FUEL)) })` : 'TFuel (loading...)');
         let transactionFeeValueContent = (
             <React.Fragment>
                 <span>Transaction Fee</span>
@@ -268,6 +267,8 @@ const mapStateToProps = state => {
     return {
         balancesByType: state.wallet.balancesByType,
         walletAddress: state.wallet.address,
+
+        balancesLoaded: !_.isNil(state.wallet.balancesRefreshedAt)
     };
 };
 

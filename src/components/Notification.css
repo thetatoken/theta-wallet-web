@@ -1,0 +1,23 @@
+.Notification{
+    display: flex;
+    flex-direction: row;
+    margin-left: 0px;
+    border-radius: 4px;
+    padding: 8px;
+    background-color: rgba(27, 222, 208, 0.15);
+    color: #1bded0;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none !important;
+}
+
+.Notification--green{
+    background-color: rgba(27, 222, 208, 0.15);
+    color: #1bded0;
+}
+
+.Notification--orange{
+    background-color: rgba(255, 164, 20, 0.15);
+    color: #ffa414;
+}

@@ -9,5 +9,6 @@ export default {
     WITHDRAW_STAKE: 'withdraw-stake',
     WITHDRAW_STAKE_CONFIRMATION: 'withdraw-stake-confirmation',
     SMART_CONTRACT_CONFIRMATION: 'smart-contract-confrimation',
-    NETWORK_SELECTOR: 'network-selector'
+    NETWORK_SELECTOR: 'network-selector',
+    GUARDIAN_NODE_DELEGATE_SELECTOR: 'guardian-node-delegate-selector'
 };

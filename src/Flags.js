@@ -25,6 +25,29 @@ export function getMinStakeAmount(purpose){
     else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
         return 1000.0;
     }
+    else if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
+        return 10000.0;
+    }
+
+    //Unknown
+    return 0.0;
+}
+
+export function getMaxStakeAmount(purpose){
+    if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
+        return 500000.0;
+    }
+
+    //No max
+    return 100000000000.0;
+}
+
+export function getMaxDelegatedStakeAmount(purpose){
+    const network = Theta.getChainID();
+
+    if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
+        return 10000.0;
+    }
 
     //Unknown
     return 0.0;
