@@ -17,7 +17,7 @@ export const EthereumDerivationPath = "m/44'/60'/0'/0/";
 export const EthereumOtherDerivationPath = "m/44'/60'/0'/";
 export const EthereumLedgerLiveDerivationPath = "m/44'/60'/";
 //END
-export const ThetaDevDerivationPath = "m/44'/1777'/";
+export const ThetaDevDerivationPath = "m/44'/500'/";
 
 const MnemonicPath = "m/44'/500'/0'/0/0";
 
