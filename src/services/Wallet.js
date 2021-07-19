@@ -118,7 +118,7 @@ export default class Wallet {
 
     static async walletFromLedger(page, derivationPath){
         const transport = await TransportU2F.create();
-        const app = (derivationPath === ThetaDevDerivationPath) ? new Eth(transport, "tfuel") : new Eth(transport);
+        const app = new Eth(transport);
 
         let result = [], res = {};
         for(var i = 0; i < 5; i++){
