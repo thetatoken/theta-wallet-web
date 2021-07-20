@@ -8,6 +8,7 @@ import Trezor from './Trezor';
 import Ledger from './Ledger';
 import Eth from "@ledgerhq/hw-app-eth";
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import TransportU2F from "@ledgerhq/hw-transport-u2f";
 
 const ethUtil = require('ethereumjs-util');
 
@@ -117,7 +118,13 @@ export default class Wallet {
     }
 
     static async walletFromLedger(page, derivationPath){
-        const transport = await TransportWebUSB.create();
+        let transport;
+        if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+            transport = await TransportU2F.create();
+        }
+        else {
+            transport = await TransportWebUSB.create();
+        }
         const app = new Eth(transport);
 
         let result = [], res = {};

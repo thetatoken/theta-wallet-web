@@ -1,5 +1,6 @@
 import ThetaJS from '../libs/thetajs.esm';
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import TransportU2F from "@ledgerhq/hw-transport-u2f";
 import Eth from "@ledgerhq/hw-app-eth";
 import Wallet from './Wallet';
 import Theta from "./Theta.js";
@@ -10,7 +11,13 @@ export default class Ledger {
         let chainID = Theta.getChainID();
         let ethTxWrapper = unsignedTx.signBytes(chainID).slice(2); // remove the '0x' prefix
         let path = Wallet.getWalletPath();
-        const transport = await TransportWebUSB.create();
+        let transport;
+        if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+            transport = await TransportU2F.create();
+        }
+        else {
+            transport = await TransportWebUSB.create();
+        }
         var eth = new Eth(transport);
         let sig = await eth.signTransaction(Wallet.getWalletPath(), ethTxWrapper);
         // transport.close();
