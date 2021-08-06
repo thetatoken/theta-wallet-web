@@ -83,27 +83,27 @@ export default class DepositStakeModal extends React.Component {
                             <StakePurposeSelector>
                                 <StakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForEliteEdge}
                                                           title={"Edge Node"}
-                                                          subtitle={"Deposit stake to your Edge node"}
+                                                          subtitle={"Stake TFUEL to earn TFUEL"}
                                                           isSelected={(selectedPurpose === ThetaJS.StakePurposes.StakeForEliteEdge)}
                                                           isDisabled={isEdgeNodeStakingDisabled}
                                                           onClick={this.handlePurposeClick}
                                 />
                                 <StakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForValidator}
                                                           title={"Validator Node"}
-                                                          subtitle={"Deposit stake to your Validator node"}
+                                                          subtitle={"For enterprises: Stake THETA to earn TFUEL"}
                                                           isSelected={(selectedPurpose === ThetaJS.StakePurposes.StakeForValidator)}
                                                           onClick={this.handlePurposeClick}
                                 />
                                 <StakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForGuardian}
                                                           title={"Guardian Node"}
-                                                          subtitle={"Deposit stake to your Guardian node"}
+                                                          subtitle={"Stake THETA to earn TFUEL"}
                                                           isSelected={(selectedPurpose === ThetaJS.StakePurposes.StakeForGuardian)}
                                                           isDisabled={isGuardianNodeStakingDisabled}
                                                           onClick={this.handlePurposeClick}
                                 />
                                 <StakePurposeSelectorItem purpose={ThetaJS.StakePurposes.StakeForGuardian}
                                                           title={"Delegated Guardian Node"}
-                                                          subtitle={"Deposit stake to a community run Guardian node"}
+                                                          subtitle={"Stake THETA to community run node to earn TFUEL"}
                                                           isDisabled={isGuardianNodeStakingDisabled}
                                                           onClick={this.handleDelegatedGuardianNodeClick}
                                 />
