@@ -12,6 +12,9 @@ import _ from 'lodash';
 import Warning from "../components/Warning";
 import {Urls} from "../constants/Urls";
 import Config from '../Config';
+import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import TransportU2F from "@ledgerhq/hw-transport-u2f";
+import Eth from "@ledgerhq/hw-app-eth";
 
 export default class ReceiveModal extends React.Component {
     constructor(props) {
@@ -28,6 +31,23 @@ export default class ReceiveModal extends React.Component {
         copyToClipboard(address);
 
         Alerts.showSuccess("Your address has been copied");
+    };
+
+    handleDisplayOnLedgerClick = async () => {
+        try {
+            Alerts.showSuccess("Your address will be displayed on Ledger device");
+            let transport;
+            if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+                transport = await TransportU2F.create();
+            }
+            else {
+                transport = await TransportWebUSB.create();
+            }
+            var eth = new Eth(transport);
+            await eth.getAddress(Wallet.getWalletPath(), true, false);
+        } catch(e) {
+            Alerts.showSuccess("Rejected, please refresh to change address");
+        }
     };
 
     handleFaucetClick = async () => {
@@ -79,7 +99,13 @@ export default class ReceiveModal extends React.Component {
                                      onClick={this.handleCopyAddressClick}
                         />
                     </div>
-
+                    {Wallet.getWalletHardware() ==='ledger' &&
+                    <div className="ReceiveModal__buttons">
+                        <GhostButton title="Display on Ledger"
+                                     onClick={this.handleDisplayOnLedgerClick}
+                        />
+                    </div>
+                     }
                     <img src={qrCodeURL}
                          className="ReceiveModal__qr"
                     />

@@ -355,7 +355,7 @@ class UnlockWalletViaColdWallet extends React.Component {
         this.state = {
             hardware: '',
             loading: false,
-            derivationPath: EthereumDerivationPath
+            derivationPath: ThetaDevDerivationPath
         };
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
