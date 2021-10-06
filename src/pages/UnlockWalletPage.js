@@ -355,7 +355,7 @@ class UnlockWalletViaColdWallet extends React.Component {
         this.state = {
             hardware: '',
             loading: false,
-            derivationPath: ThetaDevDerivationPath
+            derivationPath: EthereumDerivationPath//ThetaDevDerivationPath
         };
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -464,7 +464,7 @@ class UnlockWalletViaColdWallet extends React.Component {
                                 onChange={this.handleDerivationPathChange}
                                 className={"UnlockColdWalletLedger__select"}
                         >
-                            <option value={ThetaDevDerivationPath}>Theta - m/44'/500'</option>
+                            {/* <option value={ThetaDevDerivationPath}>Theta - m/44'/500'</option> */}
                             <option value={EthereumDerivationPath}>Ethereum - m/44'/60'/0'/0</option>
                             <option value={EthereumOtherDerivationPath}>Ethereum - m/44'/60'/0'</option>
                             <option value={EthereumLedgerLiveDerivationPath}>Ethereum - Ledger Live - m/44'/60'</option>
