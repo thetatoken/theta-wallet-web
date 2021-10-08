@@ -6,8 +6,9 @@ import Api from './Api';
 import TrezorConnect from 'trezor-connect';
 import Trezor from './Trezor';
 import Ledger from './Ledger';
-import TransportU2F from "@ledgerhq/hw-transport-u2f";
 import Eth from "@ledgerhq/hw-app-eth";
+import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import TransportU2F from "@ledgerhq/hw-transport-u2f";
 
 const ethUtil = require('ethereumjs-util');
 
@@ -17,6 +18,7 @@ export const EthereumDerivationPath = "m/44'/60'/0'/0/";
 export const EthereumOtherDerivationPath = "m/44'/60'/0'/";
 export const EthereumLedgerLiveDerivationPath = "m/44'/60'/";
 //END
+export const ThetaDevDerivationPath = "m/44'/500'/";
 
 const MnemonicPath = "m/44'/500'/0'/0/0";
 
@@ -116,13 +118,21 @@ export default class Wallet {
     }
 
     static async walletFromLedger(page, derivationPath){
-        const transport = await TransportU2F.create();
-        const eth = new Eth(transport);
+        let transport;
+        if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+            transport = await TransportU2F.create();
+        }
+        else {
+            transport = await TransportWebUSB.create();
+        }
+        const app = new Eth(transport);
 
-        let result = [];
+        let result = [], res = {};
         for(var i = 0; i < 5; i++){
             var path = "";
-            if(derivationPath === EthereumDerivationPath){
+            if (derivationPath === ThetaDevDerivationPath) {
+                path = ThetaDevDerivationPath + (page * NumPathsPerPage + i) + "'/0/0";
+            } else if(derivationPath === EthereumDerivationPath){
                 path = EthereumDerivationPath + (page * NumPathsPerPage + i);
             }
             else if(derivationPath === EthereumOtherDerivationPath){
@@ -131,7 +141,7 @@ export default class Wallet {
             else if(derivationPath === EthereumLedgerLiveDerivationPath){
                 path = EthereumLedgerLiveDerivationPath + (page * NumPathsPerPage + i) + "'/0/0";
             }
-            let res = await eth.getAddress(path, false, false);
+            res = await app.getAddress(path, false, false);    
 
             result.push({address: res.address, serializedPath: path});
 

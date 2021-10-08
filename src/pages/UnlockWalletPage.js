@@ -5,7 +5,7 @@ import {Link} from "react-router-dom";
 import GradientButton from '../components/buttons/GradientButton'
 import HardwareOptionButton from '../components/buttons/HardwareOptionButton';
 import Wallet, {EthereumOtherDerivationPath} from '../services/Wallet'
-import { WalletUnlockStrategy, EthereumDerivationPath, EthereumLedgerLiveDerivationPath } from '../services/Wallet'
+import { WalletUnlockStrategy, EthereumDerivationPath, EthereumLedgerLiveDerivationPath, ThetaDevDerivationPath } from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
 import {unlockWallet} from "../state/actions/Wallet";
@@ -355,7 +355,7 @@ class UnlockWalletViaColdWallet extends React.Component {
         this.state = {
             hardware: '',
             loading: false,
-            derivationPath: EthereumDerivationPath
+            derivationPath: EthereumDerivationPath//ThetaDevDerivationPath
         };
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -464,6 +464,7 @@ class UnlockWalletViaColdWallet extends React.Component {
                                 onChange={this.handleDerivationPathChange}
                                 className={"UnlockColdWalletLedger__select"}
                         >
+                            {/* <option value={ThetaDevDerivationPath}>Theta - m/44'/500'</option> */}
                             <option value={EthereumDerivationPath}>Ethereum - m/44'/60'/0'/0</option>
                             <option value={EthereumOtherDerivationPath}>Ethereum - m/44'/60'/0'</option>
                             <option value={EthereumLedgerLiveDerivationPath}>Ethereum - Ledger Live - m/44'/60'</option>
