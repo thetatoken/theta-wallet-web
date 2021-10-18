@@ -3,8 +3,6 @@ import TrezorConnect from 'trezor-connect';
 import Web3 from 'web3';
 import Wallet from './Wallet'
 import Theta from "./Theta.js"
-import {chainIDStringToNumber} from "../utils/Utils";
-import Api from './Api'
 
 const rpcURL = "https://mainnet.infura.io/v3/40980e2189924c8abfc5f60dd2e5dc4b";
 const web3 = new Web3(rpcURL);
