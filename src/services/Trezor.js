@@ -9,13 +9,12 @@ const web3 = new Web3(rpcURL);
 
 export default class Trezor {
     static async signTransaction(unsignedTx){
-        // let unsignedTx = Theta.unsignedSendTx(txData, sequence);
         let payload = Theta.prepareTxPayload(unsignedTx);
 
         const trezorSignParams = {
             path: Wallet.getWalletPath(),
             transaction: {
-                // // chainId: 1,
+                chainId: 1,
                 nonce: web3.utils.toHex('0'),
                 gasPrice: web3.utils.toHex('0'),
                 gasLimit: web3.utils.toHex('0'),
@@ -24,20 +23,17 @@ export default class Trezor {
                 data: payload,
             },
         };
-
         const signedTx = await TrezorConnect.ethereumSignTransaction(trezorSignParams);
         if (signedTx.payload.error) {
             throw signedTx.payload.error;
         }
-
-        let signature = signedTx.payload.r + signedTx.payload.s.slice(2) + (parseInt(signedTx.payload.v, 16) - 27).toString().padStart(2, '0');
+        let signature = signedTx.payload.r + signedTx.payload.s.slice(2) + (parseInt(signedTx.payload.v, 16) - 37).toString().padStart(2, '0');
         unsignedTx.setSignature(signature);
-
         let signedRawTxBytes = ThetaJS.TxSigner.serializeTx(unsignedTx);
         let signedTxRaw = signedRawTxBytes.toString('hex');
 
         //Remove the '0x' until the RPC endpoint supports '0x' prefixes
-        signedTxRaw = signedTxRaw.substring(2);
+        // signedTxRaw = signedTxRaw.substring(2);
 
         if(signedTxRaw){
             return signedTxRaw;

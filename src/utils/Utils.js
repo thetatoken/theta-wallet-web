@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Networks from '../constants/Networks'
 
 /**
  * Returns a new object with vals mapped to keys
@@ -115,4 +116,16 @@ export function getQueryParameters(str) {
     else{
         return searchStr.replace(/(^\?)/,'').split("&").map(function(n){return n = n.split("="),this[n[0]] = n[1],this}.bind({}))[0];
     }
+}
+
+export function chainIDStringToNumber(chainIDstr) {
+    switch(chainIDstr) {
+        case Networks.THETA_MAINNET:
+            return 361;
+        case Networks.THETA_PRIVATENET:
+            return 366;
+        case Networks.THETA_TESTNET:
+            return 365;
+    }
+    return 0;
 }
