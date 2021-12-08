@@ -9,16 +9,7 @@ import {Urls} from "../constants/Urls";
 
 export default class SendModal extends React.Component {
     render() {
-        let tokenType = (this.props.tokenType || TokenTypes.THETA);
-        let showThetaForm = (tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL);
-        let form = null;
-
-        if(showThetaForm){
-            form = <SendTxForm defaultTokenType={tokenType}/>;
-        }
-        else{
-            form = <EthereumNetworkTxForm defaultTokenType={tokenType}/>;
-        }
+        let tokenType = null; //this.props.tokenType;
 
         return (
             <Modal>
@@ -32,7 +23,7 @@ export default class SendModal extends React.Component {
                              style={{marginBottom: 20}}
                     />
 
-                    { form }
+                    <SendTxForm defaultTokenType={tokenType}/>
 
                 </div>
             </Modal>

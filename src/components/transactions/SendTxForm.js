@@ -18,8 +18,11 @@ export class SendTxForm extends React.Component {
     constructor(props) {
         super(props);
 
+        console.log('(props.defaultTokenType || "") == ');
+        console.log((props.defaultTokenType || ""));
+
         this.state = {
-            tokenType: (props.defaultTokenType || TokenTypes.THETA),
+            tokenType: (props.defaultTokenType || ""),
             to: '',
             amount: '',
 
@@ -228,6 +231,7 @@ export class SendTxForm extends React.Component {
                 <FormInputContainer title="Token">
                     <select className="BottomBorderInput" value={this.state.tokenType} onChange={this.handleChange}
                             name="tokenType">
+                        <option value={""} disabled={true}>{"Select token"}</option>
                         <option value={TokenTypes.THETA}>{thetaTitle}</option>
                         <option value={TokenTypes.THETA_FUEL}>{tfuelTitle}</option>
                     </select>
