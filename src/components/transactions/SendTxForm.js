@@ -191,6 +191,8 @@ export class SendTxForm extends React.Component {
 
     render() {
         const { balancesLoaded } = this.props;
+        let tokenType = this.state.tokenType;
+        let selectedToken = (tokenType !== '');
         let hasToAddress = (this.state.to !== null && this.state.to !== '' && this.state.invalidAddress === false);
         let thetaTitle =  (balancesLoaded ? `Theta (${ numberWithCommas(this.getBalanceOfTokenType(TokenTypes.THETA)) })` : 'Theta (Loading...)') ;
         let tfuelTitle = (balancesLoaded ? `TFuel (${ numberWithCommas(this.getBalanceOfTokenType(TokenTypes.THETA_FUEL)) })` : 'TFuel (loading...)');
@@ -236,32 +238,43 @@ export class SendTxForm extends React.Component {
                         <option value={TokenTypes.THETA_FUEL}>{tfuelTitle}</option>
                     </select>
                 </FormInputContainer>
-                <FormInputContainer title="To"
-                                    error={toError}>
-                    <input className="BottomBorderInput"
-                           name="to"
-                           placeholder="Enter address"
-                           value={this.state.to}
-                           onChange={this.handleChange}/>
-                </FormInputContainer>
-                <FormInputContainer title={amountTitleContent}
-                                    error={amountError}>
-                    <input className="BottomBorderInput" type="text" value={this.state.amount}
-                           name="amount"
-                           placeholder="Enter amount to send"
-                           onChange={this.handleChange}/>
-                </FormInputContainer>
-
-                <div className="TxForm__fee-container">
-                    <div className="">
-                        <ValueWithTitle title={transactionFeeValueContent}
-                                        value={this.state.transactionFee + " TFuel"}/>
+                {
+                    selectedToken &&
+                    <FormInputContainer title="To"
+                                        error={toError}>
+                        <input className="BottomBorderInput"
+                               name="to"
+                               placeholder="Enter address"
+                               value={this.state.to}
+                               onChange={this.handleChange}/>
+                    </FormInputContainer>
+                }
+                {
+                    selectedToken &&
+                    <FormInputContainer title={amountTitleContent}
+                                        error={amountError}>
+                        <input className="BottomBorderInput" type="text" value={this.state.amount}
+                               name="amount"
+                               placeholder="Enter amount to send"
+                               onChange={this.handleChange}/>
+                    </FormInputContainer>
+                }
+                {
+                    selectedToken &&
+                    <div className="TxForm__fee-container">
+                        <div className="">
+                            <ValueWithTitle title={transactionFeeValueContent}
+                                            value={this.state.transactionFee + " TFuel"}/>
+                        </div>
                     </div>
-                </div>
-                <GradientButton title="Send"
-                                disabled={isValid === false}
-                                onClick={this.handleSendClick}
-                />
+                }
+                {
+                    <GradientButton title="Send"
+                                    disabled={isValid === false}
+                                    onClick={this.handleSendClick}
+                    />
+                }
+
             </div>
         )
     }
