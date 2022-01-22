@@ -7,9 +7,10 @@ import { store } from '../state';
 import {logout} from "../state/actions/Wallet";
 import {copyToClipboard} from "../utils/Utils";
 import Alerts from "../services/Alerts";
-import {showModal} from "../state/actions/Modals";
+import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import {getNetworkName} from "../constants/Networks";
+import NetworkSelector from "./NetworkSelector";
 
 const classNames = require('classnames');
 
@@ -83,13 +84,14 @@ class NavBar extends React.Component {
 
         return (
             <div className={classNames("NavBar", { 'NavBar--is-centered': this.props.centered })}>
-                <div style={{display: 'flex', flexDirection: 'column'}}>
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                     <img className="NavBar__logo" src={'/img/logo/theta_wallet_logo@2x.png'}/>
-                    <a className={classNames("NavBar__network-badge", {"NavBar__network-badge--is-disabled": !_.isNil(address)})}
-                       onClick={this.onNetworkBadgeClick}
-                    >
-                        {getNetworkName(network)}
-                    </a>
+                    <NetworkSelector/>
+                    {/*<a className={classNames("NavBar__network-badge", {"NavBar__network-badge--is-disabled": !_.isNil(address)})}*/}
+                    {/*   onClick={this.onNetworkBadgeClick}*/}
+                    {/*>*/}
+                    {/*    {getNetworkName(network)}*/}
+                    {/*</a>*/}
                 </div>
 
                 { this.renderAccountIfNeeded() }

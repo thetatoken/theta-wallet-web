@@ -39,7 +39,7 @@ class GhostButton extends React.Component {
             <a className={className}
                href={this.props.href}
                target={this.props.target}
-               onClick={this.props.onClick}
+               onClick={(this.props.disabled === true ? null : this.props.onClick)}
                style={this.props.style}
             >
                 {innerContent}

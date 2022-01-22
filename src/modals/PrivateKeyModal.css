@@ -1,11 +1,12 @@
 .PrivateKeyModal{
     display: flex;
     flex-direction: column;
-    background-color: #242F4B;
+    background-color: #1C243B;
     width: 450px;
     //height: 500px;
     padding: 20px;
     box-sizing: border-box;
+    border-radius: 12px;
 }
 
 .PrivateKeyModal__title{

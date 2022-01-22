@@ -2,33 +2,38 @@ import _ from 'lodash';
 import React from "react";
 import './WalletTokenListItem.css';
 import {NavLink} from 'react-router-dom'
-import {BigNumber} from 'bignumber.js';
-import {numberWithCommas} from "../utils/Utils";
+import {Jazzicon} from "@ukstv/jazzicon-react";
 
 class WalletTokenListItem extends React.Component {
     render() {
-        let tokenBalanceStr = "-";
-
-        if(!_.isNil(this.props.tokenBalance)){
-            const tokenBalance = (this.props.tokenBalance || "0");
-            tokenBalanceStr = numberWithCommas(new BigNumber(tokenBalance).toString());
-        }
+        const {token, balance} = this.props;
+        let balanceStr = balance || "-";
 
         return (
-            <NavLink to={this.props.token.href}
+            <NavLink to={`/wallet/tokens/${token.id}`}
                      className="WalletTokenListItem"
                      activeClassName="WalletTokenListItem--is-active">
                 <div className="WalletTokenListItem__token-container">
                     <div className="WalletTokenListItem__active-indicator"/>
-                    <img src={this.props.token.iconUrl}
-                         className="WalletTokenListItem__token-icon"
-                    />
+
+                    <div className='WalletTokenListItem__token-icon-wrapper'>
+                        {
+                            token.iconUrl &&
+                            <img src={token.iconUrl}
+                                 className="WalletTokenListItem__token-icon"
+                            />
+                        }
+                        {
+                            _.isNil(token.iconUrl) &&
+                            <Jazzicon address={token.contractAddress} className="WalletTokenListItem__token-icon"/>
+                        }
+                    </div>
                     <div className="WalletTokenListItem__token-balance-container">
                         <div className="WalletTokenListItem__token-name">
-                            {this.props.token.name}
+                            {token.symbol}
                         </div>
                         <div className="WalletTokenListItem__token-balance">
-                            {tokenBalanceStr}
+                            {balanceStr}
                         </div>
                     </div>
                 </div>

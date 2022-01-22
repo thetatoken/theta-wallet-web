@@ -193,3 +193,7 @@ typings/
 /configs
 
 src/libs/thetajs-old.esm.js
+
+
+src/index.css
+src/index.css.map

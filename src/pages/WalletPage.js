@@ -12,8 +12,9 @@ import EmptyState from "../components/EmptyState";
 import TokenTypes from "../constants/TokenTypes";
 import MDSpinner from "react-md-spinner";
 import GhostButton from "../components/buttons/GhostButton";
-import {showModal} from "../state/actions/Modals";
+import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
+import {DefaultAssets, tokenToAsset} from "../constants/assets";
 
 export class WalletPage extends React.Component {
     constructor(){
@@ -21,7 +22,7 @@ export class WalletPage extends React.Component {
 
         this.pollWalletBalancesIntervalId = null;
 
-        this.fetchBalances = this.fetchBalances.bind(this);
+        // this.fetchBalances = this.fetchBalances.bind(this);
         this.handleSendClick = this.handleSendClick.bind(this);
         this.handleReceiveClick = this.handleReceiveClick.bind(this);
     }
@@ -33,27 +34,27 @@ export class WalletPage extends React.Component {
     }
 
     fetchBalances(){
-        this.props.dispatch(fetchWalletBalances());
+        // this.props.dispatch(fetchWalletBalances());
     }
 
     startPollingWalletBalances(){
         //Fetch it immediately
-        this.fetchBalances();
+        // this.fetchBalances();
 
-        this.pollWalletBalancesIntervalId = setInterval(this.fetchBalances, 15000);
+        // this.pollWalletBalancesIntervalId = setInterval(this.fetchBalances, 15000);
     }
 
     stopPollingWalletBalances(){
-        if(this.pollWalletBalancesIntervalId){
-            clearInterval(this.pollWalletBalancesIntervalId);
-        }
+        // if(this.pollWalletBalancesIntervalId){
+        //     clearInterval(this.pollWalletBalancesIntervalId);
+        // }
     }
 
     handleSendClick(){
         this.props.dispatch(showModal({
-            type: ModalTypes.SEND,
+            type: ModalTypes.CREATE_TRANSACTION,
             props: {
-                tokenType: this.props.match.params.tokenType
+                transactionType: 'send'
             }
         }));
     }
@@ -67,12 +68,12 @@ export class WalletPage extends React.Component {
     componentDidMount(){
         let tokenType = this.props.match.params.tokenType;
 
-        this.startPollingWalletBalances();
+        // this.startPollingWalletBalances();
         this.fetchTransactions(tokenType);
     }
 
     componentWillUnmount(){
-        this.stopPollingWalletBalances();
+        // this.stopPollingWalletBalances();
     }
 
     componentWillReceiveProps(nextProps){
@@ -84,19 +85,23 @@ export class WalletPage extends React.Component {
     }
 
     render() {
-        const { isFetchingBalances, balancesByType, balancesRefreshedAt } = this.props;
+        const { selectedAccount, assets, tokens, isFetchingBalances, balancesRefreshedAt, transactions, isLoadingTransactions } = this.props;
+        console.log('this.props == ');
+        console.log(this.props);
 
         return (
             <div className="WalletPage">
                 <div className="WalletPage__master-view">
                     {
-                        isFetchingBalances && _.isEmpty(balancesByType) &&
+                        isFetchingBalances && _.isEmpty(selectedAccount) &&
                         <MDSpinner singleColor="#ffffff"
                                    className="WalletPage__master-view-spinner"
                                    size={20}/>
                     }
 
-                    <WalletTokenList balancesByType={this.props.balancesByType}
+                    <WalletTokenList selectedAccount={selectedAccount}
+                                     tokens={tokens}
+                                     assets={assets}
                                      balancesRefreshedAt={balancesRefreshedAt}
                     />
                 </div>
@@ -115,17 +120,17 @@ export class WalletPage extends React.Component {
                     </PageHeader>
 
                     {
-                        this.props.isLoadingTransactions &&
+                        isLoadingTransactions &&
                         <MDSpinner singleColor="#ffffff" className="WalletPage__detail-view-spinner"/>
                     }
 
                     {
-                        this.props.transactions.length > 0 &&
-                        <TransactionList transactions={this.props.transactions}/>
+                        transactions.length > 0 &&
+                        <TransactionList transactions={transactions}/>
                     }
 
                     {
-                        (this.props.transactions.length === 0 && this.props.isLoadingTransactions === false) &&
+                        (transactions.length === 0 && isLoadingTransactions === false) &&
                         <EmptyState icon="/img/icons/empty-transactions@2x.png"
                                     title="No Transactions"
                         />
@@ -137,36 +142,59 @@ export class WalletPage extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    let tokenType = ownProps.match.params.tokenType;
-    let localTransactionsByHash = (state.transactions.localTransactionsByHash || {});
-    let transactions = [];
-    let isLoadingTransactions = false;
+    const {thetaWallet} = state;
+    const selectedAddress = thetaWallet.selectedAddress;
+    const identities = thetaWallet.identities;
+    const accounts = thetaWallet.accounts;
+    const tokens = thetaWallet.tokens;
+    const chainId = thetaWallet.network?.chainId;
+    const transactions = getThetaNetworkTransactions(state);
+    const isLoadingTransactions = state.transactions.isFetchingTransactions;
 
-    if(tokenType === TokenTypes.ERC20_THETA){
-        transactions = getERC20Transactions(state);
-        isLoadingTransactions = state.transactions.isFetchingERC20Transactions;
-    }
-    else if(tokenType === TokenTypes.ETHEREUM){
-        transactions = getEthereumTransactions(state);
-        isLoadingTransactions = state.transactions.isFetchingEthereumTransactions;
-    }
-    else if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
-        transactions = getThetaNetworkTransactions(state);
-        isLoadingTransactions = state.transactions.isFetchingTransactions;
-    }
 
     return {
-        balancesByType: Object.assign({}, state.wallet.balancesByType, state.wallet.ethereumBalancesByType),
+        selectedAddress: selectedAddress,
+        selectedIdentity: identities[selectedAddress],
+        selectedAccount: accounts[selectedAddress],
 
-        localTransactionsAmount: Object.keys(localTransactionsByHash).length,
+        tokens: tokens,
+        assets: _.concat(DefaultAssets(chainId), tokens.map(tokenToAsset)),
 
         transactions: transactions,
+        isLoadingTransactions: isLoadingTransactions
+    }
 
-        isLoadingTransactions: isLoadingTransactions,
-        isFetchingBalances: state.wallet.isFetchingBalances,
-
-        balancesRefreshedAt: state.wallet.balancesRefreshedAt
-    };
+    //
+    // let tokenType = ownProps.match.params.tokenType;
+    // let localTransactionsByHash = (state.transactions.localTransactionsByHash || {});
+    // let transactions = [];
+    // let isLoadingTransactions = false;
+    //
+    // if(tokenType === TokenTypes.ERC20_THETA){
+    //     transactions = getERC20Transactions(state);
+    //     isLoadingTransactions = state.transactions.isFetchingERC20Transactions;
+    // }
+    // else if(tokenType === TokenTypes.ETHEREUM){
+    //     transactions = getEthereumTransactions(state);
+    //     isLoadingTransactions = state.transactions.isFetchingEthereumTransactions;
+    // }
+    // else if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
+    //     transactions = getThetaNetworkTransactions(state);
+    //     isLoadingTransactions = state.transactions.isFetchingTransactions;
+    // }
+    //
+    // return {
+    //     balancesByType: Object.assign({}, state.wallet.balancesByType, state.wallet.ethereumBalancesByType),
+    //
+    //     localTransactionsAmount: Object.keys(localTransactionsByHash).length,
+    //
+    //     transactions: transactions,
+    //
+    //     isLoadingTransactions: isLoadingTransactions,
+    //     isFetchingBalances: state.wallet.isFetchingBalances,
+    //
+    //     balancesRefreshedAt: state.wallet.balancesRefreshedAt
+    // };
 };
 
 export default connect(mapStateToProps)(WalletPage);

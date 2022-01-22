@@ -18,8 +18,8 @@ class ThetaTransactionListItem extends React.Component {
         let explorerUrl = Theta.getTransactionExplorerUrl(transaction);
 
         //Truncate the addresses to help reduce the run ons
-        from = truncate(from, 23, '...');
-        to = truncate(to, 23, '...');
+        from = truncate(from);
+        to = truncate(to);
 
         let thetaAmount = _.get(output, ['coins', 'theta']);
         let tfuelAmount = _.get(output, ['coins', 'tfuel']);

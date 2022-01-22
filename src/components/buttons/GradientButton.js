@@ -41,7 +41,7 @@ class GradientButton extends React.Component {
             content = (
                 <a className={className}
                    style={this.props.style}
-                   onClick={this.props.onClick}>
+                   onClick={(this.props.disabled === true ? null : this.props.onClick)}>
                     {innerContent}
                 </a>
             );

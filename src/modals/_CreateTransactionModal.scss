@@ -1,0 +1,15 @@
+.CreateTransactionModal{
+  display: flex;
+  flex-direction: column;
+  background-color: $background-color;
+  width: 500px;
+  min-height: 540px;
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius: 12px;
+
+  &__footer{
+    margin-top: auto;
+  }
+}
+

@@ -40,8 +40,9 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    background-color: #242F4B;
+    background-color: #8A8FB51F;
     min-height: 435px;
+    border-radius: 12px;
 }
 
 .UnlockWalletCard__content{
@@ -179,7 +180,7 @@
 }
 
 .UnlockWalletViaKeystoreFile__password-input, .UnlockColdWalletLedger__select{
-    background-color: #404C6E;
+    background-color: #8A8FB51F;
     height: 50px;
     color: white;
     border-radius: 4px;
@@ -226,7 +227,7 @@
 }
 
 .UnlockWalletViaMnemonicPhrase__mnemonic{
-    background-color: #404C6E;
+    background-color: #8A8FB51F;
     outline: none !important;
     border: none !important;
     color: white;
@@ -248,7 +249,7 @@
 }
 
 .UnlockWalletViaMnemonicPhrase__password-input{
-    background-color: #404C6E;
+    background-color: #8A8FB51F;
     height: 50px;
     color: white;
     border-radius: 4px;
@@ -295,7 +296,7 @@
 }
 
 .UnlockWalletViaPrivateKey__private-key{
-    background-color: #404C6E;
+    background-color: #8A8FB51F;
     outline: none !important;
     border: none !important;
     color: white;
@@ -317,7 +318,7 @@
 }
 
 .UnlockWalletViaPrivateKey__password-input{
-    background-color: #404C6E;
+    background-color: #8A8FB51F;
     height: 50px;
     color: white;
     border-radius: 4px;

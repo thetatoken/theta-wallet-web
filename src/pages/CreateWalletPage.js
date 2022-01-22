@@ -6,7 +6,7 @@ import Wallet from '../services/Wallet'
 import TemporaryState from '../services/TemporaryState'
 import { downloadFile } from '../utils/Utils'
 import {store} from "../state";
-import {showModal} from "../state/actions/Modals";
+import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 
 class WalletCreationCompleteCard extends React.Component {
@@ -41,10 +41,10 @@ class WalletCreationCompleteCard extends React.Component {
 class MnemonicCard extends React.Component {
     constructor(){
         super();
-        
+
         this.showPrivateKey = this.showPrivateKey.bind(this);
     }
-    
+
     showPrivateKey(){
         store.dispatch(showModal({
             type: ModalTypes.PRIVATE_KEY,
@@ -53,9 +53,10 @@ class MnemonicCard extends React.Component {
             }
         }));
     }
-    
+
     render() {
         let { mnemonic, privateKey } = this.props.wallet;
+        const phrase = mnemonic.phrase;
 
         return (
             <div className="MnemonicCard">
@@ -76,8 +77,7 @@ class MnemonicCard extends React.Component {
 
                         <div className="MnemonicCard__phrase-container">
                             <p>
-                                {/*cat house phone trip design donkey coffee office hat charger heart rate*/}
-                                { mnemonic }
+                                { phrase }
                             </p>
                         </div>
 

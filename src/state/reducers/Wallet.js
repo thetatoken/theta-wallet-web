@@ -3,6 +3,8 @@ import { zipMap } from "../../utils/Utils";
 import Config from '../../Config';
 
 const INITIAL_STATE = {
+    thetaWallet: null,
+
     network: Config.defaultThetaChainID,
 
     isFetchingBalances : false,

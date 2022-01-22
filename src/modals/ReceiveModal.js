@@ -80,7 +80,7 @@ export default class ReceiveModal extends React.Component {
         return (
             <Modal>
                 <div className="ReceiveModal">
-                    <div className="ReceiveModal__title">
+                    <div className="ModalTitle">
                         Receive
                     </div>
                     <Warning message={'Do not send ETH or ERC20 tokens to this address.'}

@@ -48,8 +48,9 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    background-color: #242F4B;
     min-height: 435px;
+    background-color: #8A8FB51F;
+    border-radius: 12px;
 }
 
 .ChoosePasswordCard__content{
@@ -102,7 +103,7 @@
 }
 
 .ChoosePasswordCard__password-input{
-    background-color: #404C6E;
+    background-color: #8A8FB51F;
     height: 50px;
     color: white;
     border-radius: 4px;
@@ -177,7 +178,8 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    background-color: #242F4B;
+    background-color: #8A8FB51F;
+    border-radius: 12px;
     min-height: 435px;
 }
 
@@ -284,7 +286,8 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    background-color: #242F4B;
+    background-color: #8A8FB51F;
+    border-radius: 12px;
     min-height: 435px;
 }
 
@@ -385,7 +388,8 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    background-color: #242F4B;
+    background-color: #8A8FB51F;
+    border-radius: 12px;
     min-height: 435px;
 }
 

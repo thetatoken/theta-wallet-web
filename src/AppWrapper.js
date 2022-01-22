@@ -7,6 +7,8 @@ import {Provider as AlertProvider} from 'react-alert'
 import Alerts from './services/Alerts'
 import Alert from './components/Alert'
 import { hot } from 'react-hot-loader/root'
+import Wallet from "./services/Wallet";
+import {UPDATE_THETA_WALLET_STATE} from "./state/types/ThetaWallet";
 
 // optional cofiguration
 const options = {
@@ -18,6 +20,17 @@ const options = {
 };
 
 class AppWrapper extends Component {
+    componentDidMount() {
+        Wallet.controller.on('update', (data) => {
+            console.log('Wallet.controller :: update == ');
+            console.log(data);
+            store.dispatch({
+                type: UPDATE_THETA_WALLET_STATE,
+                data: data
+            });
+        });
+    }
+
     render() {
         let alertRef = Alerts.getRef();
 

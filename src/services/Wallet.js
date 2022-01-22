@@ -1,3 +1,4 @@
+import * as thetajs from '@thetalabs/theta-js';
 import { ethers } from 'ethers';
 import _ from "lodash";
 import Ethereum from './Ethereum'
@@ -9,6 +10,7 @@ import Ledger from './Ledger';
 import Eth from "@ledgerhq/hw-app-eth";
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import TransportU2F from "@ledgerhq/hw-transport-u2f";
+import ThetaWalletController from "../controllers/theta-wallet";
 
 const ethUtil = require('ethereumjs-util');
 
@@ -34,6 +36,9 @@ export const WalletUnlockStrategy = {
 export default class Wallet {
     static _wallet = null;
     static _keystore = null;
+    static controller = new ThetaWalletController({
+        initState: {}
+    });
 
     static setWallet(wallet){
         this._wallet = wallet;
@@ -141,7 +146,7 @@ export default class Wallet {
             else if(derivationPath === EthereumLedgerLiveDerivationPath){
                 path = EthereumLedgerLiveDerivationPath + (page * NumPathsPerPage + i) + "'/0/0";
             }
-            res = await app.getAddress(path, false, false);    
+            res = await app.getAddress(path, false, false);
 
             result.push({address: res.address, serializedPath: path});
 
@@ -152,8 +157,13 @@ export default class Wallet {
     }
 
     static createWallet(password){
-        let mnemonic = ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
+        const random = thetajs.Wallet.createRandom();
+        const mnemonic = random.mnemonic.phrase;
+        console.log('mnemonic == ');
+        console.log(mnemonic);
         let wallet = this.walletFromMnemonic(mnemonic);
+        console.log('wallet == ');
+        console.log(wallet);
         let keystore = this.encryptToKeystore(wallet.privateKey, password);
 
         return {
@@ -202,12 +212,22 @@ export default class Wallet {
                 }
 
                 wallet = Wallet.decryptFromKeystore(keystore, password);
+
+                await this.controller.RPCApi.importAccount({
+                    privateKey: wallet.privateKey
+                });
             }
             else if(strategy === WalletUnlockStrategy.MNEMONIC_PHRASE){
                 mnemonic = mnemonic.toString();
                 mnemonic = _.trim(mnemonic);
 
                 wallet = Wallet.walletFromMnemonic(mnemonic.toString());
+
+                console.log('wallet.privateKey == ' + wallet.privateKey);
+
+                await this.controller.RPCApi.importAccount({
+                    privateKey: wallet.privateKey
+                });
             }
             else if(strategy === WalletUnlockStrategy.PRIVATE_KEY){
                 privateKey = _.trim(privateKey);
@@ -223,6 +243,10 @@ export default class Wallet {
                 }
 
                 wallet = Wallet.walletFromPrivateKey(privateKey);
+
+                await this.controller.RPCApi.importAccount({
+                    privateKey: privateKey
+                });
             }
             else if(strategy === WalletUnlockStrategy.COLD_WALLET){
                 wallet = {};
@@ -268,6 +292,28 @@ export default class Wallet {
         return sequence;
     }
 
+    static verifyPassword(password){
+        try {
+            let hardware = Wallet.getWalletHardware();
+
+            if(hardware === "trezor"){
+                return true;
+            }
+            else if(hardware === "ledger"){
+                return true;
+            }
+            else {
+                let keystore = Wallet.getKeystore();
+                let wallet = Wallet.decryptFromKeystore(keystore, password);
+
+                return !!wallet;
+            }
+        }
+        catch (e) {
+            return false;
+        }
+    }
+
     static async signTransaction(network, unsignedTx, password){
         let hardware = Wallet.getWalletHardware();
 
@@ -286,7 +332,7 @@ export default class Wallet {
                 return Theta.signTransaction(unsignedTx, wallet.privateKey);
             }
             else{
-                throw new Error('Wrong password.  Your transaction could not be signed.');
+                throw new Error('Wrong password. Your transaction could not be signed.');
             }
         }
     }

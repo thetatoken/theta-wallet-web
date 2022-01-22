@@ -8,10 +8,14 @@
 .FormInputContainer__title{
     display: flex;
     flex-direction: row;
-    font-size: 18px;
-    font-weight: normal;
+    /*font-size: 18px;*/
+    /*font-weight: normal;*/
     line-height: 21px;
     color: #92A2D6;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+
 }
 
 .FormInputContainer__input-container{
@@ -40,19 +44,19 @@
     border-radius: 0;
 }
 
-select {
-    /* for Firefox */
-    -moz-appearance: none;
-    /* for Chrome */
-    -webkit-appearance: none;
+/*select {*/
+/*    !* for Firefox *!*/
+/*    -moz-appearance: none;*/
+/*    !* for Chrome *!*/
+/*    -webkit-appearance: none;*/
 
-    background: #fff url('/img/icons/arrow-down@2x.png') no-repeat;
-    background-size: 20px;
-    background-position:  right 10px center;
-    padding-right: 30px;
-}
+/*    background: #fff url('/img/icons/arrow-down@2x.png') no-repeat;*/
+/*    background-size: 20px;*/
+/*    background-position:  right 10px center;*/
+/*    padding-right: 30px;*/
+/*}*/
 
-/* For IE10 */
-select::-ms-expand {
-    display: none;
-}
+/*!* For IE10 *!*/
+/*select::-ms-expand {*/
+/*    display: none;*/
+/*}*/

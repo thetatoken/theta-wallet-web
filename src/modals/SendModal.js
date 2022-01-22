@@ -1,20 +1,40 @@
+import _ from 'lodash';
 import React from 'react'
 import './SendModal.css';
 import Modal from '../components/Modal'
-import EthereumNetworkTxForm from '../components/EthereumNetworkTxForm'
 import SendTxForm from '../components/transactions/SendTxForm'
-import TokenTypes from "../constants/TokenTypes";
 import Warning from "../components/Warning";
 import {Urls} from "../constants/Urls";
+import {formDataToTransaction} from "../utils/Utils";
+import Wallet from "../services/Wallet";
+import {store} from "../state";
+import {showModal} from "../state/actions/ui";
+import ModalTypes from "../constants/ModalTypes";
+import Theta from "../services/Theta";
+import {createTransactionRequest} from "../state/actions/Transactions";
 
 export default class SendModal extends React.Component {
-    render() {
-        let tokenType = null; //this.props.tokenType;
+    onSubmit = async (formData) => {
+        const tx = await formDataToTransaction('send', formData, Wallet.controller.getState());
+        const deps = tx.dependencies || [];
+        const depTx = deps[0];
+        const transactionRequest = tx.toJson();
+        if(depTx){
+            transactionRequest.dependencies = [
+                depTx.toJson()
+            ];
+        }
+        console.log('transactionRequest == ');
+        console.log(transactionRequest);
 
+        store.dispatch(createTransactionRequest(transactionRequest));
+    }
+
+    render() {
         return (
             <Modal>
                 <div className="SendModal">
-                    <div className="SendModal__title">
+                    <div className="ModalTitle">
                         Send
                     </div>
 
@@ -23,7 +43,8 @@ export default class SendModal extends React.Component {
                              style={{marginBottom: 20}}
                     />
 
-                    <SendTxForm defaultTokenType={tokenType}/>
+                    <SendTxForm onSubmit={this.onSubmit}
+                    />
 
                 </div>
             </Modal>

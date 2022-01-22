@@ -1,0 +1,70 @@
+.FlatButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  height: 40px;
+  background: $grey-background-color;
+  border-radius: 7px;
+  padding-left: 16px;
+  padding-right: 16px;
+  cursor: pointer;
+  box-sizing: border-box;
+  font-size: 16px;
+  font-weight: 400;
+  color: white;
+  text-decoration: none !important;
+  transition: all 0.2s ease-in-out;
+
+  &__icon {
+    height: 22px;
+    margin-right: 8px;
+  }
+
+  &__title {
+    font-size: inherit;
+    font-weight: normal;
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none !important;
+  }
+
+  &__spinner {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &:hover {
+    background: $grey-background-color--hover;
+  }
+
+  &--is-disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &--small {
+    height: 26px;
+    font-size: 16px;
+    font-weight: normal;
+  }
+
+  &--large {
+    height: 50px;
+    min-width: 125px;
+    font-size: 18px;
+    font-weight: 600;
+
+    .GhostButton__icon {
+      height: 37px;
+    }
+  }
+
+  &--borderless {
+    border: 0;
+  }
+
+  &--centered {
+    justify-content: center;
+  }
+}

@@ -1,0 +1,3 @@
+const name = "THETA_WALLET";
+
+export const UPDATE_THETA_WALLET_STATE = `${name}/UPDATE_THETA_WALLET_STATE`;

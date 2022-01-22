@@ -6,7 +6,7 @@ import { WalletUnlockStrategy } from '../services/Wallet'
 import { NumPathsPerPage } from '../services/Wallet'
 import {unlockWallet} from "../state/actions/Wallet";
 import {store} from "../state";
-import {hideModal} from "../state/actions/Modals";
+import {hideModal} from "../state/actions/ui";
 import MDSpinner from "react-md-spinner";
 import Api from "../services/Api";
 import Config from "../Config";

@@ -1,11 +1,12 @@
 .TxConfirmationModal{
     display: flex;
     flex-direction: column;
-    background-color: #242F4B;
+    background-color: #1C243B;
     width: 500px;
     min-height: 540px;
     padding: 20px;
     box-sizing: border-box;
+    border-radius: 12px;
 }
 
 .TxConfirmationModal__title{

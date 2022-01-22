@@ -1,0 +1,87 @@
+.DelegatedNodeSelectorModal{
+  display: flex;
+  flex-direction: column;
+  background-color: $modal-background-color;
+  border-radius: 8px;
+  width: 360px;
+
+  &__header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    border-bottom: 1px solid $grey-color-20;
+  }
+
+  &__header-title{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 16px;
+    color: white;
+  }
+
+  &__content{
+    padding: 0;
+  }
+
+  &__message{
+    font-size: 13px;
+    font-weight: 600;
+    color: $grey-color;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 12px;
+    text-align: left;
+  }
+}
+
+.DelegatedNodeList{
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  max-height: 30vh;
+  overflow-y: auto;
+}
+
+.DelegatedNodeListItem{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: all 0.2s ease-in-out;
+  color: $grey-color;
+  cursor: pointer;
+  margin-bottom: 15px;
+  padding-left: 12px;
+  padding-right: 12px;
+
+  *{
+    cursor: inherit;
+  }
+
+  &__name{
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    line-height: 16px;
+  }
+
+  &__address{
+    color: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  &__fee{
+    color: $grey-color;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 8px;
+    line-height: 16px;
+  }
+
+  &:hover{
+    opacity: 0.8;
+  }
+}

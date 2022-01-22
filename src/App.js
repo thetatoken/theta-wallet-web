@@ -5,7 +5,7 @@ import TabBar from './components/TabBar'
 import TabBarItem from './components/TabBarItem'
 import {Pages, WalletPages} from './Pages'
 import Modals from "./components/Modals";
-import {showModal} from "./state/actions/Modals";
+import {showModal} from "./state/actions/ui";
 import ModalTypes from "./constants/ModalTypes";
 import {store} from "./state";
 import Router from "./services/Router";
@@ -13,6 +13,10 @@ import Transactions from './services/Transactions'
 import UnsupportedDevice from './components/UnsupportedDevice'
 import Wallet from "./services/Wallet";
 import {isStakingAvailable, areSmartContractsAvailable} from './Flags';
+import LoadingOverlay from "./components/LoadingOverlay";
+import {connect} from "react-redux";
+import Networks from "./constants/Networks";
+import * as thetajs from '@thetalabs/theta-js';
 
 class WalletTabBar extends Component {
     constructor() {
@@ -23,8 +27,15 @@ class WalletTabBar extends Component {
     }
 
     onSendClick() {
+        // store.dispatch(showModal({
+        //     type: ModalTypes.SEND,
+        // }));
+
         store.dispatch(showModal({
-            type: ModalTypes.SEND,
+            type: ModalTypes.CREATE_TRANSACTION,
+            props: {
+                transactionType: 'send'
+            }
         }));
     }
 
@@ -87,16 +98,25 @@ class WalletTabBar extends Component {
     }
 }
 
-export class App extends Component {
+const mapStateToProps = (state) => {
+    return {
+        isLoading: state.ui.isLoading,
+        loadingMessage: state.ui.loadingMessage,
+    };
+};
+
+export class UnconnectedApp extends Component {
     componentDidMount() {
         Router.setHistory(this.props.history);
     }
 
     render() {
+        let {isLoading, loadingMessage} = this.props;
         let address = Wallet.getWalletAddress();
 
         return (
             <div className="App">
+                {isLoading && <LoadingOverlay loadingMessage={loadingMessage} />}
                 <NavBar centered={address === null}/>
                 <Pages/>
                 <Modals/>
@@ -105,8 +125,10 @@ export class App extends Component {
         );
     }
 }
+export const App = connect(mapStateToProps, null)(UnconnectedApp);
 
-export class WalletApp extends Component {
+
+export class UnconnectedWalletApp extends Component {
     componentDidMount() {
         Router.setHistory(this.props.history);
 
@@ -115,8 +137,11 @@ export class WalletApp extends Component {
     }
 
     render() {
+        let {isLoading, loadingMessage} = this.props;
+
         return (
             <div className="App WalletApp">
+                {isLoading && <LoadingOverlay loadingMessage={loadingMessage} />}
                 <NavBar/>
                 <WalletTabBar/>
                 <WalletPages/>
@@ -126,3 +151,5 @@ export class WalletApp extends Component {
         );
     }
 }
+export const WalletApp = connect(mapStateToProps, null)(UnconnectedWalletApp);
+

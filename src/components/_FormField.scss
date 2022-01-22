@@ -1,0 +1,27 @@
+.FormField{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+
+  &__title{
+    font-size: 14px;
+    font-weight: 600;
+    color: $grey-color;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    text-align: left;
+  }
+
+  &__input{
+
+  }
+
+  &__error{
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+    line-height: 11px;
+    color: $red-color;
+    margin-top: 3px;
+  }
+}

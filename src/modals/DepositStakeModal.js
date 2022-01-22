@@ -8,7 +8,7 @@ import Networks, {canEdgeNodeStake, canGuardianNodeStake} from "../constants/Net
 import ThetaJS from "../libs/thetajs.esm";
 import StakePurposeSelector, {StakePurposeSelectorItem} from '../components/StakePurposeSelector';
 import {store} from "../state";
-import {showModal} from "../state/actions/Modals";
+import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 
 export default class DepositStakeModal extends React.Component {
@@ -58,9 +58,7 @@ export default class DepositStakeModal extends React.Component {
         return (
             <Modal>
                 <div className="DepositStakeModal">
-                    <div className="DepositStakeModal__title">
-                        Deposit Stake
-                    </div>
+                    <div className={'ModalTitle'}>Deposit Stake</div>
                     {
                         purpose && selectedGuardianNodeDelegate &&
                         <div className={"StakePurposeContainer__instructions"}>

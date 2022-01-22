@@ -18,7 +18,16 @@
 
 .EmptyState__title{
     font-size: 21px;
-    color: #404C6E;
+    color: white;
     text-align: center;
     margin-top: 8px;
 }
+
+.EmptyState__subtitle{
+     font-size: 14px;
+     font-weight: 600;
+     text-align: center;
+     color: #404C6E;
+     margin-top: 6px;
+     margin-bottom: 12px;
+ }

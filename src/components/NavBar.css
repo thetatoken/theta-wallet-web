@@ -11,8 +11,9 @@
 }
 
 .NavBar__logo{
-    height: 38px;
+    height: 36px;
     align-self: center;
+    margin-bottom: 6px;
 }
 
 .NavBar--is-centered{

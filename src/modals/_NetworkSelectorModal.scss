@@ -1,0 +1,84 @@
+.NetworkSelectorModal{
+  display: flex;
+  flex-direction: column;
+  background-color: $modal-background-color;
+  border-radius: 8px;
+  width: 300px;
+
+  &__header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    border-bottom: 1px solid $grey-color-20;
+  }
+
+  &__header-title{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 16px;
+    color: white;;
+  }
+
+  &__content{
+    padding: 20px;
+  }
+
+  &__message{
+    font-size: 13px;
+    font-weight: 600;
+    color: $grey-color;
+    text-align: left;
+    max-width: 190px;
+  }
+}
+
+.NetworkSelectList{
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.NetworkSelectListItem{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 40px;
+  transition: all 0.2s ease-in-out;
+  color: $grey-color;
+  cursor: pointer;
+
+  &__checkmark{
+    width: 12px;
+    opacity: 0;
+    transition: inherit;
+  }
+
+  &__color{
+    height: 8px;
+    width: 8px;
+    border-radius: 4px;
+    background-color: black;
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  &__name{
+    color: inherit;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  &--active{
+    color: white;
+
+    .NetworkSelectListItem__checkmark{
+      opacity: 1;
+    }
+  }
+
+  &:hover{
+    opacity: 0.8;
+  }
+}

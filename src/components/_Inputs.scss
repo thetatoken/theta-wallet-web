@@ -1,0 +1,97 @@
+.RoundedInput{
+  background-color: $grey-background-color;
+  height: 50px;
+  color: white;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  width: 100%;
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-bottom: 0;
+  //font-family: "Gilroy",-apple-system,sans-serif;
+
+  &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: darken($grey-color, 5);
+    opacity: 1; /* Firefox */
+  }
+
+  &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: darken(#787DA1, 5);
+  }
+
+  &::-ms-input-placeholder { /* Microsoft Edge */
+    color: darken(#787DA1, 5);
+  }
+
+
+}
+
+
+.BottomBorderInput{
+  height: 34px;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid #687399;
+  font-size: 17px;
+  font-weight: 300;
+  background-color: transparent;
+  color: white;
+  border-radius: 0;
+}
+
+select {
+  /* for Firefox */
+  -moz-appearance: none;
+  /* for Chrome */
+  -webkit-appearance: none;
+
+  background: #fff url('/img/icons/arrow-down@2x.png') no-repeat;
+  background-size: 20px;
+  background-position:  right 10px center;
+  padding-right: 30px;
+}
+
+option{
+  color: #1C243B;
+}
+
+/* For IE10 */
+select::-ms-expand {
+  display: none;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+textarea{
+  padding-top: 12px;
+}
+
+
+.RoundedInputClearableValue{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+
+  a{
+    margin-left: auto;
+    cursor: pointer;
+  }
+
+  img{
+    height: 20px;
+    cursor: pointer;
+  }
+}

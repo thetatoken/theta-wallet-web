@@ -9,7 +9,7 @@ import GradientButton from './buttons/GradientButton';
 import {hasValidDecimalPlaces} from '../utils/Utils'
 import {BigNumber} from 'bignumber.js';
 import {store} from "../state";
-import {showModal} from "../state/actions/Modals";
+import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import Networks from "../constants/Networks";
 

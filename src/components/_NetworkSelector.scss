@@ -1,0 +1,38 @@
+.NetworkSelector{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 34px;
+  background-color: $grey-background-color;
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer;
+  border-radius: 17px;
+  padding: 13px;
+  padding-top: 0;
+  padding-bottom: 0;
+
+  &__color{
+    height: 8px;
+    width: 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    background-color: $green-color;
+  }
+
+  &__name{
+    color: $grey-color;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16px;
+    margin-right: 4px;
+  }
+
+  &__arrow{
+    color: $grey-color;
+    margin-top: 4px;
+  }
+
+  &:hover{
+    background-color: $grey-background-color--hover;
+  }
+}

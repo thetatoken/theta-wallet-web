@@ -14,8 +14,8 @@ class EthereumTransactionListItem extends React.Component {
         let explorerUrl = `https://etherscan.io/tx/${transaction.hash}`;
 
         //Truncate the addresses to help reduce the run ons
-        from = truncate(from, 23, '...');
-        to = truncate(to, 23, '...');
+        from = truncate(from);
+        to = truncate(to);
 
         return (
             <a className="EthereumTransactionListItem"

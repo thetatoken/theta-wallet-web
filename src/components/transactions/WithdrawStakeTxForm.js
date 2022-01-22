@@ -1,159 +1,132 @@
-import React from 'react'
-import './TxForm.css';
-import './WithdrawStakeTxForm.css';
-import _ from 'lodash'
-import {connect} from 'react-redux'
-import Theta from '../../services/Theta'
-import TokenTypes from "../../constants/TokenTypes";
-import FormInputContainer from '../FormInputContainer'
-import ValueWithTitle from '../ValueWithTitle'
-import GradientButton from '../buttons/GradientButton';
-import {hasValidDecimalPlaces} from '../../utils/Utils'
-import {BigNumber} from 'bignumber.js';
-import {store} from "../../state";
-import {showModal} from "../../state/actions/Modals";
-import ModalTypes from "../../constants/ModalTypes";
-import Config from "../../Config";
-import ThetaJS from "../../libs/thetajs.esm";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { ethers } from 'ethers';
+import * as thetajs from '@thetalabs/theta-js';
+import FormField from '../FormField';
+import {StakePurposeForTDROP} from '../../constants';
+import {formatTNT20TokenAmountToLargestUnit} from '../../utils/Utils';
+import _ from 'lodash';
+import BigNumber from 'bignumber.js';
+import {TDropAsset} from '../../constants/assets';
 
-export class WithdrawStakeTxForm extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
+export default function WithdrawStakeTxForm(props){
+    const {onSubmit, defaultValues, formRef, selectedAccount, assets, chainId} = props;
+    const {register, handleSubmit, errors, watch, setValue} = useForm({
+        mode: 'onChange',
+        defaultValues: defaultValues || {
+            purpose: thetajs.constants.StakePurpose.StakeForGuardian,
             holder: '',
+            amount: ''
+        }
+    });
+    const purpose = parseInt(watch('purpose'));
+    const amount = watch('amount');
 
-            transactionFee: Theta.getTransactionFee(),
 
-            invalidHolder: false,
-        };
+    const renderEstTDROPToReturn = () => {
+        const percentageToUnstake = parseFloat(amount) / 100;
+        const tnt20stakes = _.get(selectedAccount, ['tnt20Stakes'], {});
+        const balanceStr = _.get(tnt20stakes, 'tdrop.estimatedTokenOwnedWithRewards', '0');
+        const balanceBN = new BigNumber(balanceStr);
+        const amountBN = balanceBN.multipliedBy(percentageToUnstake);
+        const formattedAmt = formatTNT20TokenAmountToLargestUnit(amountBN.toString(), TDropAsset(chainId).decimals);
 
-        this.handleChange = this.handleChange.bind(this);
-    }
-
-    handleChange(event) {
-        let name = event.target.name;
-        let value = event.target.value;
-
-        this.setState({[name]: value}, () => {
-            this.validate();
-        });
-    }
-
-    handleWithdrawStakeClick = () => {
-        store.dispatch(showModal({
-            type: ModalTypes.WITHDRAW_STAKE_CONFIRMATION,
-            props: {
-                network: Theta.getChainID(),
-                transaction: {
-                    purpose: this.props.purpose,
-
-                    from: this.props.walletAddress,
-
-                    holder: this.state.holder,
-
-                    transactionFee: this.state.transactionFee
-                }
-            }
-        }));
+        return (
+            <div>
+                <span className={'Balance__amount-title'}>Estimated TDROP Returned: </span><span className={'Balance__amount-value'}>{formattedAmt}</span>
+            </div>
+        );
     };
 
-    isValid() {
-        return (
-            this.state.holder.length > 0 &&
-            this.state.invalidHolder === false
-        );
-    }
+    return (
+        <form className={'TxForm TxForm--WithdrawStake'}
+              onSubmit={handleSubmit(onSubmit)}
+              ref={formRef}
+        >
+            <FormField title={'Stake Type'}
+                       error={errors.purpose && 'Stake type is required'}
+            >
+                <select
+                    className={'RoundedInput'}
+                    name={'purpose'}
+                    ref={register({ required: true })}
+                >
+                    <option key={'__placeholder__'}
+                            value={''}
+                            disabled>
+                        Select stake type
+                    </option>
+                    <option key={'guardian'}
+                            value={thetajs.constants.StakePurpose.StakeForGuardian}>
+                        Guardian Node
+                    </option>
+                    <option key={'validator'}
+                            value={thetajs.constants.StakePurpose.StakeForValidator}>
+                        Validator Node
+                    </option>
+                    <option key={'validator'}
+                            value={thetajs.constants.StakePurpose.StakeForEliteEdge}>
+                        Edge Node
+                    </option>
+                    {
+                        TDropAsset(chainId) &&
+                        <option key={'tdrop'}
+                                value={StakePurposeForTDROP}>
+                            TDROP
+                        </option>
+                    }
 
-    validate() {
-        if (this.state.holder.length > 0) {
-            this.validateHolder();
-        }
-    }
+                </select>
+            </FormField>
 
-    async validateHolder() {
-        let isValid = false;
-
-        isValid = Theta.isAddress(this.state.holder);
-
-        this.setState({invalidHolder: (isValid === false)});
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.state.holder !== prevState.holder) {
-            this.validateHolder();
-        }
-    }
-
-    render() {
-        const {purpose} = this.props;
-        let transactionFeeValueContent = (
-            <React.Fragment>
-                <span>Transaction Fee</span>
-            </React.Fragment>
-        );
-
-        let isValid = this.isValid();
-        let holderError = null;
-
-        if(this.state.invalidHolder){
-            if(purpose === ThetaJS.StakePurposes.StakeForValidator){
-                holderError = "Invalid validator node address (holder)";
+            {
+                purpose !== StakePurposeForTDROP &&
+                <FormField title={'Holder'}
+                           error={errors.holder && 'A valid node address is required'}
+                >
+                    <input name="holder"
+                           className={'RoundedInput'}
+                           placeholder={'Enter node address'}
+                           ref={register({
+                               required: true,
+                               validate: (s) => ethers.utils.isAddress(s)
+                           })} />
+                </FormField>
             }
-            else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
-                holderError = "Invalid guardian node address (holder)";
+
+            {
+                purpose === StakePurposeForTDROP &&
+                <FormField title={'% Amount to Unstake'}
+                           error={errors.amount && errors.amount.message}
+                >
+                    <input name="amount"
+                           className={'RoundedInput'}
+                           placeholder={'Enter % amount to unstake'}
+                           ref={register({
+                               required: {
+                                   value: true,
+                                   message: 'Unstake % amount is required'
+                               },
+                               validate: {
+                                   moreThanZero: (s) => {
+                                       const f = parseFloat(s);
+
+                                       return (f > 0) ? true : 'Invalid % amount.';
+                                   },
+                                   lessThanOrEqualTo100: (s) => {
+                                       const f = parseFloat(s);
+
+                                       return (f <= 100.0) ? true : 'Invalid % amount. Max 100%.';
+                                   }
+                               }
+                           })} />
+                </FormField>
             }
-            else if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
-                holderError = "Invalid guardian node address (holder)";
+            {
+                (purpose === StakePurposeForTDROP && !_.isEmpty(amount)) &&
+                renderEstTDROPToReturn()
             }
-        }
-
-        let holderTitle = "";
-        let holderPlaceholder = "";
-
-        if(purpose === ThetaJS.StakePurposes.StakeForValidator){
-            holderTitle = "Validator Node Address (Holder)";
-            holderPlaceholder = "Enter validator node address";
-        }
-        else if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
-            holderTitle = "Guardian Node Address (Holder)";
-            holderPlaceholder = "Enter guardian node address";
-        }
-        else if(purpose === ThetaJS.StakePurposes.StakeForEliteEdge){
-            holderTitle = "Edge Node Address (Holder)";
-            holderPlaceholder = "Enter edge node address";
-        }
-
-        return (
-            <div className="TxForm">
-                <FormInputContainer title={holderTitle}
-                                    error={holderError}>
-                    <input className="BottomBorderInput"
-                           name="holder"
-                           placeholder={holderPlaceholder}
-                           value={this.state.holder}
-                           onChange={this.handleChange}/>
-                </FormInputContainer>
-
-                <div className="TxForm__fee-container">
-                    <div className="">
-                        <ValueWithTitle title={transactionFeeValueContent}
-                                        value={this.state.transactionFee + " TFuel"}/>
-                    </div>
-                </div>
-                <GradientButton title="Withdraw Stake"
-                                disabled={isValid === false}
-                                onClick={this.handleWithdrawStakeClick}
-                />
-            </div>
-        )
-    }
+        </form>
+    );
 }
 
-const mapStateToProps = state => {
-    return {
-        walletAddress: state.wallet.address,
-    };
-};
-
-export default connect(mapStateToProps)(WithdrawStakeTxForm);

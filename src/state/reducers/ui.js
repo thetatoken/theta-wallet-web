@@ -1,10 +1,13 @@
-import * as actionTypes from "../types/Modals";
+import * as actionTypes from '../types/ui';
 
 const INITIAL_STATE = {
-    modals : []
+    modals : [],
+
+    isLoading: false,
+    loadingMessage: null
 };
 
-export const modalsReducer = (state = INITIAL_STATE, action) => {
+export const uiReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case actionTypes.SHOW_MODAL:{
             let { type, props } = action.modal;
@@ -27,8 +30,22 @@ export const modalsReducer = (state = INITIAL_STATE, action) => {
             });
         }
 
+        case actionTypes.SHOW_LOADER:
+            return {
+                ...state,
+                isLoading: true,
+                loadingMessage: action.message,
+            };
+
+        case actionTypes.HIDE_LOADER:
+            return {
+                ...state,
+                isLoading: false,
+                loadingMessage: null
+            };
+
         default:{
-            return state
+            return state;
         }
     }
 };

@@ -10,13 +10,16 @@ import {onLine} from "../../utils/Utils";
 import Networks from "../../constants/Networks";
 import Config from "../../Config";
 import {store} from "../../state";
-import {showModal} from "./Modals";
+import {hideLoader, hideModals, showLoader, showModal} from "./ui";
 import ModalTypes from "../../constants/ModalTypes";
 import Theta from "../../services/Theta";
 
 
 export function setNetwork(networkId){
     Theta.setChainID(networkId);
+    Wallet.controller.preferencesController.setNetwork({
+        chainId: networkId
+    });
 
     return async function(dispatch, getState){
         dispatch({
@@ -28,6 +31,8 @@ export function setNetwork(networkId){
 }
 
 export function fetchWalletBalances(){
+
+
     let address = Wallet.getWalletAddress();
 
     return reduxFetch(FETCH_WALLET_BALANCES, function(){
@@ -118,5 +123,34 @@ export function logout(){
 
         //Navigate away
         Router.push('/unlock');
+
+        // Reload the app
+        window.location.reload();
+    };
+}
+
+export function updateAccountBalances(shouldShowLoader){
+    return async function(dispatch, getState){
+        if(shouldShowLoader){
+            dispatch(showLoader());
+        }
+
+        const result = await Wallet.controller.RPCApi.updateAccountBalances({});
+
+        dispatch(hideLoader());
+    };
+}
+
+export function updateAccountStakes(address, shouldShowLoader){
+    return async function(dispatch, getState){
+        if(shouldShowLoader){
+            dispatch(showLoader());
+        }
+
+        const result = await Wallet.controller.RPCApi.updateAccountStakes({
+            address: address
+        });
+
+        dispatch(hideLoader());
     };
 }

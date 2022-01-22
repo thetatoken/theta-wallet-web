@@ -21,11 +21,13 @@ import {
 import Wallet from "../../services/Wallet";
 import Theta from "../../services/Theta";
 import Timeout from 'await-timeout';
-import {hideModals} from "./Modals";
+import {hideLoader, hideModal, hideModals, showLoader, showModal} from "./ui";
 import Alerts from "../../services/Alerts";
 import ThetaJS from "../../libs/thetajs.esm";
 import ContractModes from "../../constants/ContractModes";
 import Router from "../../services/Router";
+import {store} from "../index";
+import ModalTypes from "../../constants/ModalTypes";
 
 const DefaultTransactionErrorMessage = "An error occurred while sending your transaction. Please wait and try again.";
 
@@ -353,4 +355,66 @@ export function resetTransactionsState(){
     return {
         type: RESET,
     }
+}
+
+export function createTransactionRequest(transactionRequest) {
+    return async (dispatch) => {
+        try {
+            const result = Wallet.controller.RPCApi.addTransactionRequest({
+                transactionRequest: transactionRequest
+            });
+
+            dispatch(showModal({
+                type: ModalTypes.CONFIRM_TRANSACTION,
+            }));
+
+            return result;
+        }
+        catch (error) {
+            return false;
+        }
+    };
+}
+
+export function rejectTransactionRequest(transactionRequestId) {
+    return async (dispatch) => {
+        try {
+            const result = Wallet.controller.RPCApi.rejectTransactionRequest({
+                transactionRequestId: transactionRequestId
+            });
+
+            dispatch(hideModal());
+
+            return result;
+        }
+        catch (error) {
+            return false;
+        }
+    };
+}
+
+export function approveTransactionRequest(transactionRequestId, password) {
+    return async (dispatch) => {
+        try {
+            dispatch(showLoader('Sending Transaction'));
+            const validPassword = Wallet.verifyPassword(password);
+
+            if(!validPassword){
+                dispatch(hideLoader());
+                Alerts.showError('Wrong password. Your transaction could not be signed.');
+                return false;
+            }
+
+            const result = await Wallet.controller.RPCApi.approveTransactionRequest({
+                transactionRequestId: transactionRequestId
+            });
+            dispatch(hideModals());
+            dispatch(hideLoader());
+
+            return result;
+        }
+        catch (error) {
+            return false;
+        }
+    };
 }

@@ -3,7 +3,7 @@ import './PrivateKeyModal.css';
 import Modal from '../components/Modal'
 import GradientButton from '../components/buttons/GradientButton'
 import {store} from "../state";
-import {hideModal} from "../state/actions/Modals";
+import {hideModal} from "../state/actions/ui";
 
 export default class PrivateKeyModal extends React.Component {
     constructor(){

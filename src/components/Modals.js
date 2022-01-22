@@ -3,7 +3,7 @@ import './Modals.css';
 import {connect} from 'react-redux'
 import ReactModal from 'react-modal';
 import _ from 'lodash';
-import {hideModal} from "../state/actions/Modals";
+import {hideModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import ReceiveModal from "../modals/ReceiveModal";
 import SendModal from "../modals/SendModal";
@@ -17,6 +17,9 @@ import WithdrawStakeConfirmationModal from "../modals/WithdrawStakeConfirmationM
 import SmartContractConfirmationModal from "../modals/SmartContractConfirmationModal";
 import NetworkSelectorModal from "../modals/NetworkSelectorModal";
 import GuardianNodeDelegatesModal from "../modals/GuardianNodeDelegatesModal";
+import ConfirmTransactionModal from "../modals/ConfirmTransactionModal";
+import CreateTransactionModal from "../modals/CreateTransactionModal";
+import DelegatedNodeSelectorModal from "../modals/DelegatedNodeSelectorModal";
 
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
@@ -30,7 +33,10 @@ const ModalComponentByType = {
     [ModalTypes.WITHDRAW_STAKE_CONFIRMATION]: WithdrawStakeConfirmationModal,
     [ModalTypes.SMART_CONTRACT_CONFIRMATION]: SmartContractConfirmationModal,
     [ModalTypes.NETWORK_SELECTOR]: NetworkSelectorModal,
-    [ModalTypes.GUARDIAN_NODE_DELEGATE_SELECTOR]: GuardianNodeDelegatesModal
+    [ModalTypes.GUARDIAN_NODE_DELEGATE_SELECTOR]: GuardianNodeDelegatesModal,
+    [ModalTypes.CONFIRM_TRANSACTION]: ConfirmTransactionModal,
+    [ModalTypes.CREATE_TRANSACTION]: CreateTransactionModal,
+    [ModalTypes.DELEGATED_NODE_SELECTOR]: DelegatedNodeSelectorModal
 };
 
 class ModalContainer extends React.Component {
@@ -95,7 +101,7 @@ class Modals extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    modals: state.modals.modals
+    modals: state.ui.modals
 });
 
 export default connect(mapStateToProps, null)(Modals)

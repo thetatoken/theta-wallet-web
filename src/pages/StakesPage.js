@@ -1,16 +1,21 @@
+import _ from 'lodash';
 import React from "react";
 import {connect} from 'react-redux'
 import './StakesPage.css';
 import PageHeader from "../components/PageHeader";
 import {fetchStakes} from "../state/actions/Stakes";
 import GhostButton from "../components/buttons/GhostButton";
-import {showModal} from "../state/actions/Modals";
+import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import StakesTable from "../components/StakesTable";
 import EmptyState from "../components/EmptyState";
 import MDSpinner from "react-md-spinner";
 import Wallet from "../services/Wallet";
 import {canStakeFromHardwareWallet} from '../Flags';
+import {updateAccountStakes} from "../state/actions/Wallet";
+import {DefaultAssets, TDropAsset, tokenToAsset} from "../constants/assets";
+import {Jazzicon} from "@ukstv/jazzicon-react";
+import {formatTNT20TokenAmountToLargestUnit} from "../utils/Utils";
 
 const sampleStakes = [
     {
@@ -51,8 +56,15 @@ class StakesPage extends React.Component {
         }
         else{
             this.props.dispatch(showModal({
-                type: ModalTypes.DEPOSIT_STAKE,
+                type: ModalTypes.CREATE_TRANSACTION,
+                props: {
+                    transactionType: 'deposit-stake'
+                }
             }));
+
+            // this.props.dispatch(showModal({
+            //     type: ModalTypes.DEPOSIT_STAKE,
+            // }));
         }
     };
 
@@ -64,20 +76,29 @@ class StakesPage extends React.Component {
         }
         else{
             this.props.dispatch(showModal({
-                type: ModalTypes.WITHDRAW_STAKE,
+                type: ModalTypes.CREATE_TRANSACTION,
+                props: {
+                    transactionType: 'withdraw-stake'
+                }
             }));
+
+            //
+            //this.props.dispatch(showModal({
+            //     type: ModalTypes.WITHDRAW_STAKE,
+            // }));
         }
     };
 
     fetchStakes = () => {
-        this.props.dispatch(fetchStakes());
+        const {selectedAddress} = this.props;
+        this.props.dispatch(updateAccountStakes(selectedAddress, false));
     };
 
     startPollingStakes(){
         //Fetch it immediately
         this.fetchStakes();
 
-        this.pollStakesIntervalId = setInterval(this.fetchStakes, 15000);
+        this.pollStakesIntervalId = setInterval(this.fetchStakes, 60000);
     }
 
     stopPollingStakes(){
@@ -94,8 +115,49 @@ class StakesPage extends React.Component {
         this.stopPollingStakes();
     }
 
+    renderTDROPCard = () => {
+        const {selectedAccount, chainId} = this.props;
+        const tDropAsset = TDropAsset(chainId);
+        const address = tDropAsset.contractAddress;
+        const symbol = tDropAsset.symbol;
+        const decimals = tDropAsset.decimals;
+        const tnt20stakes = _.get(selectedAccount, ['tnt20Stakes'], {});
+        const balanceStr = _.get(tnt20stakes, 'tdrop.balance', '0');
+        const estimatedTDROPStr = _.get(tnt20stakes, 'tdrop.estimatedTokenOwnedWithRewards', '0');
+
+        return (
+            <div className={'Balance'}
+                 key={address}
+            >
+                <div className='Balance__icon-wrapper'>
+                    {
+                        tDropAsset.iconUrl &&
+                        <img className={'Balance__icon'}
+                             src={tDropAsset.iconUrl}/>
+                    }
+                    {
+                        _.isNil(tDropAsset.iconUrl) &&
+                        <Jazzicon address={address} />
+                    }
+                </div>
+                <div className={'Balance__name'}>{symbol}</div>
+                <div className={'Balance__amount'}>
+                    <div className={'Balance__amount-title-and-value'}>
+                        <span className={'Balance__amount-title'}>Voting power: </span><span className={'Balance__amount-value'}>{formatTNT20TokenAmountToLargestUnit(balanceStr, decimals)}</span>
+                    </div>
+                    <div className={'Balance__amount-title-and-value'}>
+                        <span className={'Balance__amount-title'}>Est TDROP: </span><span className={'Balance__amount-value'}>{formatTNT20TokenAmountToLargestUnit(estimatedTDROPStr, decimals)}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     render() {
-        const {stakes, isFetchingStakes} = this.props;
+        const {selectedAddress, selectedIdentity, selectedAccount, assets, chainId, isLoading} = this.props;
+        const stakes = _.get(selectedAccount, ['stakes'], []);
+        const tDropAsset = TDropAsset(chainId);
+        const isFetchingStakes = false;
 
         return (
             <div className="StakesPage">
@@ -114,10 +176,18 @@ class StakesPage extends React.Component {
                         </div>
                     </PageHeader>
 
+                    <div>
+                    {
+                        tDropAsset &&
+                        this.renderTDROPCard()
+                    }
+                    </div>
+
+
                     {
                         (stakes.length === 0 && isFetchingStakes === false) &&
-                        <EmptyState icon="/img/icons/empty-stakes@2x.png"
-                                    title="No Stakes"
+                        <EmptyState title={'No THETA/TFUEL Stakes'}
+                                    subtitle={'Stake to earn Tokens'}
                         />
                     }
 
@@ -138,10 +208,20 @@ class StakesPage extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    return {
-        stakes: state.stakes.stakes,
+    const {thetaWallet} = state;
+    const selectedAddress = thetaWallet.selectedAddress;
+    const identities = thetaWallet.identities;
+    const accounts = thetaWallet.accounts;
+    const tokens = thetaWallet.tokens;
+    const chainId = thetaWallet.network.chainId;
 
-        isFetchingStakes: state.stakes.isFetchingStakes
+    return {
+        selectedAddress: selectedAddress,
+        selectedIdentity: identities[selectedAddress],
+        selectedAccount: accounts[selectedAddress],
+        chainId: chainId,
+
+        assets: _.concat(DefaultAssets(chainId), tokens.map(tokenToAsset)),
     };
 };
 

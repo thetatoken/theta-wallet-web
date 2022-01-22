@@ -13,7 +13,7 @@ import Theta from "../services/Theta";
 import Wallet from "../services/Wallet";
 import ThetaJS from "../libs/thetajs.esm";
 import {store} from "../state";
-import {showModal} from "../state/actions/Modals";
+import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import GhostButton from "../components/buttons/GhostButton";
 import PageHeader from "../components/PageHeader";

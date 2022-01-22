@@ -10,32 +10,33 @@
     cursor: pointer;
     text-decoration: none;
 
-    background: #29b3eb; /* Old browsers */
-    background: -moz-linear-gradient(left, #29b3eb 0%, #21edba 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(left, #29b3eb 0%,#21edba 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to right, #29b3eb 0%,#21edba 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    background-size: 100%;
+    /*background: #29b3eb; !* Old browsers *!*/
+    /*background: -moz-linear-gradient(left, #29b3eb 0%, #21edba 100%); !* FF3.6-15 *!*/
+    /*background: -webkit-linear-gradient(left, #29b3eb 0%,#21edba 100%); !* Chrome10-25,Safari5.1-6 *!*/
+    /*background: linear-gradient(to right, #29b3eb 0%,#21edba 100%); !* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ *!*/
+    /*background-size: 100%;*/
+    background: #1BD3D4;
 
     transition: all 0.2s ease-in-out;
 }
 
 .GradientButton:hover{
-    box-shadow: 0 0 25px rgba(33, 237, 186, 0.5);
+    background: #19C3C4;
 }
 
 .GradientButton:active{
-    box-shadow: 0 0 25px rgba(33, 237, 186, 0.25);
+    background: #18b5b6;
 }
 
 .GradientButton--is-disabled{
-    background: #404C6E !important;
-    box-shadow: none !important;
+    /*background: #404C6E !important;*/
+    /*box-shadow: none !important;*/
     cursor: not-allowed;
-    pointer-events:none;
+    /*pointer-events:none;*/
 }
 
 .GradientButton__title{
-    font-size: 20px;
+    font-size: 18px;
     font-weight: normal;
     color: white;
     cursor: inherit;

@@ -1,14 +1,16 @@
 import { combineReducers } from 'redux';
 import { walletReducer } from '../reducers/Wallet';
 import { transactionsReducer } from '../reducers/Transactions';
-import { modalsReducer } from '../reducers/Modals';
+import { uiReducer } from './ui';
 import { stakesReducer } from '../reducers/Stakes';
 import { nodesReducer } from '../reducers/Nodes';
+import {thetaWalletReducer} from "./ThetaWallet";
 
 export const rootReducer = combineReducers({
     wallet: walletReducer,
     transactions: transactionsReducer,
-    modals: modalsReducer,
-    stakes: stakesReducer,
-    nodes: nodesReducer
+    ui: uiReducer,
+    // stakes: stakesReducer,
+    // nodes: nodesReducer,
+    thetaWallet: thetaWalletReducer,
 });

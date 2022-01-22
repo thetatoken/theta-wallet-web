@@ -11,6 +11,7 @@ export default class EmptyState extends React.PureComponent {
                          src={this.props.icon}/>
                 }
                 <div className="EmptyState__title">{this.props.title}</div>
+                <div className="EmptyState__subtitle">{this.props.subtitle}</div>
             </div>
         );
     }
