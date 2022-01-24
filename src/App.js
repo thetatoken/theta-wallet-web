@@ -9,14 +9,11 @@ import {showModal} from "./state/actions/ui";
 import ModalTypes from "./constants/ModalTypes";
 import {store} from "./state";
 import Router from "./services/Router";
-import Transactions from './services/Transactions'
 import UnsupportedDevice from './components/UnsupportedDevice'
 import Wallet from "./services/Wallet";
 import {isStakingAvailable, areSmartContractsAvailable} from './Flags';
 import LoadingOverlay from "./components/LoadingOverlay";
 import {connect} from "react-redux";
-import Networks from "./constants/Networks";
-import * as thetajs from '@thetalabs/theta-js';
 
 class WalletTabBar extends Component {
     constructor() {
@@ -131,9 +128,6 @@ export const App = connect(mapStateToProps, null)(UnconnectedApp);
 export class UnconnectedWalletApp extends Component {
     componentDidMount() {
         Router.setHistory(this.props.history);
-
-        //Start polling local Txs
-        Transactions.pollLocalTransactions();
     }
 
     render() {

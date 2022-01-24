@@ -1,6 +1,7 @@
 import ObservableStore from '../utils/ObservableStore';
 import * as thetajs from '@thetalabs/theta-js';
 import {nanoid} from 'nanoid';
+import _ from "lodash";
 
 const { EventEmitter } = require('events');
 
@@ -15,6 +16,7 @@ export default class TransactionsController extends EventEmitter{
 
         this.memStore = new ObservableStore({
             transactionRequests: [],
+            transactions: {}
         });
 
         this.preferencesController = opts.preferencesController;
@@ -133,5 +135,78 @@ export default class TransactionsController extends EventEmitter{
         // approval.reject(new Error('User rejected transaction.'));
 
         return true;
+    }
+
+    _transformTransaction(rawXact, priorityAddress) {
+        if (rawXact.type === thetajs.constants.TxType.Send) {
+            let xact = {};
+
+            xact.type = rawXact.type;
+            xact.number = rawXact.number;
+            xact.status = rawXact.status;
+            xact.hash = rawXact.hash.toLowerCase();
+            xact.timestamp = rawXact.timestamp;
+            xact.fee = {
+                theta: rawXact.data.fee.thetawei,
+                tfuel: rawXact.data.fee.tfuelwei
+            };
+
+            xact.inputs = _.map(rawXact.data.inputs, (input) => {
+                return _.pick(input, ['address', 'coins']);
+            });
+            xact.outputs = _.map(rawXact.data.outputs, (output) => {
+                return _.pick(output, ['address', 'coins']);
+            });
+
+            //Sort outputs
+            if(priorityAddress){
+                var priorityAddressLC = priorityAddress.toLowerCase();
+
+                xact.outputs = _.sortBy(xact.outputs, function(output){
+                    //Ensure the priorityAddress is always first (lowest sort key) in the list
+                    return ((priorityAddressLC === output.address.toLowerCase()) ? -100 : 0);
+                });
+            }
+
+            return xact;
+        }
+
+        return null;
+    }
+
+    async updateAccountTransactions(address){
+        let txs = null;
+
+        if(_.isEmpty(address)){
+            return [];
+        }
+
+        try {
+            const network = this.preferencesController.getNetwork();
+            const chainId = network.chainId;
+            const explorerUrl = thetajs.networks.getExplorerUrlForChainId(chainId);
+            const explorerApiUrl = `${explorerUrl}:8443/api`;
+            const listStakesUrl = `${explorerApiUrl}/accounttx/${address}`;
+            const response = await fetch(listStakesUrl);
+            const responseJson = await response.json();
+            txs = _.get(responseJson, ['body'], []);
+            txs = _.map(txs, (tx) => {
+                return this._transformTransaction(tx, address);
+            });
+        }
+        catch (e) {
+            // No Update
+            return [];
+        }
+
+        // update accounts state
+        const { transactions } = this.memStore.getState();
+        transactions[address] = txs;
+
+        this.memStore.updateState({
+            transactions: transactions
+        });
+
+        return txs;
     }
 }

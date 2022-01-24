@@ -2,15 +2,12 @@ import _ from 'lodash';
 import React from 'react';
 import * as thetajs from '@thetalabs/theta-js';
 import './TxConfirmationModal.css';
-import './SendConfirmationModal.css';
 import connect from "react-redux/es/connect/connect";
 import Modal from '../components/Modal'
 import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet'
 import {
     approveTransactionRequest,
-    createSendTransaction,
-    createTransactionRequest,
     rejectTransactionRequest
 } from "../state/actions/Transactions";
 import {
@@ -182,7 +179,6 @@ export class ConfirmTransactionModal extends React.Component {
 
     render() {
         let isValid = Wallet.getWalletHardware() || this.state.password.length > 0;
-        let isLoading = this.props.isCreatingTransaction;
         let txDataRows = this.renderDataRows();
         let passwordRow = null;
 
@@ -220,12 +216,11 @@ export class ConfirmTransactionModal extends React.Component {
                         <FlatButton title={'Reject'}
                                     className={'ConfirmTransactionPage__reject-button'}
                                     size={'large'}
-                                    disabled={isLoading}
                                     onClick={this.onRejectClick}
                                     borderless centered/>
                         <GradientButton title={'Confirm'}
                                         className={'ConfirmTransactionPage__confirm-button'}
-                                        disabled={isLoading || isValid === false}
+                                        disabled={isValid === false}
                                         onClick={this.onConfirmClick}
                         />
                     </div>
@@ -251,8 +246,6 @@ const mapStateToProps = state => {
         selectedAccount: accounts[selectedAddress],
         assets: _.concat(DefaultAssets(chainId), tokens.map(tokenToAsset)),
         transactionRequest: transactionRequest,
-
-        isCreatingTransaction: state.transactions.isCreatingTransaction,
     };
 };
 

@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import React from 'react'
 import connect from "react-redux/es/connect/connect";
-import './SendModal.css';
 import SendTxForm from '../components/transactions/SendTxForm';
 import {formDataToTransaction} from "../utils/Utils";
 import {createTransactionRequest} from "../state/actions/Transactions";

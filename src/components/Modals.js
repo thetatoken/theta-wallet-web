@@ -6,36 +6,22 @@ import _ from 'lodash';
 import {hideModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import ReceiveModal from "../modals/ReceiveModal";
-import SendModal from "../modals/SendModal";
 import PrivateKeyModal from "../modals/PrivateKeyModal";
-import SendConfirmationModal from "../modals/SendConfirmationModal";
 import ColdWalletSelectorModal from "../modals/ColdWalletSelectorModal";
-import DepositStakeModal from "../modals/DepositStakeModal";
-import DepositStakeConfirmationModal from "../modals/DepositStakeConfirmationModal";
-import WithdrawStakeModal from "../modals/WithdrawStakeModal";
-import WithdrawStakeConfirmationModal from "../modals/WithdrawStakeConfirmationModal";
 import SmartContractConfirmationModal from "../modals/SmartContractConfirmationModal";
 import NetworkSelectorModal from "../modals/NetworkSelectorModal";
-import GuardianNodeDelegatesModal from "../modals/GuardianNodeDelegatesModal";
 import ConfirmTransactionModal from "../modals/ConfirmTransactionModal";
 import CreateTransactionModal from "../modals/CreateTransactionModal";
 import DelegatedNodeSelectorModal from "../modals/DelegatedNodeSelectorModal";
 
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
-    [ModalTypes.SEND]: SendModal,
-    [ModalTypes.SEND_CONFIRMATION]: SendConfirmationModal,
     [ModalTypes.PRIVATE_KEY]: PrivateKeyModal,
     [ModalTypes.COLD_WALLET_SELECTOR]: ColdWalletSelectorModal,
-    [ModalTypes.DEPOSIT_STAKE]: DepositStakeModal,
-    [ModalTypes.DEPOSIT_STAKE_CONFIRMATION]: DepositStakeConfirmationModal,
-    [ModalTypes.WITHDRAW_STAKE]: WithdrawStakeModal,
-    [ModalTypes.WITHDRAW_STAKE_CONFIRMATION]: WithdrawStakeConfirmationModal,
     [ModalTypes.SMART_CONTRACT_CONFIRMATION]: SmartContractConfirmationModal,
     [ModalTypes.NETWORK_SELECTOR]: NetworkSelectorModal,
-    [ModalTypes.GUARDIAN_NODE_DELEGATE_SELECTOR]: GuardianNodeDelegatesModal,
-    [ModalTypes.CONFIRM_TRANSACTION]: ConfirmTransactionModal,
     [ModalTypes.CREATE_TRANSACTION]: CreateTransactionModal,
+    [ModalTypes.CONFIRM_TRANSACTION]: ConfirmTransactionModal,
     [ModalTypes.DELEGATED_NODE_SELECTOR]: DelegatedNodeSelectorModal
 };
 

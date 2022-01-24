@@ -148,9 +148,9 @@ const mapStateToProps = (state, ownProps) => {
     const accounts = thetaWallet.accounts;
     const tokens = thetaWallet.tokens;
     const chainId = thetaWallet.network?.chainId;
-    const transactions = getThetaNetworkTransactions(state);
-    const isLoadingTransactions = state.transactions.isFetchingTransactions;
-
+    // const transactions = getThetaNetworkTransactions(state);
+    // const isLoadingTransactions = state.transactions.isFetchingTransactions;
+    const transactions = _.get(thetaWallet, ['transactions', selectedAddress], []);
 
     return {
         selectedAddress: selectedAddress,
@@ -161,7 +161,7 @@ const mapStateToProps = (state, ownProps) => {
         assets: _.concat(DefaultAssets(chainId), tokens.map(tokenToAsset)),
 
         transactions: transactions,
-        isLoadingTransactions: isLoadingTransactions
+        // isLoadingTransactions: isLoadingTransactions
     }
 
     //

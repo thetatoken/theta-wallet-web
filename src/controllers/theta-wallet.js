@@ -32,6 +32,8 @@ export default class ThetaWalletController extends EventEmitter {
             this.accountManager.updateAccounts();
             this.accountManager.updateAccountStakes(selectedAddress);
             this.accountManager.detectNewTokens();
+
+            this.transactionsController.updateAccountTransactions(selectedAddress);
         });
         this.preferencesController.on('accountTokensUpdated', () => {
             this.accountManager.updateAccounts();
@@ -182,7 +184,8 @@ export default class ThetaWalletController extends EventEmitter {
             sendTransaction: this._sendTransaction.bind(this),
 
             updateAccountStakes: this._updateAccountStakes.bind(this),
-            updateAccountBalances: this._updateAccountBalances.bind(this)
+            updateAccountBalances: this._updateAccountBalances.bind(this),
+            updateAccountTransactions: this._updateAccountTransactions.bind(this)
         };
     }
 
@@ -277,11 +280,6 @@ export default class ThetaWalletController extends EventEmitter {
             throw new Error('Invalid account.');
         }
 
-        console.log('this == ');
-        console.log(this);
-        console.log('this.keyringController == ');
-        console.log(this.keyringController);
-
         const keyring = await this.keyringController.addNewKeyring(
             SimpleKeyring.type,
             [privateKeyToImport],
@@ -291,8 +289,6 @@ export default class ThetaWalletController extends EventEmitter {
         // update accounts in preferences controller
         const allAccounts = await this.keyringController.getAccounts();
         this.preferencesController.setAddresses(allAccounts);
-        console.log('allAccounts == ');
-        console.log(allAccounts);
 
         // Set account name
         const newAccount = accounts[0];
@@ -302,9 +298,6 @@ export default class ThetaWalletController extends EventEmitter {
 
         // set new account as selected
         await this.preferencesController.setSelectedAddress(newAccount);
-
-        console.log('this.preferencesController getSelectedAddress == ');
-        console.log(this.preferencesController.getSelectedAddress());
 
         this.accountManager.start();
 
@@ -322,5 +315,11 @@ export default class ThetaWalletController extends EventEmitter {
         const {} = args;
 
         return this.accountManager.updateAccounts();
+    }
+
+    async _updateAccountTransactions(args) {
+        const {address} = args;
+
+        return this.transactionsController.updateAccountTransactions(address);
     }
 }
