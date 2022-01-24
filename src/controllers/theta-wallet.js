@@ -31,6 +31,7 @@ export default class ThetaWalletController extends EventEmitter {
 
             this.accountManager.updateAccounts();
             this.accountManager.updateAccountStakes(selectedAddress);
+            this.accountManager.detectNewTokens();
         });
         this.preferencesController.on('accountTokensUpdated', () => {
             this.accountManager.updateAccounts();

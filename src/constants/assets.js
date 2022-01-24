@@ -2,7 +2,6 @@ import _ from 'lodash';
 import * as thetajs from '@thetalabs/theta-js';
 import {TDropAddressByChainId} from './index';
 
-
 const {tokensByChainId} = require('@thetalabs/tnt20-contract-metadata');
 
 const getTokenIconUrl = (fileName) => {

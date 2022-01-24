@@ -1,15 +1,5 @@
 import * as thetajs from '@thetalabs/theta-js';
 
-export const AccountImportTypes = {
-    PrivateKey: 'private_key',
-    EncryptedJson: 'encrypted-json',
-};
-
-export const ModalTypes = {
-    MainMenu: 'MainMenu',
-    NetworkSelector: 'NetworkSelector',
-};
-
 export const SingleCallTokenBalancesAddressByChainId = {
     [thetajs.networks.ChainIds.Mainnet]: '0xb6ecbc094abd0ff7cf030ec9e81f6ca8045b87f9',
     [thetajs.networks.ChainIds.Testnet]: '0xf0cfe34a7e053520f08bf0a982391810ece9c582',

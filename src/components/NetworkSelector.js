@@ -41,16 +41,11 @@ export class NetworkSelector extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
     const selectedChainId = _.get(state, 'thetaWallet.network.chainId', thetajs.networks.ChainIds.Mainnet);
-    console.log('selectedChainId == ');
-    console.log(selectedChainId);
     const selectedNetwork = getNetworkForChainId(selectedChainId) || {
         chainId: selectedChainId,
         name: selectedChainId,
         color: '#000000'
     };
-
-    console.log('selectedNetwork == ');
-    console.log(selectedNetwork);
 
     return {
         selectedNetwork: selectedNetwork

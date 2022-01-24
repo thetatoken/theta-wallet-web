@@ -223,8 +223,6 @@ export default class Wallet {
 
                 wallet = Wallet.walletFromMnemonic(mnemonic.toString());
 
-                console.log('wallet.privateKey == ' + wallet.privateKey);
-
                 await this.controller.RPCApi.importAccount({
                     privateKey: wallet.privateKey
                 });
