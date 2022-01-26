@@ -14,5 +14,6 @@ export default {
 
     CONFIRM_TRANSACTION: 'confirm-transaction',
     CREATE_TRANSACTION: 'create-transaction',
-    DELEGATED_NODE_SELECTOR: 'delegated-node-selector'
+    DELEGATED_NODE_SELECTOR: 'delegated-node-selector',
+    TRACK_TOKEN: 'track-token'
 };

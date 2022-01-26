@@ -5,8 +5,17 @@ import WalletTokenListItem from './WalletTokenListItem'
 import Theta from '../services/Theta';
 import moment from "moment";
 import {formatNativeTokenAmountToLargestUnit, formatTNT20TokenAmountToLargestUnit} from "../utils/Utils";
+import {showModal} from "../state/actions/ui";
+import ModalTypes from "../constants/ModalTypes";
+import {store} from "../state";
 
 class WalletTokenList extends React.Component {
+    onAddTokenClick = () => {
+        store.dispatch(showModal({
+            type: ModalTypes.TRACK_TOKEN
+        }))
+    }
+
     render() {
         const {selectedAccount, tokens, assets, balancesRefreshedAt} = this.props;
         const assetsById = _.keyBy(assets, 'id');
@@ -43,6 +52,14 @@ class WalletTokenList extends React.Component {
                         );
                     })
                 }
+
+                <a className='AddTokenCTA'
+                   onClick={this.onAddTokenClick}
+                >
+                    <img className={'AddTokenCTA__icon'}
+                         src={'/img/icons/add-token.svg'}/>
+                    <div className={'AddTokenCTA__name'}>Add Token</div>
+                </a>
 
                 {
                     selectedAccount && _.isEmpty(selectedAccount.balances) &&

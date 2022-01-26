@@ -212,7 +212,7 @@ export class ConfirmTransactionModal extends React.Component {
         }
 
         return (
-            <Modal>
+            <Modal closeable={false}>
                 <div className="TxConfirmationModal">
                     <div className="ModalTitle">
                         Confirm Transaction

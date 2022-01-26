@@ -164,7 +164,10 @@ export default class PreferencesController  extends EventEmitter {
             // add missing identity
             const identityCount = Object.keys(identities).length;
 
-            accountTokens[address] = {};
+            if(_.isNil(accountTokens[address])){
+                accountTokens[address] = {};
+            }
+
             identities[address] = { name: `Account ${identityCount + 1}`, address };
         });
         this.store.updateState({ identities, accountTokens });

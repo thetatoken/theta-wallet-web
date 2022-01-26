@@ -74,8 +74,16 @@ export default class ThetaWalletController extends EventEmitter {
             keyringController: this.keyringController.store,
             preferencesController: this.preferencesController.store,
         });
-        this.store.subscribe((data) => {
-            // TODO store some non-sensitive info in LS?
+
+        this.preferencesController.store.subscribe((data) => {
+            try {
+                if(localStorage){
+                    localStorage.setItem('preferencesController', JSON.stringify(_.pick(data, 'accountTokens')));
+                }
+            }
+            catch (e) {
+
+            }
         });
 
         this.memStore.updateStructure({
@@ -93,9 +101,6 @@ export default class ThetaWalletController extends EventEmitter {
             // TODO anything?
         };
         this.on('update', sendUpdate);
-
-        console.log('this.keyringController == ');
-        console.log(this.keyringController);
 
         this.RPCApi = this._setupRPCApi();
     }

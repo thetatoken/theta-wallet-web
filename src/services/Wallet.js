@@ -33,11 +33,24 @@ export const WalletUnlockStrategy = {
     PRIVATE_KEY: 'private-key',
 };
 
+const getThetaWalletControllerState = () => {
+    try {
+        const preferencesControllerState = localStorage.getItem('preferencesController');
+
+        return {
+            preferencesController: (_.isEmpty(preferencesControllerState) ? {} : JSON.parse(preferencesControllerState))
+        }
+    }
+    catch (e) {
+        return {}
+    }
+}
+
 export default class Wallet {
     static _wallet = null;
     static _keystore = null;
     static controller = new ThetaWalletController({
-        initState: {}
+        initState: getThetaWalletControllerState()
     });
 
     static setWallet(wallet){

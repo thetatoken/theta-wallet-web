@@ -144,6 +144,9 @@ export function createTransactionRequest(transactionRequest) {
 
             dispatch(showModal({
                 type: ModalTypes.CONFIRM_TRANSACTION,
+                props: {
+                    closeable: false
+                }
             }));
 
             return result;

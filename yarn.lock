@@ -1512,10 +1512,10 @@
     rlp "^2.2.2"
     secp256k1 "^3.6.1"
 
-"@thetalabs/tnt20-contract-metadata@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@thetalabs/tnt20-contract-metadata/-/tnt20-contract-metadata-1.0.1.tgz#0bd91f070cbc68df073ac63c9d50323cdb2b0237"
-  integrity sha512-4OgkM23NbRixc1xrTcRaYnQW1EgSElValFTgctsLAlCnbx1U8vSqoFIFSTOiGymE2gUxdD2cWXIQ9TvnkiAJBA==
+"@thetalabs/tnt20-contract-metadata@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@thetalabs/tnt20-contract-metadata/-/tnt20-contract-metadata-1.0.2.tgz#a0a9c12787dec18eab26f6836508e2213d0498b1"
+  integrity sha512-tyjwYu9AZiWINi7PvQzJfQP+vB9j0Jfz5KzW1xIm4VjWshLIKRSR29RzqG5LjLTkqMseLC2JMwN49bU/bZf0zw==
 
 "@types/babel__core@^7.1.0":
   version "7.1.5"

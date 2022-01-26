@@ -10,7 +10,7 @@ import {onLine} from "../../utils/Utils";
 import Networks from "../../constants/Networks";
 import Config from "../../Config";
 import {store} from "../../state";
-import {hideLoader, hideModals, showLoader, showModal} from "./ui";
+import {hideLoader, hideModal, hideModals, showLoader, showModal} from "./ui";
 import ModalTypes from "../../constants/ModalTypes";
 import Theta from "../../services/Theta";
 
@@ -155,6 +155,52 @@ export function updateAccountStakes(address, shouldShowLoader){
 
         if(shouldShowLoader) {
             dispatch(hideLoader());
+        }
+    };
+}
+
+//
+// Tokens
+//
+
+export function addToken(tokenData) {
+    return async (dispatch) => {
+        try {
+            dispatch(showLoader());
+
+            const result = await Wallet.controller.RPCApi.addToken({
+                token: tokenData
+            });
+
+            dispatch(hideModal());
+
+            dispatch(hideLoader());
+
+            return result;
+        }
+        catch (error) {
+            dispatch(hideLoader());
+            return false;
+        }
+    };
+}
+
+export function removeToken(address) {
+    return async (dispatch) => {
+        try {
+            dispatch(showLoader());
+
+            const result = await Wallet.controller.RPCApi.removeToken({
+                address: address
+            });
+
+            dispatch(hideLoader());
+
+            return result;
+        }
+        catch (error) {
+            dispatch(hideLoader());
+            return false;
         }
     };
 }

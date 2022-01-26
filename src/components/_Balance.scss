@@ -4,6 +4,7 @@
   align-items: center;
   height: 54px;
   background-color: $grey-background-color;
+  background-color: #242b45;
   margin-bottom: 7px;
   padding: 12px;
   padding-left: 14px;
@@ -44,7 +45,6 @@
     font-size: 14px;
     font-weight: 400;
     line-height: 20px;
-    margin-left: auto;
   }
 
   &__amount-title-and-value{
@@ -60,4 +60,8 @@
   &__amount-value{
     color: white;
   }
+}
+
+.AddTokenCTA{
+
 }

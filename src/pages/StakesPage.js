@@ -141,7 +141,7 @@ class StakesPage extends React.Component {
                     }
                 </div>
                 <div className={'Balance__name'}>{symbol}</div>
-                <div className={'Balance__amount'}>
+                <div className={'Balance__amount'} style={{marginLeft: 'auto'}}>
                     <div className={'Balance__amount-title-and-value'}>
                         <span className={'Balance__amount-title'}>Voting power: </span><span className={'Balance__amount-value'}>{formatTNT20TokenAmountToLargestUnit(balanceStr, decimals)}</span>
                     </div>

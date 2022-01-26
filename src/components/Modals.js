@@ -13,6 +13,7 @@ import NetworkSelectorModal from "../modals/NetworkSelectorModal";
 import ConfirmTransactionModal from "../modals/ConfirmTransactionModal";
 import CreateTransactionModal from "../modals/CreateTransactionModal";
 import DelegatedNodeSelectorModal from "../modals/DelegatedNodeSelectorModal";
+import TrackTokenModal from "../modals/TrackTokenModal";
 
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
@@ -22,19 +23,23 @@ const ModalComponentByType = {
     [ModalTypes.NETWORK_SELECTOR]: NetworkSelectorModal,
     [ModalTypes.CREATE_TRANSACTION]: CreateTransactionModal,
     [ModalTypes.CONFIRM_TRANSACTION]: ConfirmTransactionModal,
-    [ModalTypes.DELEGATED_NODE_SELECTOR]: DelegatedNodeSelectorModal
+    [ModalTypes.DELEGATED_NODE_SELECTOR]: DelegatedNodeSelectorModal,
+    [ModalTypes.TRACK_TOKEN]: TrackTokenModal
 };
 
 class ModalContainer extends React.Component {
     render() {
         let modal = this.props.modal;
         let ModalComponent = (modal ? modal.component : null);
+        let closeable = (modal?.props?.closeable !== false);
 
         return (
             <ReactModal
                 isOpen={modal !== null}
                 onRequestClose={this.props.closeModal}
                 ariaHideApp={false}
+                shouldCloseOnOverlayClick={closeable}
+                shouldCloseOnEsc={closeable}
                 overlayClassName="ModalOverlay"
                 className="Modal">
                 {
