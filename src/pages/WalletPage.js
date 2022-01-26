@@ -14,7 +14,7 @@ import MDSpinner from "react-md-spinner";
 import GhostButton from "../components/buttons/GhostButton";
 import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
-import {DefaultAssets, tokenToAsset} from "../constants/assets";
+import {DefaultAssets, getAllAssets, tokenToAsset} from "../constants/assets";
 
 export class WalletPage extends React.Component {
     constructor(){
@@ -156,7 +156,7 @@ const mapStateToProps = (state, ownProps) => {
         selectedAccount: accounts[selectedAddress],
 
         tokens: tokens,
-        assets: _.concat(DefaultAssets(chainId), tokens.map(tokenToAsset)),
+        assets: getAllAssets(chainId, tokens),
 
         transactions: transactions,
     }

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import Networks from '../constants/Networks'
 import BigNumber from 'bignumber.js';
 import {Ten18} from '@thetalabs/theta-js/src/constants';
-import {DefaultAssets, tokenToAsset} from "../constants/assets";
+import {DefaultAssets, getAllAssets, tokenToAsset} from "../constants/assets";
 import * as thetajs from "@thetalabs/theta-js";
 import {TDropStakingABI, TNT20ABI} from "../constants/contracts";
 import {StakePurposeForTDROP, TDropAddressByChainId, TDropStakingAddressByChainId} from "../constants";
@@ -226,7 +226,7 @@ export const formDataToTransaction = async (transactionType, txFormData, thetaWa
     const selectedAccount = accounts[selectedAddress];
     const tokens = thetaWalletState.tokens;
     const chainId = thetaWalletState.network.chainId;
-    const assets = _.concat(DefaultAssets(chainId), tokens.map(tokenToAsset));
+    const assets = getAllAssets(chainId, tokens);
 
     if (transactionType === 'send') {
         const {to, assetId, amount} = txFormData;

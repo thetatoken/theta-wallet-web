@@ -5,7 +5,7 @@ import SendTxForm from '../components/transactions/SendTxForm';
 import {formDataToTransaction} from "../utils/Utils";
 import {createTransactionRequest} from "../state/actions/Transactions";
 import GradientButton from "../components/buttons/GradientButton";
-import {DefaultAssets, tokenToAsset} from "../constants/assets";
+import {DefaultAssets, getAllAssets, tokenToAsset} from "../constants/assets";
 import DepositStakeTxForm from "../components/transactions/DepositStakeTxForm";
 import WithdrawStakeTxForm from "../components/transactions/WithdrawStakeTxForm";
 import {updateAccountBalances} from "../state/actions/Wallet";
@@ -116,7 +116,7 @@ const mapStateToProps = (state, props) => {
         // Not ideal to pass this whole state but helps with the form data -> tx
         thetaWallet: thetaWallet,
 
-        assets: _.concat(DefaultAssets(chainId), tokens.map(tokenToAsset)),
+        assets: getAllAssets(chainId, tokens),
     };
 };
 

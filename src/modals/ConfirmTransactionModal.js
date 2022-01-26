@@ -15,7 +15,7 @@ import {
     transactionRequestToTransactionType,
     transactionTypeToName, truncate
 } from "../utils/Utils";
-import {DefaultAssets, tokenToAsset} from "../constants/assets";
+import {DefaultAssets, getAllAssets, tokenToAsset} from "../constants/assets";
 import {TNT20ABI} from '../constants/contracts';
 import FlatButton from "../components/buttons/FlatButton";
 import {store} from "../state";
@@ -275,7 +275,7 @@ const mapStateToProps = state => {
         selectedAddress: selectedAddress,
         selectedIdentity: identities[selectedAddress],
         selectedAccount: accounts[selectedAddress],
-        assets: _.concat(DefaultAssets(chainId), tokens.map(tokenToAsset)),
+        assets: getAllAssets(chainId, tokens),
         transactionRequest: transactionRequest,
     };
 };

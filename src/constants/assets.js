@@ -9,6 +9,7 @@ const getTokenIconUrl = (fileName) => {
         return null;
     }
     return `https://s3.us-east-2.amazonaws.com/assets.thetatoken.org/tokens/${fileName}`;
+    // return `https://assets.thetatoken.org/tokens/${fileName}`;
 };
 
 const ThetaAsset = {
@@ -17,7 +18,8 @@ const ThetaAsset = {
     symbol: 'THETA',
     contractAddress: null,
     decimals: 18,
-    iconUrl: '/img/tokens/theta_large@2x.png',
+    iconUrl: getTokenIconUrl('theta.png'),
+    balanceKey: 'thetawei'
 };
 
 const TFuelAsset = {
@@ -26,7 +28,8 @@ const TFuelAsset = {
     symbol: 'TFUEL',
     contractAddress: null,
     decimals: 18,
-    iconUrl: '/img/tokens/tfuel_large@2x.png',
+    iconUrl: getTokenIconUrl('tfuel.png'),
+    balanceKey: 'tfuelwei'
 };
 
 const NativeAssets = [
@@ -47,6 +50,7 @@ const TDropAsset = (chainId) => {
             address: tdropAddress,
             decimals: 18,
             iconUrl: getTokenIconUrl(_.get(tokensByChainId, [chainId, tdropAddress, 'logo'])),
+            balanceKey: tdropAddress
         };
     }
 
@@ -65,6 +69,16 @@ const DefaultAssets = (chainId) => {
     return _.concat(NativeAssets, TNT20Assets);
 };
 
+const getAllAssets = (chainId, tokens) => {
+    const tdropAddress = TDropAddressByChainId[chainId];
+    const tokenAssets = tokens.map(tokenToAsset);
+    const tokenAssetsWithoutTdrop = _.filter(tokenAssets, (asset) => {
+        return asset.contractAddress?.toLowerCase() !== tdropAddress?.toLowerCase();
+    });
+
+    return _.concat(DefaultAssets(chainId), tokenAssetsWithoutTdrop);
+};
+
 const tokenToAsset = (token) => {
     const knownToken = (tokensByChainId[thetajs.networks.ChainIds.Mainnet][token.address] || tokensByChainId[thetajs.networks.ChainIds.Testnet][token.address]);
 
@@ -75,6 +89,7 @@ const tokenToAsset = (token) => {
         contractAddress: token.address,
         decimals: token.decimals,
         iconUrl: (knownToken ? getTokenIconUrl(knownToken.logo) : null),
+        balanceKey: token.address
     };
 };
 
@@ -85,5 +100,7 @@ export {
     TFuelAsset,
     TDropAsset,
 
-    tokenToAsset
+    tokenToAsset,
+
+    getAllAssets,
 };

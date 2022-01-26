@@ -13,7 +13,7 @@ import MDSpinner from "react-md-spinner";
 import Wallet from "../services/Wallet";
 import {canStakeFromHardwareWallet} from '../Flags';
 import {updateAccountStakes} from "../state/actions/Wallet";
-import {DefaultAssets, TDropAsset, tokenToAsset} from "../constants/assets";
+import {DefaultAssets, getAllAssets, TDropAsset, tokenToAsset} from "../constants/assets";
 import {Jazzicon} from "@ukstv/jazzicon-react";
 import {formatTNT20TokenAmountToLargestUnit} from "../utils/Utils";
 
@@ -221,7 +221,7 @@ const mapStateToProps = (state, ownProps) => {
         selectedAccount: accounts[selectedAddress],
         chainId: chainId,
 
-        assets: _.concat(DefaultAssets(chainId), tokens.map(tokenToAsset)),
+        assets: getAllAssets(chainId, tokens),
     };
 };
 

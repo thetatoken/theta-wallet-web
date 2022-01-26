@@ -18,38 +18,21 @@ class WalletTokenList extends React.Component {
 
     render() {
         const {selectedAccount, tokens, assets, balancesRefreshedAt} = this.props;
-        const assetsById = _.keyBy(assets, 'id');
 
         return (
             <div className="WalletTokenList">
                 {
                     selectedAccount && selectedAccount.balances &&
-                    <React.Fragment>
-                        <WalletTokenListItem token={assetsById['theta']}
-                                             balance={formatNativeTokenAmountToLargestUnit(selectedAccount.balances.thetawei)}
-                                             key={'theta'}
-                        />
-                        <WalletTokenListItem token={assetsById['tfuel']}
-                                             balance={formatNativeTokenAmountToLargestUnit(selectedAccount.balances.tfuelwei)}
-                                             key={'tfuel'}
-                        />
-                    </React.Fragment>
-                }
-
-                {
-                    selectedAccount && selectedAccount.balances &&
-                    tokens.map((token) => {
-                        const address = token.address;
-                        const decimals = token.decimals;
-                        const balanceStr = _.get(selectedAccount.balances, [address], '0');
-                        const asset = assetsById[address];
+                    assets.map((asset) => {
+                        const decimals = asset.decimals;
+                        const balanceStr = _.get(selectedAccount.balances, [asset.balanceKey], '0');
 
                         return (
-                            <WalletTokenListItem token={asset}
+                            <WalletTokenListItem key={asset.id}
+                                                 token={asset}
                                                  balance={formatTNT20TokenAmountToLargestUnit(balanceStr, decimals)}
-                                                 key={address}
                             />
-                        );
+                        )
                     })
                 }
 
