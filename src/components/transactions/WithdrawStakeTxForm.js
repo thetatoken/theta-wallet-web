@@ -24,7 +24,7 @@ export default function WithdrawStakeTxForm(props){
 
 
     const renderEstTDROPToReturn = () => {
-        const percentageToUnstake = parseFloat(amount) / 100;
+        const percentageToUnstake = Math.min(parseFloat(amount), 100.0) / 100;
         const tnt20stakes = _.get(selectedAccount, ['tnt20Stakes'], {});
         const balanceStr = _.get(tnt20stakes, 'tdrop.estimatedTokenOwnedWithRewards', '0');
         const balanceBN = new BigNumber(balanceStr);
