@@ -323,6 +323,8 @@ export const formDataToTransaction = async (transactionType, txFormData, thetaWa
             const amountBN = toTNT20TokenSmallestUnit(amount, tDropAsset.decimals);
             const approveTx = await tdropContract.populateTransaction.approve(tDropStakingAddress,amountBN.toString());
             const stakeTx = await tdropStakingContract.populateTransaction.stake(amountBN.toString());
+            // We are sending the approve TX in the background which fails because the amount hasn't been approved yet...so we will hardcode this gas limit for now
+            stakeTx.gasLimit = 150000;
             stakeTx.dependencies = [
                 approveTx
             ];

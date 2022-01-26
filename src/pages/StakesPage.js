@@ -187,7 +187,7 @@ class StakesPage extends React.Component {
                     {
                         (stakes.length === 0 && isFetchingStakes === false) &&
                         <EmptyState title={'No THETA/TFUEL Stakes'}
-                                    subtitle={'Stake to earn Tokens'}
+                                    subtitle={'Stake to earn tokens'}
                         />
                     }
 

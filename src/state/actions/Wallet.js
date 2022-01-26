@@ -137,7 +137,9 @@ export function updateAccountBalances(shouldShowLoader){
 
         const result = await Wallet.controller.RPCApi.updateAccountBalances({});
 
-        dispatch(hideLoader());
+        if(shouldShowLoader){
+            dispatch(hideLoader());
+        }
     };
 }
 
@@ -151,6 +153,8 @@ export function updateAccountStakes(address, shouldShowLoader){
             address: address
         });
 
-        dispatch(hideLoader());
+        if(shouldShowLoader) {
+            dispatch(hideLoader());
+        }
     };
 }

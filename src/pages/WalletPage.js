@@ -148,8 +148,6 @@ const mapStateToProps = (state, ownProps) => {
     const accounts = thetaWallet.accounts;
     const tokens = thetaWallet.tokens;
     const chainId = thetaWallet.network?.chainId;
-    // const transactions = getThetaNetworkTransactions(state);
-    // const isLoadingTransactions = state.transactions.isFetchingTransactions;
     const transactions = _.get(thetaWallet, ['transactions', selectedAddress], []);
 
     return {
@@ -161,40 +159,7 @@ const mapStateToProps = (state, ownProps) => {
         assets: _.concat(DefaultAssets(chainId), tokens.map(tokenToAsset)),
 
         transactions: transactions,
-        // isLoadingTransactions: isLoadingTransactions
     }
-
-    //
-    // let tokenType = ownProps.match.params.tokenType;
-    // let localTransactionsByHash = (state.transactions.localTransactionsByHash || {});
-    // let transactions = [];
-    // let isLoadingTransactions = false;
-    //
-    // if(tokenType === TokenTypes.ERC20_THETA){
-    //     transactions = getERC20Transactions(state);
-    //     isLoadingTransactions = state.transactions.isFetchingERC20Transactions;
-    // }
-    // else if(tokenType === TokenTypes.ETHEREUM){
-    //     transactions = getEthereumTransactions(state);
-    //     isLoadingTransactions = state.transactions.isFetchingEthereumTransactions;
-    // }
-    // else if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
-    //     transactions = getThetaNetworkTransactions(state);
-    //     isLoadingTransactions = state.transactions.isFetchingTransactions;
-    // }
-    //
-    // return {
-    //     balancesByType: Object.assign({}, state.wallet.balancesByType, state.wallet.ethereumBalancesByType),
-    //
-    //     localTransactionsAmount: Object.keys(localTransactionsByHash).length,
-    //
-    //     transactions: transactions,
-    //
-    //     isLoadingTransactions: isLoadingTransactions,
-    //     isFetchingBalances: state.wallet.isFetchingBalances,
-    //
-    //     balancesRefreshedAt: state.wallet.balancesRefreshedAt
-    // };
 };
 
 export default connect(mapStateToProps)(WalletPage);

@@ -2,6 +2,7 @@ import ObservableStore from '../utils/ObservableStore';
 import * as thetajs from '@thetalabs/theta-js';
 import {nanoid} from 'nanoid';
 import _ from "lodash";
+import BigNumber from "bignumber.js";
 
 const { EventEmitter } = require('events');
 
@@ -79,12 +80,35 @@ export default class TransactionsController extends EventEmitter{
      * @returns {Object}
      */
     async addTransactionRequest(transactionRequest) {
-        console.log('addTransactionRequest == transactionRequest == ');
-        console.log(transactionRequest);
+        const fromAddress = this.preferencesController.getSelectedAddress();
+        const transaction = thetajs.transactions.transactionFromJson(transactionRequest);
+        transaction.setFrom(fromAddress);
+        const gasFeeData = await this.getEstimatedGasData(transaction);
+        let transactionDepJson = (transactionRequest.dependencies || [])[0];
+
+        if(transactionDepJson){
+            const transactionDep = thetajs.transactions.transactionFromJson(transactionDepJson);
+            transactionDep.setFrom(fromAddress);
+            const depGasFeeData = await this.getEstimatedGasData(transactionDep);
+            transactionDepJson = {
+                ...transactionDepJson,
+                txData: {
+                    ...transactionDepJson.txData,
+                    ..._.pick(depGasFeeData, ['gasPrice', 'gasLimit'])
+                },
+                gasFeeData: depGasFeeData
+            };
+            transactionRequest.dependencies = [transactionDepJson]
+        }
 
         return new Promise((resolve, reject) => {
             this._addTransactionRequest(Object.assign({}, transactionRequest, {
                 id: nanoid(),
+                txData: {
+                    ...transactionRequest.txData,
+                    ..._.pick(gasFeeData, ['gasPrice', 'gasLimit'])
+                },
+                gasFeeData: gasFeeData
             }), resolve, reject);
         });
     }
@@ -193,6 +217,9 @@ export default class TransactionsController extends EventEmitter{
             txs = _.map(txs, (tx) => {
                 return this._transformTransaction(tx, address);
             });
+            txs = _.filter(txs, (tx) => {
+                return !_.isNil(tx);
+            });
         }
         catch (e) {
             // No Update
@@ -208,5 +235,45 @@ export default class TransactionsController extends EventEmitter{
         });
 
         return txs;
+    }
+
+    /**
+     * Estimates the gas fee
+     *
+     * @returns {Object}
+     */
+    async getEstimatedGasData(transaction) {
+        if(transaction.getType() === thetajs.constants.TxType.SmartContract){
+            if(transaction.gasLimit !== thetajs.constants.gasLimitDefault){
+                // Gas fee was set by user...
+                return {
+                    gasPrice: transaction.gasPrice.toString(),
+                    gasLimit: transaction.gasLimit,
+                    totalGasFee: transaction.gasPrice.multipliedBy(transaction.gasLimit).toString()
+                }
+            }
+
+            const provider = this._getProvider();
+            const result = await provider.callSmartContract(transaction);
+
+            // if(!_.isEmpty(result.vm_error)){
+            //     throw new Error(result.vm_error);
+            // }
+
+            const gasLimitWithBuffer = (new BigNumber(result.gas_used)).multipliedBy(1.5);
+            const gasLimit = Math.ceil(gasLimitWithBuffer.toNumber());
+
+            return {
+                gasPrice: thetajs.constants.gasPriceSmartContractDefault.toString(),
+                gasLimit: gasLimit,
+                totalGasFee: thetajs.constants.gasPriceSmartContractDefault.multipliedBy(gasLimit).toString()
+            }
+        }
+        else{
+            return {
+                gasPrice: thetajs.constants.gasPriceDefault.toString(),
+                totalGasFee: thetajs.constants.gasPriceDefault.toString()
+            }
+        }
     }
 }

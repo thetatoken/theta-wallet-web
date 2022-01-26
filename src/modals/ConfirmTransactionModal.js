@@ -19,6 +19,8 @@ import {DefaultAssets, tokenToAsset} from "../constants/assets";
 import {TNT20ABI} from '../constants/contracts';
 import FlatButton from "../components/buttons/FlatButton";
 import {store} from "../state";
+import MDSpinner from "react-md-spinner";
+import BigNumber from "bignumber.js";
 
 
 const renderDataRow = (title, value, suffix = '', isLarge = false) => {
@@ -44,7 +46,8 @@ export class ConfirmTransactionModal extends React.Component {
         super();
 
         this.state = {
-            password: ''
+            password: '',
+            estimatedGasFee: null
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -177,7 +180,18 @@ export class ConfirmTransactionModal extends React.Component {
         }
     };
 
+    calculateTotalGasPrice = () => {
+        const {transactionRequest} = this.props;
+
+        if(transactionRequest?.gasFeeData?.totalGasFee){
+            const dependencyGasFee = new BigNumber(_.get(transactionRequest, ['dependencies', 0, 'gasFeeData', 'totalGasFee'], '0'));
+
+            return (new BigNumber(transactionRequest.gasFeeData.totalGasFee || '0')).plus(dependencyGasFee);
+        }
+    }
+
     render() {
+        const {transactionRequest} = this.props;
         let isValid = Wallet.getWalletHardware() || this.state.password.length > 0;
         let txDataRows = this.renderDataRows();
         let passwordRow = null;
@@ -208,6 +222,23 @@ export class ConfirmTransactionModal extends React.Component {
                         {
                             txDataRows
                         }
+                        <div className={`TxDataRow`}>
+                            <div className="TxDataRow__title">
+                                Estimated Gas Fee
+                            </div>
+                            {
+                                _.isNil(transactionRequest?.gasFeeData) &&
+                                <div className="TxDataRow__value">
+                                    <MDSpinner singleColor={'#1BDED0'} size={20}/>
+                                </div>
+                            }
+                            {
+                                !_.isNil(transactionRequest?.gasFeeData) &&
+                                <div className="TxDataRow__value">
+                                    <span>{`${formatNativeTokenAmountToLargestUnit(this.calculateTotalGasPrice())} TFUEL`}</span>
+                                </div>
+                            }
+                        </div>
                     </div>
 
                     { passwordRow }

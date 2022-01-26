@@ -1497,10 +1497,10 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@thetalabs/theta-js@^0.0.58":
-  version "0.0.58"
-  resolved "https://registry.yarnpkg.com/@thetalabs/theta-js/-/theta-js-0.0.58.tgz#0e2b6e6da1a64ede273b53c68296a56e73c73c56"
-  integrity sha512-Af65S6w14IUinzDGzvxZmls0wb87zRaqoVJUG0SLTyuHnvJ7y8MRRszULLqB3tH0FXBz3yTHbSva6FZyN4RW7w==
+"@thetalabs/theta-js@^0.0.61":
+  version "0.0.61"
+  resolved "https://registry.yarnpkg.com/@thetalabs/theta-js/-/theta-js-0.0.61.tgz#ca97789bbd4c9d1f8316e1577759ca571f13295d"
+  integrity sha512-cOVge6U0LDA6h59o+Zm13nL1YTkXOgDEkhzzKH5q+VeWhm8kzZR58L5UqefV4fjrR+tN7MwOBTMZNeoptkcnWQ==
   dependencies:
     "@ethersproject/bignumber" "^5.0.9"
     "@ethersproject/bytes" "^5.0.11"

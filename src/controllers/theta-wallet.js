@@ -29,11 +29,13 @@ export default class ThetaWalletController extends EventEmitter {
             const newProvider = new thetajs.providers.HttpProvider(newNetwork.chainId);
             this.setProvider(newProvider);
 
-            this.accountManager.updateAccounts();
-            this.accountManager.updateAccountStakes(selectedAddress);
-            this.accountManager.detectNewTokens();
+            if(selectedAddress) {
+                this.accountManager.updateAccounts();
+                this.accountManager.updateAccountStakes(selectedAddress);
+                this.accountManager.detectNewTokens();
 
-            this.transactionsController.updateAccountTransactions(selectedAddress);
+                this.transactionsController.updateAccountTransactions(selectedAddress);
+            }
         });
         this.preferencesController.on('accountTokensUpdated', () => {
             this.accountManager.updateAccounts();
