@@ -16,6 +16,7 @@ import ThetaJS from "../../libs/thetajs.esm";
 import ContractModes from "../../constants/ContractModes";
 import Router from "../../services/Router";
 import ModalTypes from "../../constants/ModalTypes";
+import {updateAccountStakes} from "./Wallet";
 
 export function fetchThetaTransactions() {
     return function (dispatch, getState) {
@@ -175,7 +176,7 @@ export function rejectTransactionRequest(transactionRequestId) {
 }
 
 export function approveTransactionRequest(transactionRequestId, password) {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         try {
             dispatch(showLoader('Sending Transaction'));
             const validPassword = Wallet.verifyPassword(password);
@@ -190,11 +191,19 @@ export function approveTransactionRequest(transactionRequestId, password) {
                 transactionRequestId: transactionRequestId
             });
             dispatch(hideModals());
+
+            if(window.location.href.includes('stakes')){
+                const selectedAddress = _.get(getState(), 'thetaWallet.selectedAddress');
+                dispatch(updateAccountStakes(selectedAddress));
+            }
+
             dispatch(hideLoader());
 
             return result;
         }
         catch (error) {
+            dispatch(hideLoader());
+            Alerts.showError(error.message);
             return false;
         }
     };

@@ -15,7 +15,7 @@ import {canStakeFromHardwareWallet} from '../Flags';
 import {updateAccountStakes} from "../state/actions/Wallet";
 import {DefaultAssets, getAllAssets, TDropAsset, tokenToAsset} from "../constants/assets";
 import {Jazzicon} from "@ukstv/jazzicon-react";
-import {formatTNT20TokenAmountToLargestUnit} from "../utils/Utils";
+import {formatTNT20TokenAmountToLargestUnit, trimDecimalPlaces} from "../utils/Utils";
 
 const sampleStakes = [
     {
@@ -125,6 +125,7 @@ class StakesPage extends React.Component {
         const balanceStr = _.get(tnt20stakes, 'tdrop.balance', '0');
         const estimatedTDROPStr = _.get(tnt20stakes, 'tdrop.estimatedTokenOwnedWithRewards', '0');
 
+
         return (
             <div className={'Balance'}
                  key={address}
@@ -141,14 +142,25 @@ class StakesPage extends React.Component {
                     }
                 </div>
                 <div className={'Balance__name'}>{symbol}</div>
-                <div className={'Balance__amount'} style={{marginLeft: 'auto'}}>
-                    <div className={'Balance__amount-title-and-value'}>
-                        <span className={'Balance__amount-title'}>Voting power: </span><span className={'Balance__amount-value'}>{formatTNT20TokenAmountToLargestUnit(balanceStr, decimals)}</span>
+                {
+                    (balanceStr === '0') &&
+                    <div className={'Balance__amount'} style={{marginLeft: 'auto'}}>
+                        <div className={'Balance__amount-title-and-value'}>
+                            <span className={'Balance__amount-title'}>Staked: </span><span className={'Balance__amount-value'}>0</span>
+                        </div>
                     </div>
-                    <div className={'Balance__amount-title-and-value'}>
-                        <span className={'Balance__amount-title'}>Est TDROP: </span><span className={'Balance__amount-value'}>{formatTNT20TokenAmountToLargestUnit(estimatedTDROPStr, decimals)}</span>
+                }
+                {
+                    (balanceStr !== '0') &&
+                    <div className={'Balance__amount'} style={{marginLeft: 'auto'}}>
+                        <div className={'Balance__amount-title-and-value'}>
+                            <span className={'Balance__amount-title'}>Voting power: </span><span className={'Balance__amount-value'}>{`${trimDecimalPlaces(formatTNT20TokenAmountToLargestUnit(balanceStr, decimals), 5)}%`}</span>
+                        </div>
+                        <div className={'Balance__amount-title-and-value'}>
+                            <span className={'Balance__amount-title'}>Staked + reward (est.): </span><span className={'Balance__amount-value'}>{trimDecimalPlaces(formatTNT20TokenAmountToLargestUnit(estimatedTDROPStr, decimals), 5)}</span>
+                        </div>
                     </div>
-                </div>
+                }
             </div>
         );
     }

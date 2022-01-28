@@ -390,3 +390,27 @@ export const isHolderSummary = (holderSummary) => {
         return false;
     }
 };
+
+export function trimDecimalPlaces(x, maxDecimals) {
+    let parts = x.split('.');
+    let newFractional = '0';
+    let foundNonZero = false;
+
+    _.map(parts[1], (char, idx) => {
+        if(foundNonZero){
+            return;
+        }
+        if((idx + 1) > maxDecimals){
+            return;
+        }
+
+        if(char !== '0'){
+            foundNonZero = true;
+        }
+        newFractional = newFractional + char;
+    });
+
+    parts[1] = newFractional;
+
+    return parts.join('.');
+}

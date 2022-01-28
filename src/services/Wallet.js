@@ -172,11 +172,7 @@ export default class Wallet {
     static createWallet(password){
         const random = thetajs.Wallet.createRandom();
         const mnemonic = random.mnemonic.phrase;
-        console.log('mnemonic == ');
-        console.log(mnemonic);
         let wallet = this.walletFromMnemonic(mnemonic);
-        console.log('wallet == ');
-        console.log(wallet);
         let keystore = this.encryptToKeystore(wallet.privateKey, password);
 
         return {

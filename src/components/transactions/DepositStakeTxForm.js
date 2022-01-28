@@ -4,9 +4,9 @@ import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
 import * as thetajs from '@thetalabs/theta-js';
 import FormField from '../../components/FormField';
-import {isHolderSummary, isValidAmount} from '../../utils/Utils';
+import {isHolderSummary, isValidAmount, numberWithCommas} from '../../utils/Utils';
 import {TDropAsset, TFuelAsset, ThetaAsset} from '../../constants/assets';
-import {StakePurposeForTDROP} from '../../constants';
+import {getMaxDelegatedStakeAmount, getMaxStakeAmount, getMinStakeAmount, StakePurposeForTDROP} from '../../constants';
 
 export default function DepositStakeTxForm(props) {
     const {onSubmit, defaultValues, formRef, selectedAccount, assets, chainId, onShowDelegatedGuardianNodes} = props;
@@ -108,7 +108,7 @@ export default function DepositStakeTxForm(props) {
                            error={errors.holderSummary && 'Guardian node summary or delegated guardian node is required'}
                 >
                     <React.Fragment>
-                <textarea name="holderSummary"
+                        <textarea name="holderSummary"
                           className={'RoundedInput'}
                           style={{height: 100, display: (delegatedGuardianNode ? 'none' : 'block')}}
                           placeholder={holderPlaceholder}
@@ -196,6 +196,39 @@ export default function DepositStakeTxForm(props) {
                                    }
 
                                    return isValid ? true : 'Insufficient balance';
+                               },
+                               moreThanMin: (s) => {
+                                   const f = parseFloat(s);
+                                   const min = getMinStakeAmount(purpose);
+                                   if (purpose === thetajs.constants.StakePurpose.StakeForEliteEdge) {
+                                       if(min > f){
+                                           return `Invalid amount. Must be at least ${numberWithCommas(min)} TFUEL`;
+                                       }
+                                   } else if (
+                                       purpose === thetajs.constants.StakePurpose.StakeForGuardian ||
+                                       purpose === thetajs.constants.StakePurpose.StakeForValidator) {
+                                       if(min > f){
+                                           return `Invalid amount. Must be at least ${numberWithCommas(min)} THETA`;
+                                       }
+                                   }
+                                   return true;
+                               },
+                               lessThanMax: (s) => {
+                                   const f = parseFloat(s);
+                                   let max = getMaxStakeAmount(purpose);
+                                   if (purpose === thetajs.constants.StakePurpose.StakeForEliteEdge) {
+                                       if(max < f){
+                                           return `Invalid amount. Must be less than ${numberWithCommas(max)} TFUEL`;
+                                       }
+                                   } else if (
+                                       purpose === thetajs.constants.StakePurpose.StakeForGuardian ||
+                                       !_.isNil(delegatedGuardianNode)) {
+                                       max = getMaxDelegatedStakeAmount(purpose);
+                                       if(max < f){
+                                           return `Invalid amount. There's a max of ${numberWithCommas(max)} THETA for delegated nodes. Please download and run your own Guardian Node to stake more.`;
+                                       }
+                                   }
+                                   return true;
                                },
                                moreThanZero: (s) => {
                                    const f = parseFloat(s);

@@ -17,8 +17,6 @@ export function areSmartContractsAvailable(){
 }
 
 export function getMinStakeAmount(purpose){
-    const network = Theta.getChainID();
-
     if(purpose === ThetaJS.StakePurposes.StakeForValidator){
         return 2000000.0;
     }
@@ -43,8 +41,6 @@ export function getMaxStakeAmount(purpose){
 }
 
 export function getMaxDelegatedStakeAmount(purpose){
-    const network = Theta.getChainID();
-
     if(purpose === ThetaJS.StakePurposes.StakeForGuardian){
         return 10000.0;
     }

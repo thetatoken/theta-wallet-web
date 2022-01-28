@@ -1,4 +1,5 @@
 import * as thetajs from '@thetalabs/theta-js';
+import ThetaJS from "../libs/thetajs.esm";
 
 export const SingleCallTokenBalancesAddressByChainId = {
     [thetajs.networks.ChainIds.Mainnet]: '0xb6ecbc094abd0ff7cf030ec9e81f6ca8045b87f9',
@@ -23,3 +24,37 @@ export const Urls = {
 };
 
 export const FaucetAvailable = false;
+
+
+export function getMinStakeAmount(purpose){
+    if(purpose === thetajs.constants.StakePurpose.StakeForValidator){
+        return 2000000.0;
+    }
+    else if(purpose === thetajs.constants.StakePurpose.StakeForGuardian){
+        return 1000.0;
+    }
+    else if(purpose === thetajs.constants.StakePurpose.StakeForEliteEdge){
+        return 10000.0;
+    }
+
+    //Unknown
+    return 0.0;
+}
+
+export function getMaxStakeAmount(purpose){
+    if(purpose === thetajs.constants.StakePurpose.StakeForEliteEdge){
+        return 500000.0;
+    }
+
+    //No max
+    return 100000000000.0;
+}
+
+export function getMaxDelegatedStakeAmount(purpose){
+    if(purpose === thetajs.constants.StakePurpose.StakeForGuardian){
+        return 10000.0;
+    }
+
+    //Unknown
+    return 0.0;
+}
