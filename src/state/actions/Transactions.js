@@ -1,3 +1,4 @@
+import * as thetajs from '@thetalabs/theta-js';
 import _ from 'lodash';
 import Api from '../../services/Api'
 import {reduxFetch} from './Api'
@@ -203,7 +204,8 @@ export function approveTransactionRequest(transactionRequestId, password) {
         }
         catch (error) {
             dispatch(hideLoader());
-            Alerts.showError(error.message);
+            const humanizedErrorMessage = thetajs.errors.humanizeErrorMessage(error.message);
+            Alerts.showError(humanizedErrorMessage);
             return false;
         }
     };

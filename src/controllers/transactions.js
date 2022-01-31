@@ -133,8 +133,8 @@ export default class TransactionsController extends EventEmitter{
         const result = await this.signAndSendTransaction(fromAddress, transaction, provider);
 
         if(result){
-            this._removeTransactionRequest(transactionRequestId);
             const approval = this.pendingTransactionRequests.get(transactionRequestId);
+            this._removeTransactionRequest(transactionRequestId);
 
             // Refresh balances because we just sent a tx
             this._updateAccounts();
