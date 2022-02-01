@@ -14,6 +14,7 @@ import {
     NumPathsPerPage,
     ThetaDevDerivationPath
 } from "../services/Wallet";
+import {updateAccountBalances} from "../state/actions/Wallet";
 
 const { EventEmitter } = require('events');
 
@@ -456,7 +457,10 @@ export default class ThetaWalletController extends EventEmitter {
                 // Select the account
                 this.preferencesController.setSelectedAddress(address)
             }
-        })
+        });
+
+        this.accountManager.updateAccounts();
+        this.accountManager.detectNewTokens();
 
         const { identities } = this.preferencesController.store.getState()
         return { ...keyState, identities }

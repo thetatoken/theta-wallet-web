@@ -190,7 +190,7 @@ export default class AccountManager {
 
         // update accounts state
         const { accounts } = this.store.getState();
-        const current = accounts[address.toLowerCase()] || {};
+        const current = accounts[address.toLowerCase()] || accounts[address] || {};
         // only populate if the entry is still present
 
         accounts[address] = {
@@ -250,7 +250,7 @@ export default class AccountManager {
                 }, {});
                 const currentAccounts = this.store.getState().accounts;
                 const currentBalances = currentAccounts[address].balances;
-                const current = accounts[address];
+                const current = accounts[address.toLowerCase()] || accounts[address];
 
                 accounts[address] = {
                     ...current,
@@ -270,6 +270,7 @@ export default class AccountManager {
 
     async updateAccountTDropStake(address){
         let stakingBalance = new BigNumber(0);
+        let totalShares = new BigNumber(0);
         let estimatedTDropOwned = new BigNumber(0);
 
         try {
@@ -285,6 +286,7 @@ export default class AccountManager {
 
             if(!stakingBalance.isZero()){
                 estimatedTDropOwned = await tdropStakingContract.estimatedTDropOwnedBy(address);
+                totalShares = await tdropStakingContract.totalShares();
             }
         }
         catch (e) {
@@ -294,14 +296,18 @@ export default class AccountManager {
 
         // update accounts state
         const { accounts } = this.store.getState();
-        const current = accounts[address];
+        const current = accounts[address.toLowerCase()] || accounts[address];
         // only populate if the entry is still present
         if (!current) {
             return null;
         }
+
+        const votingPower = ((new BigNumber(stakingBalance.toString())).dividedBy((new BigNumber(totalShares.toString())))).multipliedBy(100);
         const tdropStakingInfo = {
             balance: stakingBalance.toString(),
+            totalShares: totalShares.toString(),
             estimatedTokenOwnedWithRewards: estimatedTDropOwned.toString(),
+            votingPower: stakingBalance.isZero() ? "0" : votingPower.toString()
         };
 
         accounts[address] = {
@@ -335,7 +341,7 @@ export default class AccountManager {
 
         // update accounts state
         const { accounts } = this.store.getState();
-        const current = accounts[address];
+        const current = accounts[address.toLowerCase()] || accounts[address];
         // only populate if the entry is still present
         if (!current) {
             return [];

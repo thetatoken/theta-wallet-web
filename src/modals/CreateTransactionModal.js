@@ -12,7 +12,7 @@ import {updateAccountBalances} from "../state/actions/Wallet";
 import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 
-export class CreateTransactionPage extends React.Component {
+export class CreateTransactionModal extends React.Component {
     constructor() {
         super();
 
@@ -120,4 +120,4 @@ const mapStateToProps = (state, props) => {
     };
 };
 
-export default connect(mapStateToProps)(CreateTransactionPage);
+export default connect(mapStateToProps)(CreateTransactionModal);

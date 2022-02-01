@@ -393,7 +393,7 @@ export const isHolderSummary = (holderSummary) => {
 
 export function trimDecimalPlaces(x, maxDecimals) {
     let parts = x.split('.');
-    let newFractional = '0';
+    let newFractional = '';
     let foundNonZero = false;
 
     _.map(parts[1], (char, idx) => {

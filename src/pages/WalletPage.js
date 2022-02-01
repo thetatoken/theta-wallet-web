@@ -15,6 +15,7 @@ import GhostButton from "../components/buttons/GhostButton";
 import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import {DefaultAssets, getAllAssets, tokenToAsset} from "../constants/assets";
+import Theta from "../services/Theta";
 
 export class WalletPage extends React.Component {
     constructor(){
@@ -104,7 +105,7 @@ export class WalletPage extends React.Component {
                     />
                 </div>
                 <div className="WalletPage__detail-view">
-                    <PageHeader title="Transactions"
+                    <PageHeader title="Theta/Tfuel Transactions"
                                 sticky={true}>
                         <div className="WalletPage__header-buttons">
                             <GhostButton title="Send"
@@ -122,6 +123,10 @@ export class WalletPage extends React.Component {
                         <MDSpinner singleColor="#ffffff" className="WalletPage__detail-view-spinner"/>
                     }
 
+                    <a href={Theta.getAccountExplorerUrl(selectedAccount.address)}
+                       target={"_blank"}
+                       style={{marginTop: 12, marginBottom: 12}}
+                    >View all transactions on explorer</a>
                     {
                         transactions.length > 0 &&
                         <TransactionList transactions={transactions}/>

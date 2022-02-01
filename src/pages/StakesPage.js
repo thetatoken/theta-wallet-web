@@ -123,6 +123,7 @@ class StakesPage extends React.Component {
         const decimals = tDropAsset.decimals;
         const tnt20stakes = _.get(selectedAccount, ['tnt20Stakes'], {});
         const balanceStr = _.get(tnt20stakes, 'tdrop.balance', '0');
+        const votingPowerStr = _.get(tnt20stakes, 'tdrop.votingPower', '0');
         const estimatedTDROPStr = _.get(tnt20stakes, 'tdrop.estimatedTokenOwnedWithRewards', '0');
 
 
@@ -154,7 +155,7 @@ class StakesPage extends React.Component {
                     (balanceStr !== '0') &&
                     <div className={'Balance__amount'} style={{marginLeft: 'auto'}}>
                         <div className={'Balance__amount-title-and-value'}>
-                            <span className={'Balance__amount-title'}>Voting power: </span><span className={'Balance__amount-value'}>{`${trimDecimalPlaces(formatTNT20TokenAmountToLargestUnit(balanceStr, decimals), 5)}%`}</span>
+                            <span className={'Balance__amount-title'}>Voting power: </span><span className={'Balance__amount-value'}>{`${trimDecimalPlaces(votingPowerStr, 5)}%`}</span>
                         </div>
                         <div className={'Balance__amount-title-and-value'}>
                             <span className={'Balance__amount-title'}>Staked + reward (est.): </span><span className={'Balance__amount-value'}>{trimDecimalPlaces(formatTNT20TokenAmountToLargestUnit(estimatedTDROPStr, decimals), 5)}</span>
