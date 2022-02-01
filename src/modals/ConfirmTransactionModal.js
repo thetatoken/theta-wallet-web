@@ -94,7 +94,7 @@ export class ConfirmTransactionModal extends React.Component {
         }
         if(txType === thetajs.constants.TxType.SmartContract){
             const transactionName = transactionRequestToTransactionType(transactionRequest);
-            const contractAddress = _.get(transactionRequest, 'txData.to');
+            const contractAddress = _.get(transactionRequest, 'txData.to', null);
             const value = _.get(transactionRequest, 'txData.value');
             const asset = _.find(assets, function (a) {
                 return a.contractAddress === contractAddress;
@@ -120,11 +120,11 @@ export class ConfirmTransactionModal extends React.Component {
             return (
                 <React.Fragment>
                     { renderDataRow('Transaction Type', transactionName) }
-                    { contractAddress && renderDataRow('Contract', truncate(_.get(transactionRequest, 'txData.to'))) }
+                    { !_.isNil(contractAddress) && renderDataRow('Contract', truncate(_.get(transactionRequest, 'txData.to'))) }
                     { renderDataRow('From', truncate(selectedAddress)) }
-                    { transferToAddress && renderDataRow('To', truncate(transferToAddress)) }
-                    { (symbol && transferToValue) && renderDataRow('Token Amount', formatTNT20TokenAmountToLargestUnit(transferToValue, decimals), ` ${symbol}`) }
-                    { value && renderDataRow('Value', formatNativeTokenAmountToLargestUnit(value), ' TFUEL') }
+                    { !_.isNil(transferToAddress) && renderDataRow('To', truncate(transferToAddress)) }
+                    { (!_.isNil(transferToAddress) && symbol && transferToValue) && renderDataRow('Token Amount', formatTNT20TokenAmountToLargestUnit(transferToValue, decimals), ` ${symbol}`) }
+                    { (!_.isNil(value) && value > 0) && renderDataRow('Value', formatNativeTokenAmountToLargestUnit(value), ' TFUEL') }
                     { renderDataRow('Data', _.get(transactionRequest, 'txData.data'), null, true) }
 
                 </React.Fragment>

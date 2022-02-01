@@ -110,13 +110,54 @@ export async function createSmartContractTransactionAsync(dispatch, network, con
     }
 }
 
-export function createSmartContractTransaction(network, contractMode, contractAbi, txData, password) {
+export function createSmartContractTransactionLegacy(network, contractMode, contractAbi, txData, password) {
     return function (dispatch, getState) {
         createSmartContractTransactionAsync(dispatch, network, contractMode, contractAbi, txData, password).then(function (thunk) {
             if (thunk) {
                 dispatch(thunk);
             }
         });
+    };
+}
+
+export function createSmartContractTransaction(contractMode, contractAbi, txData) {
+    return async function (dispatch, getState) {
+        dispatch(showLoader('Preparing transaction...'));
+
+        //Let the spinners start, so we will delay the decryption/signing a bit
+        await sleep(1000);
+
+        try {
+            let address = Wallet.getWalletAddress();
+            const provider = Wallet.controller.provider;
+            const transaction = new thetajs.transactions.SmartContractTransaction(txData);
+            let sequence = await provider.getTransactionCount(address);
+            sequence = sequence + 1;
+            transaction.setSequence(sequence);
+            const callResult = await provider.callSmartContract(transaction);
+            await sleep(1000);
+            dispatch(hideLoader());
+
+            dispatch(createTransactionRequest(transaction.toJson()));
+
+            if(contractMode === ContractModes.DEPLOY){
+                // Assume the TX goes through
+                const contractAddress = _.get(callResult, ['contract_address']);
+                const contractABIB64 = btoa(contractAbi);
+                Router.push(`/wallet/contract/interact?address=${contractAddress}&abi=${contractABIB64}`);
+            }
+        }
+        catch (e) {
+            dispatch(hideLoader());
+
+            //Display error
+            Alerts.showError(e.message);
+
+            return Promise.resolve(null);
+        }
+        finally {
+            dispatch(hideLoader());
+        }
     };
 }
 

@@ -13,13 +13,10 @@ import Theta from "../services/Theta";
 import Wallet from "../services/Wallet";
 import ThetaJS from "../libs/thetajs.esm";
 import {store} from "../state";
-import {showModal} from "../state/actions/ui";
-import ModalTypes from "../constants/ModalTypes";
-import GhostButton from "../components/buttons/GhostButton";
 import PageHeader from "../components/PageHeader";
 import {getQueryParameters, zipMap} from "../utils/Utils";
-import {NetworksWithDescriptions} from "../constants/Networks";
 import Api from "../services/Api";
+import {createSmartContractTransaction} from "../state/actions/Transactions";
 
 const web3 = new Web3("http://localhost");
 
@@ -374,30 +371,17 @@ class DeployContractContent extends React.Component {
             return val;
         });
         const encodedParameters = web3.eth.abi.encodeParameters(constructorInputTypes, constructorInputValues).slice(2);
-
-        const feeInTFuelWei = (new BigNumber(10)).pow(12);
         const from = Wallet.getWalletAddress();
-        const gasPrice = Theta.getSmartContractGasPrice(); //feeInTFuelWei;
-        const gasLimit = 10000000;
         const data = byteCodeJson.object + encodedParameters;
         const value = 0;
 
-        store.dispatch(showModal({
-            type: ModalTypes.SMART_CONTRACT_CONFIRMATION,
-            props: {
-                network: Theta.getChainID(),
-                contractMode: ContractModes.DEPLOY,
-                contractAbi: abi,
-                transaction: {
-                    from: from,
-                    to: null,
-                    data: data,
-                    value: value,
-                    transactionFee: gasPrice,
-                    gasLimit: gasLimit
-                }
+        store.dispatch(createSmartContractTransaction(ContractModes.DEPLOY, abi, {
+                from: from,
+                to: null,
+                data: data,
+                value: value,
             }
-        }));
+        ));
     };
 
     render() {
@@ -501,22 +485,13 @@ class InteractWithContractContent extends React.Component {
             }
 
         } else {
-            store.dispatch(showModal({
-                type: ModalTypes.SMART_CONTRACT_CONFIRMATION,
-                props: {
-                    network: Theta.getChainID(),
-                    contractMode: ContractModes.EXECUTE,
-                    contractAbi: abi,
-                    transaction: {
-                        from: from,
-                        to: address,
-                        data: data,
-                        value: value,
-                        transactionFee: gasPrice,
-                        gasLimit: gasLimit
-                    }
+            store.dispatch(createSmartContractTransaction(ContractModes.INTERACT, abi, {
+                    from: from,
+                    to: address,
+                    data: data,
+                    value: value,
                 }
-            }));
+            ));
         }
     };
 
