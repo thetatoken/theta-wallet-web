@@ -119,7 +119,7 @@ export default class TransactionsController extends EventEmitter{
      *
      * @returns {Object}
      */
-    async approveTransactionRequest(transactionRequestId) {
+    async approveTransactionRequest(transactionRequestId, onDependencySent) {
         const provider = this._getProvider();
         const approval = this.pendingTransactionRequests.get(transactionRequestId);
         const transactionRequest = approval.request;
@@ -128,6 +128,10 @@ export default class TransactionsController extends EventEmitter{
         if(transactionDepJson){
             const transactionDep = thetajs.transactions.transactionFromJson(transactionDepJson);
             await this.signAndSendTransaction(fromAddress, transactionDep, provider);
+
+            if(onDependencySent){
+                onDependencySent();
+            }
         }
         const transaction = thetajs.transactions.transactionFromJson(transactionRequest);
         const result = await this.signAndSendTransaction(fromAddress, transaction, provider);

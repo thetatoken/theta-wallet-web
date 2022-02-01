@@ -209,7 +209,16 @@ export function rejectTransactionRequest(transactionRequestId) {
 export function approveTransactionRequest(transactionRequestId, password) {
     return async (dispatch, getState) => {
         try {
-            dispatch(showLoader('Sending Transaction'));
+            const transactionRequest = Wallet.controller.transactionsController.pendingTransactionRequests.get(transactionRequestId);
+            const dependencies = _.get(transactionRequest, 'request.dependencies', []);
+            const totalTransactions = (dependencies.length + 1);
+
+            if(dependencies.length === 0){
+                dispatch(showLoader('Sending Transaction'));
+            }
+            else{
+                dispatch(showLoader(`Sending Transaction (1 / ${totalTransactions})`));
+            }
 
             // Sleep a bit so the password check doesn't lag
             await sleep(1500);
@@ -223,7 +232,15 @@ export function approveTransactionRequest(transactionRequestId, password) {
             }
 
             const result = await Wallet.controller.RPCApi.approveTransactionRequest({
-                transactionRequestId: transactionRequestId
+                transactionRequestId: transactionRequestId,
+                onDependencySent: () => {
+                    if(dependencies.length === 0){
+                        dispatch(showLoader('Sending Transaction'));
+                    }
+                    else{
+                        dispatch(showLoader(`Sending Transaction (${totalTransactions} / ${totalTransactions})`));
+                    }
+                }
             });
             dispatch(hideModals());
 
