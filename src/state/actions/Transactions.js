@@ -18,6 +18,7 @@ import ContractModes from "../../constants/ContractModes";
 import Router from "../../services/Router";
 import ModalTypes from "../../constants/ModalTypes";
 import {updateAccountStakes} from "./Wallet";
+import {sleep} from "../../utils/Utils";
 
 export function fetchThetaTransactions() {
     return function (dispatch, getState) {
@@ -168,6 +169,10 @@ export function approveTransactionRequest(transactionRequestId, password) {
     return async (dispatch, getState) => {
         try {
             dispatch(showLoader('Sending Transaction'));
+
+            // Sleep a bit so the password check doesn't lag
+            await sleep(1500);
+
             const validPassword = Wallet.verifyPassword(password);
 
             if(!validPassword){

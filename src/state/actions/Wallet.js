@@ -7,7 +7,7 @@ import TemporaryState from "../../services/TemporaryState";
 import {resetTransactionsState} from './Transactions'
 import Router from "../../services/Router";
 import Alerts from '../../services/Alerts'
-import {onLine} from "../../utils/Utils";
+import {onLine, sleep} from "../../utils/Utils";
 import Networks from "../../constants/Networks";
 import Config from "../../Config";
 import {store} from "../../state";

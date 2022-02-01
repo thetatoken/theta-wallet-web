@@ -414,3 +414,7 @@ export function trimDecimalPlaces(x, maxDecimals) {
 
     return parts.join('.');
 }
+
+export const sleep = (ms) => {
+    return new Promise(r => setTimeout(r, ms));
+};
