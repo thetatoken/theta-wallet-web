@@ -459,8 +459,7 @@ export default class ThetaWalletController extends EventEmitter {
             }
         });
 
-        this.accountManager.updateAccounts();
-        this.accountManager.detectNewTokens();
+        this.accountManager.start();
 
         const { identities } = this.preferencesController.store.getState()
         return { ...keyState, identities }
