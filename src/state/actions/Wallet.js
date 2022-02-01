@@ -1,18 +1,15 @@
 import _ from 'lodash';
 import Api from '../../services/Api'
 import { reduxFetch } from'./Api'
-import {FETCH_WALLET_BALANCES, FETCH_WALLET_ETHEREUM_BALANCES, SET_WALLET_ADDRESS, RESET, SET_NETWORK} from "../types/Wallet";
+import {FETCH_WALLET_BALANCES, SET_WALLET_ADDRESS, RESET, SET_NETWORK} from "../types/Wallet";
 import Wallet, {WalletUnlockStrategy} from '../../services/Wallet'
 import TemporaryState from "../../services/TemporaryState";
 import {resetTransactionsState} from './Transactions'
 import Router from "../../services/Router";
 import Alerts from '../../services/Alerts'
-import {onLine, sleep} from "../../utils/Utils";
-import Networks from "../../constants/Networks";
+import {onLine} from "../../utils/Utils";
 import Config from "../../Config";
-import {store} from "../../state";
-import {hideLoader, hideModal, hideModals, showLoader, showModal} from "./ui";
-import ModalTypes from "../../constants/ModalTypes";
+import {hideLoader, hideModal, showLoader} from "./ui";
 import Theta from "../../services/Theta";
 
 
