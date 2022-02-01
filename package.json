@@ -14,6 +14,7 @@
     "classnames": "^2.2.6",
     "ethereumjs-util": "^6.1.0",
     "ethers": "^5.0.23",
+    "hdkey": "^2.0.1",
     "identicon.js": "^2.3.3",
     "lodash": "^4.17.11",
     "moment": "^2.23.0",

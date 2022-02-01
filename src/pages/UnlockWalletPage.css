@@ -351,7 +351,13 @@
 }
 
 .UnlockWalletViaColdWallet__footer{
+    display: flex;
+    justify-content: space-between;
     margin-top: auto;
+}
+
+.UnlockWalletViaColdWallet__footer .GradientButton{
+    flex: 1;
 }
 
 .UnlockWalletViaColdWallet__title{
@@ -361,6 +367,55 @@
     line-height: 22px;
     color: white;
     margin-bottom: 0;
+}
+
+
+.HardwareDeviceAccountRow{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #687399;
+    cursor: pointer;
+}
+
+.HardwareDeviceAccountRow *{
+    cursor: inherit;
+}
+
+.HardwareDeviceAccountRow__address{
+    font-size: 13px;
+    font-weight: 600;
+    color: #92A2D6;
+    text-align: left;
+    flex: 1;
+}
+
+.HardwareDeviceAccountRow__balances{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    justify-content: center;
+    min-height: 38px;
+}
+
+.HardwareDeviceAccountRow__balance{
+    display: flex;
+    flex-direction: row;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.HardwareDeviceAccountRow__balance img{
+    height: 13px;
+    margin-left: 6px;
+}
+
+.HardwareDeviceAccountRow__balance span{
+    font-size: 13px;
+    color: white;
+    text-align: right;
 }
 
 

@@ -80,18 +80,15 @@ class NavBar extends React.Component {
 
     render() {
         const {network} = this.props;
-        const address = Wallet.getWalletAddress();
 
         return (
             <div className={classNames("NavBar", { 'NavBar--is-centered': this.props.centered })}>
                 <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                     <img className="NavBar__logo" src={'/img/logo/theta_wallet_logo@2x.png'}/>
-                    <NetworkSelector/>
-                    {/*<a className={classNames("NavBar__network-badge", {"NavBar__network-badge--is-disabled": !_.isNil(address)})}*/}
-                    {/*   onClick={this.onNetworkBadgeClick}*/}
-                    {/*>*/}
-                    {/*    {getNetworkName(network)}*/}
-                    {/*</a>*/}
+                    {
+                        !this.props.centered &&
+                        <NetworkSelector/>
+                    }
                 </div>
 
                 { this.renderAccountIfNeeded() }

@@ -3,9 +3,9 @@ import SimpleKeyring from '../keyrings/simple/index';
 
 const { EventEmitter } = require('events');
 
-const KeyRingClassByType = {
-    [SimpleKeyring.type]: SimpleKeyring,
-};
+const keyringTypes = [
+    SimpleKeyring,
+]
 
 export default class KeyringController extends EventEmitter {
 
@@ -18,9 +18,11 @@ export default class KeyringController extends EventEmitter {
 
         const initState = opts.initState || {};
         this.store = new ObservableStore(initState);
+        this.keyringTypes = opts.keyringTypes ? keyringTypes.concat(opts.keyringTypes) : keyringTypes
 
         this.memStore = new ObservableStore({
             isUnlocked: false,
+            keyringTypes: this.keyringTypes.map((krt) => krt.type),
             keyrings: [],
         });
 
@@ -114,7 +116,6 @@ export default class KeyringController extends EventEmitter {
         addedAccounts.forEach((address) => {
             this.emit('newAccount', address);
         });
-        await this._persistAllKeyrings();
         await this._updateMemStoreKeyrings();
         return await this.fullUpdate();
     }
@@ -187,7 +188,7 @@ export default class KeyringController extends EventEmitter {
      * @returns {SimpleKeyring|HdKeyring} The class, if it exists.
      */
     _getKeyringClassForType (type) {
-        return KeyRingClassByType[type];
+        return this.keyringTypes.find((kr) => kr.type === type)
     }
 
     /**

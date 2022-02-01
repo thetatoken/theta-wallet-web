@@ -1,7 +1,8 @@
+import _ from 'lodash';
 import Api from '../../services/Api'
 import { reduxFetch } from'./Api'
 import {FETCH_WALLET_BALANCES, FETCH_WALLET_ETHEREUM_BALANCES, SET_WALLET_ADDRESS, RESET, SET_NETWORK} from "../types/Wallet";
-import Wallet from '../../services/Wallet'
+import Wallet, {WalletUnlockStrategy} from '../../services/Wallet'
 import TemporaryState from "../../services/TemporaryState";
 import {resetTransactionsState} from './Transactions'
 import Router from "../../services/Router";
@@ -75,31 +76,6 @@ export function unlockWallet(strategy, password, data){
                 //Navigate to the offline until they enable their network again
                 Router.push('/offline');
             }
-        }
-    };
-}
-
-export function getHardwareWalletAddresses(hardware, page, derivationPath){
-    return async function(dispatch, getState){
-        let addresses = null;
-
-        try {
-            addresses = await Wallet.getHardwareWalletAddresses(hardware, page, derivationPath);
-        }
-        catch (e) {
-            Alerts.showError(e.message);
-        }
-
-        if(addresses){
-            store.dispatch(showModal({
-                type: ModalTypes.COLD_WALLET_SELECTOR,
-                props: {
-                    hardware: hardware,
-                    addresses: addresses,
-                    page: page,
-                    derivationPath: derivationPath
-                }
-            }));
         }
     };
 }
@@ -203,4 +179,58 @@ export function removeToken(address) {
             return false;
         }
     };
+}
+
+
+export function connectHardware(deviceName, page, hdPath) {
+    return async (dispatch) => {
+        dispatch(showLoader(`Looking for your ${_.capitalize(deviceName)}...`));
+
+        let accounts
+        try {
+            accounts = await Wallet.controller.connectHardware(
+                deviceName,
+                page,
+                hdPath,
+            )
+        } catch (error) {
+            dispatch(hideLoader())
+            Alerts.showError(error.message);
+            throw error
+        }
+        dispatch(hideLoader())
+
+        return accounts
+    }
+}
+
+export function unlockHardwareWalletAccount(index, address, deviceName, hdPath) {
+    return (dispatch) => {
+        dispatch(showLoader())
+        return new Promise(async (resolve, reject) => {
+            await Wallet.controller.unlockHardwareWalletAccount(
+                index,
+                deviceName,
+                hdPath,
+                (err) => {
+                    if (err) {
+                        Alerts.showError(err.message);
+                        reject(err)
+                        return
+                    }
+
+                    dispatch(hideLoader())
+                    resolve()
+                },
+            );
+
+            dispatch(hideLoader())
+
+
+            dispatch(unlockWallet(
+                WalletUnlockStrategy.COLD_WALLET,
+                null,
+                {hardware: deviceName, path: hdPath, address: address}));
+        })
+    }
 }

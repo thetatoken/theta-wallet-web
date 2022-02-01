@@ -1,16 +1,17 @@
+import _ from 'lodash';
 import React from "react";
 import './UnlockWalletPage.css';
 import {connect} from 'react-redux'
 import {Link} from "react-router-dom";
 import GradientButton from '../components/buttons/GradientButton'
 import HardwareOptionButton from '../components/buttons/HardwareOptionButton';
-import Wallet, {EthereumOtherDerivationPath} from '../services/Wallet'
-import { WalletUnlockStrategy, EthereumDerivationPath, EthereumLedgerLiveDerivationPath, ThetaDevDerivationPath } from '../services/Wallet'
+import Wallet, { WalletUnlockStrategy, EthereumDerivationPath, EthereumLedgerLiveDerivationPath, EthereumOtherDerivationPath } from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
-import {unlockWallet} from "../state/actions/Wallet";
-import {getHardwareWalletAddresses} from "../state/actions/Wallet";
+import {connectHardware, unlockHardwareWalletAccount, unlockWallet} from "../state/actions/Wallet";
 import DropZone from '../components/DropZone'
+import {formatNativeTokenAmountToLargestUnit, truncate} from "../utils/Utils";
+import MDSpinner from "react-md-spinner";
 
 const classNames = require('classnames');
 
@@ -348,22 +349,112 @@ class UnlockWalletViaKeystoreFile extends React.Component {
     }
 }
 
-class UnlockWalletViaColdWallet extends React.Component {
+const HardwareAccountsList = ({hardwareAccounts, accounts, onClick}) => {
+    const renderHardwareAccount = (account, balances) => {
+        return (
+            <a className="HardwareDeviceAccountRow"
+               key={account.address}
+               onClick={() => {
+                   onClick(account)
+               }}
+            >
+                <div className="HardwareDeviceAccountRow__address">
+                    {truncate(account.address)}
+                </div>
+                <div className="HardwareDeviceAccountRow__balances">
+                    {
+                        !_.isEmpty(balances) &&
+                        <React.Fragment>
+                            <div className="HardwareDeviceAccountRow__balance">
+                                <span>{formatNativeTokenAmountToLargestUnit(balances?.thetawei)}</span>
+                                <img src="/img/tokens/theta_large@2x.png"/>
+                            </div>
+                            <div className="HardwareDeviceAccountRow__balance">
+                                <span>{formatNativeTokenAmountToLargestUnit(balances?.tfuelwei)}</span>
+                                <img src="/img/tokens/tfuel_large@2x.png"/>
+                            </div>
+                        </React.Fragment>
+                    }
+                    {
+                        _.isEmpty(balances) &&
+                        <MDSpinner singleColor="#ffffff" size={16}/>
+                    }
+                </div>
+            </a>
+        );
+    }
+
+    return (
+        <div>
+            {
+                _.map(hardwareAccounts, (hardwareAccount) => {
+                    const address = hardwareAccount.address;
+                    const account = _.get(accounts, address, {});
+
+                    return renderHardwareAccount(hardwareAccount, account.balances);
+                })
+            }
+        </div>
+    )
+
+}
+
+class UnlockWalletViaColdWalletUnconnected extends React.Component {
     constructor(){
         super();
 
         this.state = {
             hardware: '',
             loading: false,
-            derivationPath: EthereumDerivationPath//ThetaDevDerivationPath
+            hardwareAccounts: [],
+            derivationPath: EthereumDerivationPath
         };
 
-        this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleChooseHardwareClick = this.handleChooseHardwareClick.bind(this);
         this.handleTrezorClick = this.handleTrezorClick.bind(this);
         this.handleLedgerClick = this.handleLedgerClick.bind(this);
         this.handleDerivationPathChange = this.handleDerivationPathChange.bind(this);
+    }
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return true;
+    }
+
+    connectHardware = async (hardware, page, derivationPath) => {
+        this.setState({
+            loading: true,
+        });
+
+        try {
+            const hardwareAccounts = await this.props.dispatch(connectHardware(hardware, page, derivationPath));
+
+            this.setState({
+                hardwareAccounts: hardwareAccounts
+            });
+        }
+        catch (e) {
+
+        }
+        finally {
+            setTimeout(() => {
+                this.setState({loading: false});
+            }, 1000);
+        }
+    }
+
+    goToNextPage = () => {
+        const {hardware, derivationPath} = this.state;
+
+        // Increment page by 1
+        this.connectHardware(hardware, 1, derivationPath);
+    }
+
+    goToPrevPage = () => {
+        const {hardware, derivationPath} = this.state;
+
+        // Decrement page by 1
+        this.connectHardware(hardware, -1, derivationPath);
     }
 
     isValid(){
@@ -377,37 +468,13 @@ class UnlockWalletViaColdWallet extends React.Component {
         this.setState({[name]: value});
     }
 
-    handleKeyPress(e) {
-        if (e.key === 'Enter') {
-            this.handleUnlockClick();
-        }
-    }
-
-    chooseHardware(){
-        this.props.getHardwareWalletAddresses(this.state.hardware, 0, this.state.derivationPath);
-
-        if(this.state.hardware === "ledger"){
-            //Ledger is very slow...
-            setTimeout(function(){
-                this.setState({loading: false});
-            }.bind(this), 8000);
-        }
-        else{
-            this.setState({loading: false});
-        }
-    }
-
-    prepareForChooseHardware(){
-        this.setState({loading: true});
-
-        setTimeout(() => {
-            this.chooseHardware()
-        }, 1500);
-    }
-
     handleChooseHardwareClick(){
         if(this.isValid()){
-            this.prepareForChooseHardware();
+            this.setState({loading: true});
+
+            setTimeout(() => {
+                this.connectHardware(this.state.hardware, 0, this.state.derivationPath);
+            }, 1000);
         }
     }
 
@@ -423,7 +490,23 @@ class UnlockWalletViaColdWallet extends React.Component {
         this.setState({derivationPath: e.target.value});
     }
 
+    onChooseHardwareAccount = (account) => {
+        const {hardware, derivationPath} = this.state;
+        let path = null;
+
+        if(hardware === 'trezor'){
+            path = derivationPath + account.index;
+        }
+        else if(hardware === 'ledger'){
+            path = account.serializedPath;
+        }
+
+        this.props.dispatch(unlockHardwareWalletAccount(account.index, account.address, hardware, path ));
+    };
+
     render() {
+        const {accounts} = this.props;
+        const {hardwareAccounts, page} = this.state;
         let isDisabled = (this.state.loading || this.isValid() === false);
         let warning = "";
 
@@ -434,10 +517,30 @@ class UnlockWalletViaColdWallet extends React.Component {
             warning = "Please make sure your Ledger is connected with the Ethereum app open before clicking 'Continue' below.";
         }
 
+        if(hardwareAccounts.length > 0){
+            return (
+                <div className="UnlockWalletViaColdWallet">
+                    <div className="UnlockWalletViaColdWallet__title">
+                        Choose account
+                    </div>
+                    <HardwareAccountsList hardwareAccounts={hardwareAccounts.slice()}
+                                          accounts={Object.assign({}, accounts)}
+                                          onClick={this.onChooseHardwareAccount}
+                    />
+
+                    <div className="UnlockWalletViaColdWallet__footer">
+                        <a onClick={this.goToPrevPage}>{'< Prev'}</a>
+                        <div style={{flex: 1}}/>
+                        <a onClick={this.goToNextPage}>Next ></a>
+                    </div>
+                </div>
+            );
+        }
+
         return (
             <div className="UnlockWalletViaColdWallet">
                 <div className="UnlockWalletViaColdWallet__title">
-                    Please choose a wallet type
+                    Choose hardware
                 </div>
 
                 <div className="UnlockWalletViaColdWallet__cold-wallet-hardware-select">
@@ -464,7 +567,6 @@ class UnlockWalletViaColdWallet extends React.Component {
                                 onChange={this.handleDerivationPathChange}
                                 className={"UnlockColdWalletLedger__select"}
                         >
-                            {/* <option value={ThetaDevDerivationPath}>Theta - m/44'/500'</option> */}
                             <option value={EthereumDerivationPath}>Ethereum - m/44'/60'/0'/0</option>
                             <option value={EthereumOtherDerivationPath}>Ethereum - m/44'/60'/0'</option>
                             <option value={EthereumLedgerLiveDerivationPath}>Ethereum - Ledger Live - m/44'/60'</option>
@@ -473,7 +575,7 @@ class UnlockWalletViaColdWallet extends React.Component {
                 </div>
 
                 <div className="UnlockWalletViaColdWallet__footer">
-                    <GradientButton title="Continue"
+                    <GradientButton title="Connect"
                                     loading={this.state.loading}
                                     onClick={this.handleChooseHardwareClick}
                                     disabled={isDisabled}
@@ -483,6 +585,15 @@ class UnlockWalletViaColdWallet extends React.Component {
         );
     }
 }
+const UnlockWalletViaColdWalletStateToProps = state => {
+    const {thetaWallet} = state;
+
+    return {
+        accounts: thetaWallet.accounts
+    };
+};
+const UnlockWalletViaColdWallet = connect(UnlockWalletViaColdWalletStateToProps)(UnlockWalletViaColdWalletUnconnected);
+
 
 class UnlockWalletCard extends React.Component {
     render() {
@@ -505,7 +616,7 @@ class UnlockWalletCard extends React.Component {
         }
         else if(this.props.unlockStrategy === WalletUnlockStrategy.COLD_WALLET){
             unlockWalletStrategyContent = (
-                <UnlockWalletViaColdWallet getHardwareWalletAddresses={this.props.getHardwareWalletAddresses}/>
+                <UnlockWalletViaColdWallet/>
             );
         }
 
@@ -545,17 +656,19 @@ class UnlockWalletCard extends React.Component {
 export class UnlockWalletPage extends React.Component {
     constructor(){
         super();
-
-        this.unlockWallet = this.unlockWallet.bind(this);
-        this.getHardwareWalletAddresses = this.getHardwareWalletAddresses.bind(this);
     }
 
-    unlockWallet(strategy, password, data){
+    unlockWallet = (strategy, password, data) => {
         this.props.dispatch(unlockWallet(strategy, password, data));
     }
 
-    getHardwareWalletAddresses(hardware, page, derivationPath){
-        this.props.dispatch(getHardwareWalletAddresses(hardware, page, derivationPath));
+    componentDidMount() {
+        let address = Wallet.getWalletAddress();
+
+        if(!_.isNil(address)){
+            // Incase the user went backwards after unlocking, reload the app
+            window.location.reload();
+        }
     }
 
     render() {
@@ -569,8 +682,7 @@ export class UnlockWalletPage extends React.Component {
                     </div>
 
                     <UnlockWalletCard unlockStrategy={unlockStrategy}
-                                      unlockWallet={this.unlockWallet.bind(this)}
-                                      getHardwareWalletAddresses={this.getHardwareWalletAddresses.bind(this)}
+                                      unlockWallet={this.unlockWallet}
                     />
 
                     <div className="UnlockWalletPage__subtitle">
@@ -584,9 +696,7 @@ export class UnlockWalletPage extends React.Component {
 }
 
 const mapStateToProps = state => {
-    return {
-
-    };
+    return {};
 };
 
 export default connect(mapStateToProps)(UnlockWalletPage);

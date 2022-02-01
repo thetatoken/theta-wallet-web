@@ -22,8 +22,6 @@ const options = {
 class AppWrapper extends Component {
     componentDidMount() {
         Wallet.controller.on('update', (data) => {
-            console.log('Wallet.controller :: update == ');
-            console.log(data);
             store.dispatch({
                 type: UPDATE_THETA_WALLET_STATE,
                 data: data

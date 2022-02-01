@@ -6,6 +6,14 @@ import PreferencesController from './preferences';
 import AccountManager from './account-manager';
 import TransactionsController from './transactions';
 import SimpleKeyring from '../keyrings/simple';
+import TrezorKeyring from '../keyrings/trezor';
+import LedgerKeyring from "../keyrings/ledger";
+import {
+    EthereumDerivationPath, EthereumLedgerLiveDerivationPath,
+    EthereumOtherDerivationPath,
+    NumPathsPerPage,
+    ThetaDevDerivationPath
+} from "../services/Wallet";
 
 const { EventEmitter } = require('events');
 
@@ -44,8 +52,10 @@ export default class ThetaWalletController extends EventEmitter {
         const network = this.preferencesController.getNetwork();
         this.provider =  new thetajs.providers.HttpProvider(network.chainId);
 
+        const additionalKeyrings = [TrezorKeyring, LedgerKeyring]
         this.keyringController = new KeyringController({
             initState: initState.keyringController,
+            keyringTypes: additionalKeyrings,
         });
         this.keyringController.memStore.subscribe((s) =>
             this._onKeyringVaultUpdate(s),
@@ -192,7 +202,13 @@ export default class ThetaWalletController extends EventEmitter {
 
             updateAccountStakes: this._updateAccountStakes.bind(this),
             updateAccountBalances: this._updateAccountBalances.bind(this),
-            updateAccountTransactions: this._updateAccountTransactions.bind(this)
+            updateAccountTransactions: this._updateAccountTransactions.bind(this),
+
+            // Hardware wallets
+            connectHardware: this.connectHardware.bind(this),
+            forgetDevice: this.forgetDevice.bind(this),
+            checkHardwareStatus: this.checkHardwareStatus.bind(this),
+            unlockHardwareWalletAccount: this.unlockHardwareWalletAccount.bind(this),
         };
     }
 
@@ -328,5 +344,121 @@ export default class ThetaWalletController extends EventEmitter {
         const {address} = args;
 
         return this.transactionsController.updateAccountTransactions(address);
+    }
+
+    //
+    // Hardware
+    //
+
+    async getKeyringForDevice(deviceName, hdPath = null) {
+        let keyringName = null
+        switch (deviceName) {
+            case 'trezor':
+                keyringName = TrezorKeyring.type
+                break
+            case 'ledger':
+                keyringName = LedgerKeyring.type
+                break
+            default:
+                throw new Error(
+                    'ThetaWalletController:getKeyringForDevice - Unknown device',
+                )
+        }
+        let keyring = await this.keyringController.getKeyringsByType(keyringName)[0]
+        if (!keyring) {
+            keyring = await this.keyringController.addNewKeyring(keyringName)
+        }
+        if (hdPath && keyring.setHdPath) {
+            // Transform the hdPath so it can be used properly
+            if(hdPath === EthereumDerivationPath){
+                hdPath = EthereumDerivationPath;
+            }
+            else if(hdPath === EthereumOtherDerivationPath){
+                hdPath = EthereumOtherDerivationPath;
+            }
+            else if(hdPath === EthereumLedgerLiveDerivationPath){
+                hdPath = "m/44'/60'/0'/0/0";
+            }
+
+            keyring.setHdPath(hdPath)
+        }
+
+        return keyring
+    }
+
+    /**
+     * Fetch account list from a trezor device.
+     *
+     * @returns [] accounts
+     */
+    async connectHardware(deviceName, page, hdPath) {
+        const keyring = await this.getKeyringForDevice(deviceName, hdPath)
+        let accounts = []
+        switch (page) {
+            case -1:
+                accounts = await keyring.getPreviousPage()
+                break
+            case 1:
+                accounts = await keyring.getNextPage()
+                break
+            default:
+                accounts = await keyring.getFirstPage()
+        }
+
+        // Merge with existing accounts
+        // and make sure addresses are not repeated
+        const oldAccounts = await this.keyringController.getAccounts()
+        const accountsToTrack = [
+            ...new Set(
+                oldAccounts.concat(accounts.map((a) => a.address.toLowerCase())),
+            ),
+        ]
+        this.accountManager.syncAddresses(accountsToTrack)
+        return accounts
+    }
+
+    /**
+     * Check if the device is unlocked
+     *
+     * @returns {Promise<boolean>}
+     */
+    async checkHardwareStatus(deviceName, hdPath) {
+        const keyring = await this.getKeyringForDevice(deviceName, hdPath)
+        return keyring.isUnlocked()
+    }
+
+    /**
+     * Clear
+     *
+     * @returns {Promise<boolean>}
+     */
+    async forgetDevice(deviceName) {
+        const keyring = await this.getKeyringForDevice(deviceName)
+        keyring.forgetDevice()
+        return true
+    }
+
+    /**
+     * Imports an account from a trezor device.
+     *
+     * @returns {} keyState
+     */
+    async unlockHardwareWalletAccount(index, deviceName, hdPath) {
+        const keyring = await this.getKeyringForDevice(deviceName, hdPath)
+
+        keyring.setAccountToUnlock(index)
+        const oldAccounts = await this.keyringController.getAccounts()
+        const keyState = await this.keyringController.addNewAccount(keyring)
+        const newAccounts = await this.keyringController.getAccounts()
+        this.preferencesController.setAddresses(newAccounts)
+        newAccounts.forEach((address) => {
+            if (!oldAccounts.includes(address)) {
+                // Select the account
+                this.preferencesController.setSelectedAddress(address)
+            }
+        })
+
+        const { identities } = this.preferencesController.store.getState()
+        return { ...keyState, identities }
     }
 }

@@ -187,14 +187,11 @@ export default class AccountManager {
             address: address,
             balances: account.coins,
         };
+
         // update accounts state
         const { accounts } = this.store.getState();
-        const current = accounts[address];
+        const current = accounts[address.toLowerCase()] || {};
         // only populate if the entry is still present
-        if (!current) {
-            console.log('BAILING! NO CURRENT');
-            return;
-        }
 
         accounts[address] = {
             // keep our stakes
@@ -292,8 +289,6 @@ export default class AccountManager {
         }
         catch (e) {
             // No Update
-            console.log('updateAccountTDROPStake :: e == ');
-            console.log(e);
             return null;
         }
 
@@ -359,29 +354,13 @@ export default class AccountManager {
 
     async detectNewTokens() {
         const selectedAddress = this._preferencesController.getSelectedAddress();
-        console.log('detectNewTokens :: selectedAddress == ');
-        console.log(selectedAddress);
         const provider = this._getProvider();
-        console.log('detectNewTokens :: provider == ');
-        console.log(provider);
         const network = this._getNetwork();
-        console.log('detectNewTokens :: network == ');
-        console.log(network);
         const chainId = network.chainId;
-        console.log('detectNewTokens :: chainId == ');
-        console.log(chainId);
         const knownTokenList = tokensByChainId[chainId];
-        console.log('detectNewTokens :: knownTokenList == ');
-        console.log(knownTokenList);
         const tokens = this._getTokens();
-        console.log('detectNewTokens :: tokens == ');
-        console.log(tokens);
         let tokenAddresses = _.map(tokens, 'address');
         let trackedTokens = new Set(_.map(tokenAddresses, _.trim));
-        console.log('detectNewTokens :: tokenAddresses == ');
-        console.log(tokenAddresses);
-        console.log('detectNewTokens :: trackedTokens == ');
-        console.log(trackedTokens);
 
         const tokensToDetect = [];
         for (const tokenAddress in knownTokenList) {

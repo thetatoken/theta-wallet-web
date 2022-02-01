@@ -78,9 +78,6 @@ export class ConfirmTransactionModal extends React.Component {
         const txData = _.get(transactionRequest, 'txData');
         const stakePurpose = _.get(transactionRequest, 'txData.purpose');
 
-        console.log('transactionRequest == ');
-        console.log(transactionRequest);
-
         if(txType === thetajs.constants.TxType.Send){
             const thetaWei = _.get(transactionRequest, 'txData.outputs[0].thetaWei', null);
             const tfuelWei = _.get(transactionRequest, 'txData.outputs[0].tfuelWei', null);

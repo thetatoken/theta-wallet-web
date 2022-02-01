@@ -37,9 +37,6 @@ export async function createSmartContractTransactionAsync(dispatch, network, con
         txData: txData,
     };
 
-    console.log("createSmartContractTransactionAsync :: txData == ");
-    console.log(txData);
-
     //The decryption can take some time, so start the event early
     dispatch({
         type: CREATE_SMART_CONTRACT_TRANSACTION_START,
@@ -57,17 +54,12 @@ export async function createSmartContractTransactionAsync(dispatch, network, con
         const rawTxHex = rawTxBytes.toString('hex').slice(2);
         let signedTx = await Wallet.signTransaction(network, unsignedTx, password);
 
-        console.log("createSmartContractTransactionAsync :: rawTxHex = " + rawTxHex);
-
         if (signedTx) {
             let dryRunResponseJSON = null;
 
             if(contractMode === ContractModes.DEPLOY){
                 const dryRunResponse = await Api.callSmartContract({data: rawTxHex}, {network: network});
                 dryRunResponseJSON = await dryRunResponse.json();
-
-                console.log("dryRunResponseJSON == ");
-                console.log(dryRunResponseJSON);
             }
 
             let opts = {
@@ -75,10 +67,6 @@ export async function createSmartContractTransactionAsync(dispatch, network, con
                     //Show success alert
                     if(contractMode === ContractModes.DEPLOY){
                         Alerts.showSuccess("Your smart contract has been deployed.");
-
-
-                        console.log("contractAbi == " );
-                        console.log(contractAbi);
 
                         const contractAddress = _.get(dryRunResponseJSON, ['result', 'contract_address']);
                         const contractABIB64 = btoa(contractAbi);

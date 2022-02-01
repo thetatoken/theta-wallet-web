@@ -7,7 +7,6 @@ import {hideModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import ReceiveModal from "../modals/ReceiveModal";
 import PrivateKeyModal from "../modals/PrivateKeyModal";
-import ColdWalletSelectorModal from "../modals/ColdWalletSelectorModal";
 import SmartContractConfirmationModal from "../modals/SmartContractConfirmationModal";
 import NetworkSelectorModal from "../modals/NetworkSelectorModal";
 import ConfirmTransactionModal from "../modals/ConfirmTransactionModal";
@@ -18,7 +17,6 @@ import TrackTokenModal from "../modals/TrackTokenModal";
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
     [ModalTypes.PRIVATE_KEY]: PrivateKeyModal,
-    [ModalTypes.COLD_WALLET_SELECTOR]: ColdWalletSelectorModal,
     [ModalTypes.SMART_CONTRACT_CONFIRMATION]: SmartContractConfirmationModal,
     [ModalTypes.NETWORK_SELECTOR]: NetworkSelectorModal,
     [ModalTypes.CREATE_TRANSACTION]: CreateTransactionModal,

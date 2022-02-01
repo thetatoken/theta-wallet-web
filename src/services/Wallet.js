@@ -181,34 +181,6 @@ export default class Wallet {
         };
     }
 
-    static async getHardwareWalletAddresses(hardware, page, derivationPath){
-        let wallets = null;
-
-        try{
-            if(hardware === 'trezor'){
-                let res = await Wallet.walletFromTrezor(page);
-                wallets = res.payload;
-            }
-            else if(hardware === 'ledger'){
-                wallets = await Wallet.walletFromLedger(page, derivationPath);
-            }
-
-            return wallets;
-        }
-        catch (e) {
-            let message = null;
-
-            if(hardware === 'trezor'){
-                message = "No Trezor device attached.";
-            }
-            else if(hardware === 'ledger'){
-                message = "No Ledger device attached.";
-            }
-
-            throw new Error(message);
-        }
-    }
-
     static async unlockWallet(strategy, password, data){
         let wallet = null;
         let { keystore, mnemonic, privateKey, hardware, address, path } = data;

@@ -18,6 +18,14 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
+### Ledger development
+
+Ledger's transports require https which makes local development difficult. Run a proxy in development.
+
+```
+mitmdump -p 443 --mode reverse:http://localhost:3000/
+```
+
 
 ### Production
 

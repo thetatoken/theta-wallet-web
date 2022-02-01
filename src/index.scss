@@ -242,3 +242,9 @@ a{
 @import "modals/NetworkSelectorModal";
 @import "modals/DelegatedNodeSelectorModal";
 @import "modals/TrackTokenModal";
+
+
+// DO not remove
+div#TrezorConnectInteractionLayer {
+  z-index: 1000000000000000 !important;
+}
