@@ -216,7 +216,9 @@ export const getAssetBalance = (selectedAccount, asset) => {
     if(asset.name === 'Theta Fuel'){
         return formatNativeTokenAmountToLargestUnit(selectedAccount.balances['tfuelwei']);
     }
-    return formatTNT20TokenAmountToLargestUnit(selectedAccount.balances[asset.contractAddress], asset.decimals);
+
+    const balance = selectedAccount.balances[asset.contractAddress] || '0';
+    return formatTNT20TokenAmountToLargestUnit(balance, asset.decimals);
 };
 
 

@@ -42,7 +42,8 @@ export default function SendTxForm(props){
             amount = toNativeTokenLargestUnit(selectedAccount.balances['thetawei']).toString(10);
         }
         else{
-            amount = toTNT20TokenLargestUnit(selectedAccount.balances[asset.address], asset.decimals).toString(10);
+            const balance = selectedAccount.balances[asset.address] || '0';
+            amount = toTNT20TokenLargestUnit(balance, asset.decimals).toString(10);
         }
 
         setValue('amount', amount);

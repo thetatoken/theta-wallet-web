@@ -76,7 +76,8 @@ export default function DepositStakeTxForm(props) {
         }
         else if(purpose === StakePurposeForTDROP){
             const tDropAsset = TDropAsset(chainId);
-            amount = toNativeTokenLargestUnit(selectedAccount.balances[tDropAsset.address]).toString(10);
+            const balance = selectedAccount.balances[tDropAsset.address] || '0';
+            amount = toNativeTokenLargestUnit(balance).toString(10);
         }
         setValue('amount', amount);
     }
