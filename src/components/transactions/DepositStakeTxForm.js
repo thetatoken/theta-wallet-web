@@ -4,9 +4,16 @@ import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
 import * as thetajs from '@thetalabs/theta-js';
 import FormField from '../../components/FormField';
-import {isHolderSummary, isValidAmount, numberWithCommas} from '../../utils/Utils';
+import {
+    formatNativeTokenAmountToLargestUnit,
+    isHolderSummary,
+    isValidAmount,
+    numberWithCommas, toNativeTokenLargestUnit
+} from '../../utils/Utils';
 import {TDropAsset, TFuelAsset, ThetaAsset} from '../../constants/assets';
 import {getMaxDelegatedStakeAmount, getMaxStakeAmount, getMinStakeAmount, StakePurposeForTDROP} from '../../constants';
+import FlatButton from "../buttons/FlatButton";
+import BigNumber from "bignumber.js";
 
 export default function DepositStakeTxForm(props) {
     const {onSubmit, defaultValues, formRef, selectedAccount, assets, chainId, onShowDelegatedGuardianNodes} = props;
@@ -45,6 +52,33 @@ export default function DepositStakeTxForm(props) {
         holderTitle = null;
         holderPlaceholder = null;
         stakeAmountTitle = 'TDrop Stake Amount';
+    }
+    const populateMaxAmount = () => {
+        let amount = '';
+        let max = getMaxStakeAmount(purpose);
+        if(purpose === thetajs.constants.StakePurpose.StakeForValidator || purpose === thetajs.constants.StakePurpose.StakeForGuardian){
+            amount = toNativeTokenLargestUnit(selectedAccount.balances['thetawei']).toString(10);
+
+            if (purpose === thetajs.constants.StakePurpose.StakeForEliteEdge) {
+                amount = Math.min(max, parseFloat(amount));
+            } else if (
+                purpose === thetajs.constants.StakePurpose.StakeForGuardian ||
+                !_.isNil(delegatedGuardianNode)) {
+                max = getMaxDelegatedStakeAmount(purpose);
+                amount = Math.min(max, parseFloat(amount));
+            }
+        }
+        else if(purpose === thetajs.constants.StakePurpose.StakeForEliteEdge){
+            const maxTfuelBN = (new BigNumber(selectedAccount.balances['tfuelwei'])).minus(thetajs.constants.gasPriceDefault);
+            amount = toNativeTokenLargestUnit(maxTfuelBN.toString(10)).toString(10);
+
+            amount = Math.min(max, parseFloat(amount));
+        }
+        else if(purpose === StakePurposeForTDROP){
+            const tDropAsset = TDropAsset(chainId);
+            amount = toNativeTokenLargestUnit(selectedAccount.balances[tDropAsset.address]).toString(10);
+        }
+        setValue('amount', amount);
     }
 
     return (
@@ -172,7 +206,8 @@ export default function DepositStakeTxForm(props) {
             <FormField title={stakeAmountTitle}
                        error={errors.amount && errors.amount.message}
             >
-                <input name="amount"
+                <div className={'RoundedInputWrapper'}>
+                    <input name="amount"
                        className={'RoundedInput'}
                        placeholder={'Enter amount to stake'}
                        ref={register({
@@ -237,6 +272,11 @@ export default function DepositStakeTxForm(props) {
                                }
                            }
                        })}/>
+                       <FlatButton title={'Max'}
+                                   size={'small'}
+                                   className={'RoundedInputButton'}
+                                   onClick={populateMaxAmount}/>
+                </div>
             </FormField>
         </form>
     );

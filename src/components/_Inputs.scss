@@ -1,3 +1,13 @@
+.RoundedInputWrapper{
+  position: relative;
+}
+
+.RoundedInputButton{
+  position: absolute;
+  right: 8px;
+  top: 12px
+}
+
 .RoundedInput{
   background-color: $grey-background-color;
   height: 50px;
