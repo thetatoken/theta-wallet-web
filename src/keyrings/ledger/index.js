@@ -74,7 +74,7 @@ class LedgerKeyring extends EventEmitter {
                 this.hdk.publicKey = new Buffer(payload.publicKey, 'hex');
                 this.hdk.chainCode = new Buffer(payload.chainCode, 'hex');
 
-                resolve(payload.address);
+                resolve(payload.address.toLowerCase());
             }
             catch (e) {
                 reject(new Error(e.message || 'Unknown error'))
