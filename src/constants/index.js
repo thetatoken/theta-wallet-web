@@ -52,7 +52,8 @@ export function getMaxStakeAmount(purpose){
 
 export function getMaxDelegatedStakeAmount(purpose){
     if(purpose === thetajs.constants.StakePurpose.StakeForGuardian){
-        return 10000.0;
+        //No max
+        return 100000000000.0;
     }
 
     //Unknown
