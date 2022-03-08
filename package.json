@@ -19,7 +19,7 @@
     "lodash": "^4.17.11",
     "moment": "^2.23.0",
     "nanoid": "^3.2.0",
-    "node-sass": "4.12",
+    "node-sass": "7.0",
     "react": "^16.8.2",
     "react-alert": "4.0.4",
     "react-alert-template-basic": "^1.0.0",
