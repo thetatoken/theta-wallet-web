@@ -28,7 +28,7 @@ export const FaucetAvailable = false;
 
 export function getMinStakeAmount(purpose){
     if(purpose === thetajs.constants.StakePurpose.StakeForValidator){
-        return 2000000.0;
+        return 200000.0;
     }
     else if(purpose === thetajs.constants.StakePurpose.StakeForGuardian){
         return 1000.0;
