@@ -5,7 +5,7 @@ const config = {
 
     defaultThetaChainID: Networks.THETA_MAINNET,
 
-    faucetAvailable: false
+    faucetAvailable: true
 };
 
 export default config;

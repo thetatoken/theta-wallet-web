@@ -15,7 +15,7 @@ export const NetworksWithDescriptions = [
         id: Networks.THETA_MAINNET,
         name: "Mainnet",
         description: "THETA mainnet (Default)",
-        faucetId: "mainnet"
+        // faucetId: "mainnet"
     },
     {
         id: Networks.THETA_TESTNET,
@@ -32,7 +32,7 @@ export const NetworksWithDescriptions = [
         id: Networks.THETA_TESTNET_SAPPHIRE,
         name: "Testnet (Sapphire)",
         description: "THETA testnet for guardian nodes (Feb 2020)",
-        faucetId: "sapphire"
+        // faucetId: "sapphire"
     },
     {
         id: Networks.THETA_PRIVATENET,
