@@ -272,6 +272,7 @@ export default class AccountManager {
         let stakingBalance = new BigNumber(0);
         let totalShares = new BigNumber(0);
         let estimatedTDropOwned = new BigNumber(0);
+        let delegate = null;
 
         try {
             const provider = this._getProvider();
@@ -287,6 +288,7 @@ export default class AccountManager {
             if(!stakingBalance.isZero()){
                 estimatedTDropOwned = await tdropStakingContract.estimatedTDropOwnedBy(address);
                 totalShares = await tdropStakingContract.totalShares();
+                delegate = await tdropStakingContract.delegates(address);
             }
         }
         catch (e) {
@@ -307,7 +309,8 @@ export default class AccountManager {
             balance: stakingBalance.toString(),
             totalShares: totalShares.toString(),
             estimatedTokenOwnedWithRewards: estimatedTDropOwned.toString(),
-            votingPower: stakingBalance.isZero() ? "0" : votingPower.toString()
+            votingPower: stakingBalance.isZero() ? "0" : votingPower.toString(),
+            votingDelegate: delegate
         };
 
         accounts[address] = {

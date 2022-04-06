@@ -334,6 +334,14 @@ export const formDataToTransaction = async (transactionType, txFormData, thetaWa
             return stakeTx;
         }
     }
+    else if(transactionType === 'delegate-tdrop-vote'){
+        const {address} = txFormData;
+        const tDropStakingAddress = TDropStakingAddressByChainId[chainId];
+        const tdropStakingContract = new thetajs.Contract(tDropStakingAddress, TDropStakingABI, null);
+        const delegateTx = await tdropStakingContract.populateTransaction.delegate(address);
+
+        return delegateTx;
+    }
 };
 
 export const transactionTypeToName = (txType) => {

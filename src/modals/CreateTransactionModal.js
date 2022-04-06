@@ -11,6 +11,7 @@ import WithdrawStakeTxForm from "../components/transactions/WithdrawStakeTxForm"
 import {updateAccountBalances} from "../state/actions/Wallet";
 import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
+import DelegateVoteTxForm from "../components/transactions/DelegateVoteTxForm";
 
 export class CreateTransactionModal extends React.Component {
     constructor() {
@@ -85,6 +86,13 @@ export class CreateTransactionModal extends React.Component {
                                          assets={assets}
                                          chainId={chainId}
                                          onSubmit={this.onSubmit}/>
+                }
+                {
+                    (transactionType === 'delegate-tdrop-vote') &&
+                    <DelegateVoteTxForm formRef={this.formRef}
+                                        selectedAccount={selectedAccount}
+                                        chainId={chainId}
+                                        onSubmit={this.onSubmit}/>
                 }
                 <div className={'CreateTransactionModal__footer'}>
                     <GradientButton onClick={this.onNextClick}

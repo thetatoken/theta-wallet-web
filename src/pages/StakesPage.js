@@ -15,7 +15,7 @@ import {canStakeFromHardwareWallet} from '../Flags';
 import {updateAccountStakes} from "../state/actions/Wallet";
 import {DefaultAssets, getAllAssets, TDropAsset, tokenToAsset} from "../constants/assets";
 import {Jazzicon} from "@ukstv/jazzicon-react";
-import {formatTNT20TokenAmountToLargestUnit, trimDecimalPlaces} from "../utils/Utils";
+import {formatTNT20TokenAmountToLargestUnit, trimDecimalPlaces, truncate} from "../utils/Utils";
 
 const sampleStakes = [
     {
@@ -61,10 +61,6 @@ class StakesPage extends React.Component {
                     transactionType: 'deposit-stake'
                 }
             }));
-
-            // this.props.dispatch(showModal({
-            //     type: ModalTypes.DEPOSIT_STAKE,
-            // }));
         }
     };
 
@@ -81,12 +77,16 @@ class StakesPage extends React.Component {
                     transactionType: 'withdraw-stake'
                 }
             }));
-
-            //
-            //this.props.dispatch(showModal({
-            //     type: ModalTypes.WITHDRAW_STAKE,
-            // }));
         }
+    };
+
+    handleChangeTDROPVoteDelegateClick = () => {
+        this.props.dispatch(showModal({
+            type: ModalTypes.CREATE_TRANSACTION,
+            props: {
+                transactionType: 'delegate-tdrop-vote'
+            }
+        }));
     };
 
     fetchStakes = () => {
@@ -125,6 +125,7 @@ class StakesPage extends React.Component {
         const balanceStr = _.get(tnt20stakes, 'tdrop.balance', '0');
         const votingPowerStr = _.get(tnt20stakes, 'tdrop.votingPower', '0');
         const estimatedTDROPStr = _.get(tnt20stakes, 'tdrop.estimatedTokenOwnedWithRewards', '0');
+        const votingDelegate = _.get(tnt20stakes, 'tdrop.votingDelegate', null);
 
 
         return (
@@ -159,6 +160,12 @@ class StakesPage extends React.Component {
                         </div>
                         <div className={'Balance__amount-title-and-value'}>
                             <span className={'Balance__amount-title'}>Staked + reward (est.): </span><span className={'Balance__amount-value'}>{trimDecimalPlaces(formatTNT20TokenAmountToLargestUnit(estimatedTDROPStr, decimals), 5)}</span>
+                        </div>
+                        <div className={'Balance__amount-title-and-value'}>
+                            <span className={'Balance__amount-title'}>Votes delegated to:</span><span className={'Balance__amount-value'}>{truncate(votingDelegate)}</span>
+                            <a style={{marginLeft: 6}}
+                               onClick={this.handleChangeTDROPVoteDelegateClick}
+                            >Change</a>
                         </div>
                     </div>
                 }
