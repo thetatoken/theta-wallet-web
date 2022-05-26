@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import ObservableStore from '../utils/ObservableStore';
 import * as thetajs from '@thetalabs/theta-js';
+import {TNT721ABI} from "../constants/contracts";
 
 const { EventEmitter } = require('events');
 
@@ -24,6 +25,10 @@ export default class PreferencesController  extends EventEmitter {
             assetImages: {},
             tokens: [],
 
+            // address -> chainId
+            allCollectibleContracts: {},
+            allCollectibles: {},
+
             identities: {},
             lostIdentities: {},
 
@@ -42,6 +47,8 @@ export default class PreferencesController  extends EventEmitter {
 
             ...opts.initState,
         };
+
+        this._getProvider = opts.getProvider;
 
         this.store = new ObservableStore(initState);
 
@@ -325,6 +332,123 @@ export default class PreferencesController  extends EventEmitter {
      */
     getTokens() {
         return this.store.getState().tokens;
+    }
+
+    /**
+     * Helper method to update nested state for allCollectibles and allCollectibleContracts.
+     *
+     * @param newCollection - the modified piece of state to update in the controller's store
+     * @param baseStateKey - The root key in the store to update.
+     * @param passedConfig - An object containing the selectedAddress and chainId that are passed through the auto-detection flow.
+     * @param passedConfig.userAddress - the address passed through the collectible detection flow to ensure detected assets are stored to the correct account
+     * @param passedConfig.chainId - the chainId passed through the collectible detection flow to ensure detected assets are stored to the correct account
+     */
+    updateNestedCollectibleState(newCollection, baseStateKey) {
+        const {
+            network,
+            selectedAddress,
+        } = this._getTokenRelatedStates();
+        const chainId = network.chainId;
+        const userAddress = selectedAddress;
+        const { [baseStateKey]: oldState } = this.state;
+
+        const addressState = oldState[userAddress];
+        const newAddressState = {
+            ...addressState,
+            ...{ [chainId]: newCollection },
+        };
+        const newState = {
+            ...oldState,
+            ...{ [userAddress]: newAddressState },
+        };
+
+        this.store.updateState({
+            [baseStateKey]: newState,
+        });
+    }
+
+    async getCollectibleContractInformationFromContract(contractAddress) {
+
+
+
+        const provider = this._getProvider();
+        const contract = new thetajs.Contract(contractAddress, TNT721ABI, provider);
+        const contractURI = await contract.contractURI();
+
+        const response = await fetch(contractURI);
+        return response.json();
+
+        // Fall back if query fails.
+        return {
+            address: contractAddress,
+            asset_contract_type: null,
+            created_date: null,
+            schema_name: null,
+            symbol: null,
+            total_supply: null,
+            description: null,
+            external_link: null,
+            collection: { name: null, image_url: null },
+        };
+    }
+
+    /**
+     * Adds a new token to the token array, or updates the token if passed an address that already exists.
+     * Modifies the existing tokens array from the store. All objects in the tokens array array AddedToken objects.
+     * @see AddedCollectibleContract {@link AddedToken}
+     *
+     * @param {string} rawAddress - Hex address of the token contract. May or may not be a checksum address.
+     * @returns {Promise<array>} Promises the new array of AddedToken objects.
+     *
+     */
+    async addCollectibleContract(rawAddress) {
+        const address = rawAddress;
+        const newEntry = { address };
+        const { allCollectibleContracts } = this.store.getState();
+        const previousEntry = allCollectibleContracts.find((collectibleContract) => {
+            return collectibleContract.address.toLowerCase() === address.toLowerCase();
+        });
+        const previousIndex = allCollectibleContracts.indexOf(previousEntry);
+
+        if (previousEntry) {
+            allCollectibleContracts[previousIndex] = newEntry;
+        } else {
+            allCollectibleContracts.push(newEntry);
+        }
+
+        // TODO fetch the collection info (name, symbol, etc)
+        const contractInformation = await this.getCollectibleContractInformationFromContract(address);
+        const {name, description, image, external_url} = contractInformation;
+
+        this.updateNestedCollectibleState(allCollectibleContracts, 'allCollectibleContracts');
+
+        return Promise.resolve(allCollectibleContracts);
+    }
+
+    /**
+     * Removes a specified token from the tokens array.
+     *
+     * @param {string} rawAddress - Hex address of the token contract to remove.
+     * @returns {Promise<array>} The new array of AddedToken objects
+     *
+     */
+    removeToken(rawAddress) {
+        const { tokens } = this.store.getState();
+        const assetImages = this.getAssetImages();
+        const updatedTokens = tokens.filter((token) => token.address !== rawAddress);
+        delete assetImages[rawAddress];
+        this._updateAccountTokens(updatedTokens, assetImages);
+        return Promise.resolve(updatedTokens);
+    }
+
+    /**
+     * A getter for the `collectibles` property
+     *
+     * @returns {Array} The current array of AddedCollectible objects
+     *
+     */
+    getTokens() {
+        return this.store.getState().collectibles;
     }
 
     /**

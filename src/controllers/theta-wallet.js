@@ -15,6 +15,7 @@ import {
     ThetaDevDerivationPath
 } from "../services/Wallet";
 import {updateAccountBalances} from "../state/actions/Wallet";
+import CollectiblesController from "./collectibles";
 
 const { EventEmitter } = require('events');
 
@@ -31,7 +32,8 @@ export default class ThetaWalletController extends EventEmitter {
         this.memStore = new ComposableObservableStore();
 
         this.preferencesController = new PreferencesController({
-            initState: initState.preferencesController
+            initState: initState.preferencesController,
+            getProvider: this.getProvider,
         });
         this.preferencesController.on('networkChanged', (newNetwork) => {
             const selectedAddress = this.preferencesController.getSelectedAddress();
@@ -61,6 +63,13 @@ export default class ThetaWalletController extends EventEmitter {
         this.keyringController.memStore.subscribe((s) =>
             this._onKeyringVaultUpdate(s),
         );
+
+        this.collectiblesController = new CollectiblesController({
+            getProvider: this.getProvider,
+            getNetwork: this.preferencesController.getNetwork.bind(this.preferencesController),
+            getCollectibles: this.preferencesController.getTokens.bind(this.preferencesController),
+            preferencesController: this.preferencesController,
+        });
 
         this.accountManager = new AccountManager({
             getProvider: this.getProvider,
@@ -101,7 +110,8 @@ export default class ThetaWalletController extends EventEmitter {
             keyringController: this.keyringController.memStore,
             preferencesController: this.preferencesController.store,
             transactionsController: this.transactionsController.memStore,
-            accountManager: this.accountManager.store
+            accountManager: this.accountManager.store,
+            collectiblesController: this.collectiblesController.store
         });
         this.memStore.subscribe((data) => {
             this.sendUpdate();
