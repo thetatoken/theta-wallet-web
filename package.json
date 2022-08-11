@@ -8,6 +8,7 @@
     "@ledgerhq/hw-transport-webusb": "^6.2.0",
     "@thetalabs/theta-js": "^0.0.67",
     "@thetalabs/tnt20-contract-metadata": "^1.0.2",
+    "@trezor/connect-web": "^9.0.0-beta.6",
     "@ukstv/jazzicon-react": "^1.0.0",
     "await-timeout": "^0.3.0",
     "bignumber.js": "^8.0.1",
@@ -40,7 +41,6 @@
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "sass-loader": "7.1.0",
-    "trezor-connect": "^8.1.27",
     "web3": "^1.0.0-beta.52"
   },
   "scripts": {
