@@ -2,8 +2,12 @@ import _ from 'lodash';
 import ObservableStore from '../utils/ObservableStore';
 import * as thetajs from '@thetalabs/theta-js';
 import {TNT721ABI} from "../constants/contracts";
+import {ERC721} from '../constants/assets';
 
 const { EventEmitter } = require('events');
+
+const ALL_COLLECTIBLES_STATE_KEY = 'allCollectibles';
+const ALL_COLLECTIBLES_CONTRACTS_STATE_KEY = 'allCollectibleContracts';
 
 export default class PreferencesController  extends EventEmitter {
     /**
@@ -51,6 +55,8 @@ export default class PreferencesController  extends EventEmitter {
         this._getProvider = opts.getProvider;
 
         this.store = new ObservableStore(initState);
+
+        this.onCollectibleAdded = opts.onCollectibleAdded;
 
         this.updateDelegatedGuardianNodes();
     }
@@ -128,6 +134,11 @@ export default class PreferencesController  extends EventEmitter {
             return tokens;
         }, {});
         this.store.updateState({ identities, accountTokens });
+
+
+        setTimeout(async () => {
+            await this.addCollectible('0x871887293ca8f48147b86659e4edc88c1f1d7aa2', '23');
+        }, 5000);
     }
 
     /**
@@ -339,9 +350,6 @@ export default class PreferencesController  extends EventEmitter {
      *
      * @param newCollection - the modified piece of state to update in the controller's store
      * @param baseStateKey - The root key in the store to update.
-     * @param passedConfig - An object containing the selectedAddress and chainId that are passed through the auto-detection flow.
-     * @param passedConfig.userAddress - the address passed through the collectible detection flow to ensure detected assets are stored to the correct account
-     * @param passedConfig.chainId - the chainId passed through the collectible detection flow to ensure detected assets are stored to the correct account
      */
     updateNestedCollectibleState(newCollection, baseStateKey) {
         const {
@@ -350,7 +358,9 @@ export default class PreferencesController  extends EventEmitter {
         } = this._getTokenRelatedStates();
         const chainId = network.chainId;
         const userAddress = selectedAddress;
-        const { [baseStateKey]: oldState } = this.state;
+        const { [baseStateKey]: oldState } = this.store.getState();
+        console.log('this.store.getState() == ');
+        console.log(this.store.getState());
 
         const addressState = oldState[userAddress];
         const newAddressState = {
@@ -367,29 +377,129 @@ export default class PreferencesController  extends EventEmitter {
         });
     }
 
-    async getCollectibleContractInformationFromContract(contractAddress) {
+    /**
+     * A getter for `tokens` and `accountTokens` related states.
+     *
+     * @param {string} [selectedAddress] - A new hex address for an account
+     * @returns {Object.<array, object, string, string>} States to interact with tokens in `accountTokens`
+     *
+     */
+    _getCollectibleRelatedStates(selectedAddress) {
+        let { network, allCollectibles, allCollectibleContracts } = this.store.getState();
+        const chainId = network.chainId;
 
+        if (!selectedAddress) {
+            // eslint-disable-next-line no-param-reassign
+            selectedAddress = this.store.getState().selectedAddress;
+        }
+        if (!(selectedAddress in allCollectibles)) {
+            allCollectibles[selectedAddress] = {};
+            allCollectibleContracts[selectedAddress] = {};
+        }
+        if (!(chainId in allCollectibles[selectedAddress])) {
+            allCollectibles[selectedAddress][chainId] = [];
+            allCollectibleContracts[selectedAddress][chainId] = [];
+        }
 
+        const collectibleContracts = allCollectibleContracts[selectedAddress][chainId];
+        const collectibles = allCollectibles[selectedAddress][chainId];
 
+        return { collectibleContracts, collectibles, network, selectedAddress };
+    }
+
+    /**
+     * Updates `tokens` of current account and network.
+     *
+     * @param {string} selectedAddress - Account address to be updated with.
+     *
+     */
+    _updateCollectibles(selectedAddress) {
+        const { collectibles, collectibleContracts } = this._getCollectibleRelatedStates(selectedAddress);
+        this.store.updateState({ collectibles, collectibleContracts });
+    }
+
+    /**
+     * Query for tokenURI for a given asset.
+     *
+     * @param address - ERC721 asset contract address.
+     * @param tokenId - ERC721 asset identifier.
+     * @returns Promise resolving to the 'owner'.
+     */
+    async getERC721OwnerOf(address, tokenId) {
         const provider = this._getProvider();
-        const contract = new thetajs.Contract(contractAddress, TNT721ABI, provider);
-        const contractURI = await contract.contractURI();
+        let owner = null;
 
-        const response = await fetch(contractURI);
-        return response.json();
+        try {
+            const contract = new thetajs.Contract(address, TNT721ABI, provider);
+            owner = await contract.ownerOf(tokenId);
+        }
+        catch (e){
+            owner = null;
+        }
 
-        // Fall back if query fails.
-        return {
-            address: contractAddress,
-            asset_contract_type: null,
-            created_date: null,
-            schema_name: null,
-            symbol: null,
-            total_supply: null,
-            description: null,
-            external_link: null,
-            collection: { name: null, image_url: null },
-        };
+        return owner;
+    }
+
+    /**
+     * Checks the ownership of a ERC-721 or ERC-1155 collectible for a given address.
+     *
+     * @param ownerAddress - User public address.
+     * @param collectibleAddress - Collectible contract address.
+     * @param collectibleId - Collectible token ID.
+     * @returns Promise resolving the collectible ownership.
+     */
+    async isCollectibleOwner(ownerAddress, collectibleAddress, collectibleId) {
+        // Checks the ownership for ERC-721.
+        try {
+            const owner = await this.getERC721OwnerOf(
+                collectibleAddress,
+                collectibleId,
+            );
+            console.log('owner == ' + owner);
+            return ownerAddress.toLowerCase() === owner.toLowerCase();
+            // eslint-disable-next-line no-empty
+        } catch {
+            // Ignore ERC-721 contract error
+        }
+
+        // TODO Check the ownership for ERC-1155.
+
+        throw new Error(
+            'Unable to verify ownership. Probably because the standard is not supported or the chain is incorrect.',
+        );
+    }
+
+    async getCollectibleContractInformationFromContract(contractAddress) {
+        const provider = this._getProvider();
+        try {
+            const contract = new thetajs.Contract(contractAddress, TNT721ABI, provider);
+            const contractURI = await contract.contractURI();
+            const response = await fetch(contractURI);
+            const {name, description, image, external_url} = await response.json();
+
+            return {
+                address: contractAddress,
+                name: name,
+                image: image,
+                asset_contract_type: ERC721,
+                description: description,
+                external_link: external_url,
+                collection: { name: name, description: description, image_url: image },
+            };
+        }
+        catch (e){
+            // Fall back if query fails.
+            return {
+                address: contractAddress,
+                name: null,
+                image: null,
+                asset_contract_type: null,
+                description: null,
+                external_link: null,
+                collection: { name: null, description: null, image_url: null },
+            };
+        }
+
     }
 
     /**
@@ -403,26 +513,277 @@ export default class PreferencesController  extends EventEmitter {
      */
     async addCollectibleContract(rawAddress) {
         const address = rawAddress;
-        const newEntry = { address };
-        const { allCollectibleContracts } = this.store.getState();
-        const previousEntry = allCollectibleContracts.find((collectibleContract) => {
+        const contractInformation = await this.getCollectibleContractInformationFromContract(address);
+        const {asset_contract_type, name, description, image, external_link} = contractInformation;
+        const newEntry = Object.assign(
+            {},
+            { address },
+            description && { description },
+            name && { name },
+            image && { image: image },
+            asset_contract_type && { assetContractType: asset_contract_type },
+            external_link && { externalLink: external_link }
+        );
+        const { collectibleContracts } = this._getCollectibleRelatedStates();
+        const previousEntry = collectibleContracts.find((collectibleContract) => {
             return collectibleContract.address.toLowerCase() === address.toLowerCase();
         });
-        const previousIndex = allCollectibleContracts.indexOf(previousEntry);
+        const previousIndex = collectibleContracts.indexOf(previousEntry);
 
         if (previousEntry) {
-            allCollectibleContracts[previousIndex] = newEntry;
+            collectibleContracts[previousIndex] = newEntry;
         } else {
-            allCollectibleContracts.push(newEntry);
+            collectibleContracts.push(newEntry);
         }
 
-        // TODO fetch the collection info (name, symbol, etc)
-        const contractInformation = await this.getCollectibleContractInformationFromContract(address);
-        const {name, description, image, external_url} = contractInformation;
+        this.updateNestedCollectibleState(collectibleContracts, ALL_COLLECTIBLES_CONTRACTS_STATE_KEY);
 
-        this.updateNestedCollectibleState(allCollectibleContracts, 'allCollectibleContracts');
+        return Promise.resolve(collectibleContracts);
+    }
 
-        return Promise.resolve(allCollectibleContracts);
+    /**
+     * Query for tokenURI for a given asset.
+     *
+     * @param address - ERC721 asset contract address.
+     * @param tokenId - ERC721 asset identifier.
+     * @returns Promise resolving to the 'tokenURI'.
+     */
+    getERC721TokenURI = async (address, tokenId) => {
+        const provider = this._getProvider();
+        let tokenURI = null;
+
+        try {
+            const contract = new thetajs.Contract(address, TNT721ABI, provider);
+            tokenURI = await contract.tokenURI(tokenId);
+        }
+        catch (e){
+
+        }
+
+        return tokenURI;
+    }
+
+    async getCollectibleURIAndStandard(contractAddress, tokenId) {
+        // try ERC721 uri
+        try {
+            const uri = await this.getERC721TokenURI(contractAddress, tokenId);
+            return [uri, ERC721];
+        } catch {
+            // Ignore error
+        }
+
+        // TODO try ERC1155 uri
+
+        return [null, null];
+    }
+
+    /**
+     * Request individual collectible information from contracts that follows Metadata Interface.
+     *
+     * @param contractAddress - Hex address of the collectible contract.
+     * @param tokenId - The collectible identifier.
+     * @returns Promise resolving to the current collectible name and image.
+     */
+    async getCollectibleInformationFromTokenURI(contractAddress, tokenId) {
+        const result = await this.getCollectibleURIAndStandard(
+            contractAddress,
+            tokenId,
+        );
+        let tokenURI = result[0];
+        const standard = result[1];
+
+        try {
+            const response = await fetch(tokenURI);
+            const object = await response.json();
+            // TODO: Check image_url existence. This is not part of EIP721 nor EIP1155
+            const image = Object.prototype.hasOwnProperty.call(object, 'image')
+                ? 'image'
+                : /* istanbul ignore next */ 'image_url';
+
+            return {
+                image: object[image],
+                name: object.name,
+                description: object.description,
+                standard,
+                favorite: false,
+            };
+        } catch {
+            return {
+                image: null,
+                name: null,
+                description: null,
+                standard: standard || null,
+                favorite: false,
+            };
+        }
+    }
+
+    /**
+     * Request individual collectible information (name, image url and description).
+     *
+     * @param contractAddress - Hex address of the collectible contract.
+     * @param tokenId - The collectible identifier.
+     * @returns Promise resolving to the current collectible name and image.
+     */
+    async getCollectibleInformation(contractAddress, tokenId) {
+        let blockchainMetadata = {};
+
+        try {
+            blockchainMetadata = await this.getCollectibleInformationFromTokenURI(contractAddress, tokenId,);
+        } catch (e) {
+
+        }
+
+        return {
+            name: blockchainMetadata.name ?? null,
+            description: blockchainMetadata.description ?? null,
+            image: blockchainMetadata.image ?? null,
+            standard: blockchainMetadata.standard ?? null,
+        };
+    }
+
+    compareCollectiblesMetadata(newCollectibleMetadata, collectible) {
+        const keys = [
+            'image',
+            'backgroundColor',
+            'imagePreview',
+            'imageThumbnail',
+            'imageOriginal',
+            'animation',
+            'animationOriginal',
+            'externalLink',
+        ];
+        const differentValues = keys.reduce((value, key) => {
+            if (
+                newCollectibleMetadata[key] &&
+                newCollectibleMetadata[key] !== collectible[key]
+            ) {
+                return value + 1;
+            }
+            return value;
+        }, 0);
+        return differentValues > 0;
+    }
+
+    /**
+     * Adds an individual collectible to the stored collectible list.
+     *
+     * @param address - Hex address of the collectible contract.
+     * @param tokenId - The collectible identifier.
+     * @param collectibleMetadata - Collectible optional information (name, image and description).
+     * @param collectibleContract - An object containing contract data of the collectible being added.
+     * @returns Promise resolving to the current collectible list.
+     */
+    async addIndividualCollectible(address, tokenId, collectibleMetadata, collectibleContract,) {
+        console.log('addIndividualCollectible :: address == ');
+        console.log(address);
+        console.log('addIndividualCollectible :: tokenId == ');
+        console.log(tokenId);
+        console.log('addIndividualCollectible :: collectibleMetadata == ');
+        console.log(collectibleMetadata);
+        console.log('addIndividualCollectible :: collectibleContract == ');
+        console.log(collectibleContract);
+
+        try {
+            const {allCollectibles, selectedAddress, network} = this.store.getState();
+            const chainId = network.chainId;
+
+            const collectibles = allCollectibles[selectedAddress]?.[chainId] || [];
+            console.log('addIndividualCollectible :: collectibles ==');
+            console.log(collectibles);
+
+            const existingEntry = collectibles.find((collectible) => collectible.address.toLowerCase() === address.toLowerCase()
+                && collectible.tokenId === tokenId);
+
+            if (existingEntry) {
+                const differentMetadata = this.compareCollectiblesMetadata(
+                    collectibleMetadata,
+                    existingEntry);
+
+                if (differentMetadata) {
+                    // TODO: Switch to indexToUpdate
+                    const indexToRemove = collectibles.findIndex(
+                        (collectible) =>
+                            collectible.address.toLowerCase() === address.toLowerCase() &&
+                            collectible.tokenId === tokenId,
+                    );
+                    /* istanbul ignore next */
+                    if (indexToRemove !== -1) {
+                        collectibles.splice(indexToRemove, 1);
+                    }
+                } else {
+                    return collectibles;
+                }
+            }
+
+            // TODO actually check if it is owned by this address?
+            const isOwner = await this.isCollectibleOwner(selectedAddress, address, tokenId);
+            console.log('isOwner == ');
+            console.log(isOwner);
+
+            const newEntry = {
+                address,
+                tokenId,
+                favorite: existingEntry?.favorite || false,
+                isCurrentlyOwned: isOwner,
+                ...collectibleMetadata,
+            };
+
+            console.log('newEntry == ');
+            console.log(newEntry);
+
+            const newCollectibles = [...collectibles, newEntry];
+            this.updateNestedCollectibleState(
+                newCollectibles,
+                ALL_COLLECTIBLES_STATE_KEY
+            );
+
+            if (this.onCollectibleAdded) {
+                this.onCollectibleAdded({
+                    address,
+                    symbol: collectibleContract.symbol,
+                    tokenId: tokenId.toString(),
+                    standard: collectibleMetadata.standard
+                });
+            }
+
+            return newCollectibles;
+        }
+        catch (e){
+            console.log('ERROR CAUGHT:::');
+            console.log(e);
+        }
+    }
+
+    /**
+     * Adds a collectible and respective collectible contract to the stored collectible and collectible contracts lists.
+     *
+     * @param address - Hex address of the collectible contract.
+     * @param tokenId - The collectible identifier.
+     * @returns Promise resolving to the current collectible list.
+     */
+    async addCollectible(address, tokenId) {
+        const newCollectibleContracts = await this.addCollectibleContract(address);
+        console.log('newCollectibleContracts == ');
+        console.log(newCollectibleContracts);
+        const collectibleMetadata = await this.getCollectibleInformation(address, tokenId);
+        console.log('collectibleMetadata == ');
+        console.log(collectibleMetadata);
+
+        // If collectible contract was not added, do not add individual collectible
+        const collectibleContract = newCollectibleContracts.find((contract) => contract.address.toLowerCase() === address.toLowerCase(),);
+        console.log('collectibleContract == ');
+        console.log(collectibleContract);
+
+        // If collectible contract information, add individual collectible
+
+        if (collectibleContract) {
+            await this.addIndividualCollectible(
+                address,
+                tokenId,
+                collectibleMetadata,
+                collectibleContract);
+        }
     }
 
     /**

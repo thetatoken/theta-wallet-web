@@ -4,6 +4,11 @@ import {TDropAddressByChainId} from './index';
 
 const {tokensByChainId} = require('@thetalabs/tnt20-contract-metadata');
 
+// TOKEN STANDARDS
+const ERC721 = 'ERC721';
+const ERC1155 = 'ERC1155';
+const ERC20 = 'ERC20';
+
 const getTokenIconUrl = (fileName) => {
     if(_.isEmpty(fileName)){
         return null;
@@ -103,4 +108,8 @@ export {
     tokenToAsset,
 
     getAllAssets,
+
+    ERC721,
+    ERC1155,
+    ERC20
 };

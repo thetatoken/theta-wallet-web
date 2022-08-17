@@ -42,6 +42,12 @@ class WalletTabBar extends Component {
         }));
     }
 
+    onCollectiblesClick(){
+        store.dispatch(showModal({
+            type: ModalTypes.COLLECTIBLES
+        }))
+    }
+
 
     render() {
 
@@ -74,6 +80,12 @@ class WalletTabBar extends Component {
                         activeIconUrl="/img/tab-bar/stakes-active@2x.png"
                     />
                 }
+                <TabBarItem
+                    title="Collectibles"
+                    onClick={this.onCollectiblesClick}
+                    normalIconUrl="/img/tab-bar/stakes@2x.png"
+                    activeIconUrl="/img/tab-bar/stakes-active@2x.png"
+                />
                 {
                     areSmartContractsAvailable() &&
                     <TabBarItem

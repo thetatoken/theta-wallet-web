@@ -12,6 +12,7 @@ import ConfirmTransactionModal from "../modals/ConfirmTransactionModal";
 import CreateTransactionModal from "../modals/CreateTransactionModal";
 import DelegatedNodeSelectorModal from "../modals/DelegatedNodeSelectorModal";
 import TrackTokenModal from "../modals/TrackTokenModal";
+import CollectiblesModal from "../modals/CollectiblesModal";
 
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
@@ -20,7 +21,8 @@ const ModalComponentByType = {
     [ModalTypes.CREATE_TRANSACTION]: CreateTransactionModal,
     [ModalTypes.CONFIRM_TRANSACTION]: ConfirmTransactionModal,
     [ModalTypes.DELEGATED_NODE_SELECTOR]: DelegatedNodeSelectorModal,
-    [ModalTypes.TRACK_TOKEN]: TrackTokenModal
+    [ModalTypes.TRACK_TOKEN]: TrackTokenModal,
+    [ModalTypes.COLLECTIBLES]: CollectiblesModal
 };
 
 class ModalContainer extends React.Component {

@@ -98,7 +98,7 @@ export default class ThetaWalletController extends EventEmitter {
         this.preferencesController.store.subscribe((data) => {
             try {
                 if(localStorage){
-                    localStorage.setItem('preferencesController', JSON.stringify(_.pick(data, 'accountTokens')));
+                    localStorage.setItem('preferencesController', JSON.stringify(_.pick(data, ['accountTokens', 'allCollectibles', 'allCollectibleContracts'])));
                 }
             }
             catch (e) {
