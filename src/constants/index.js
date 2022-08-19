@@ -4,7 +4,7 @@ import ThetaJS from "../libs/thetajs.esm";
 export const SingleCallTokenBalancesAddressByChainId = {
     [thetajs.networks.ChainIds.Mainnet]: '0xb6ecbc094abd0ff7cf030ec9e81f6ca8045b87f9',
     [thetajs.networks.ChainIds.Testnet]: '0xf0cfe34a7e053520f08bf0a982391810ece9c582',
-    [thetajs.networks.ChainIds.Privatenet]: '0xedba30e32e11ae95ca9c000b8de97c7af087c7de'
+    [thetajs.networks.ChainIds.Privatenet]: '0xb19271bf84ddd19fe5e580983414a1840123e871'
 };
 
 export const TDropStakingAddressByChainId = {
