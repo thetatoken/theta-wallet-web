@@ -179,6 +179,53 @@ export function removeToken(address) {
 }
 
 
+//
+// Collectibles
+//
+
+export function addCollectible(collectibleData) {
+    return async (dispatch) => {
+        try {
+            dispatch(showLoader());
+
+            const result = await Wallet.controller.RPCApi.addCollectible({
+                collectible: collectibleData
+            });
+
+            dispatch(hideModal());
+
+            dispatch(hideLoader());
+
+            return result;
+        }
+        catch (error) {
+            dispatch(hideLoader());
+            return false;
+        }
+    };
+}
+
+export function removeCollectible(collectibleData) {
+    return async (dispatch) => {
+        try {
+            dispatch(showLoader());
+
+            const result = await Wallet.controller.RPCApi.removeCollectible({
+                collectible: collectibleData
+            });
+
+            dispatch(hideLoader());
+
+            return result;
+        }
+        catch (error) {
+            dispatch(hideLoader());
+            return false;
+        }
+    };
+}
+
+
 export function connectHardware(deviceName, page, hdPath) {
     return async (dispatch) => {
         dispatch(showLoader(`Looking for your ${_.capitalize(deviceName)}...`));

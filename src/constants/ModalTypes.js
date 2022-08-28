@@ -15,5 +15,6 @@ export default {
     CREATE_TRANSACTION: 'create-transaction',
     DELEGATED_NODE_SELECTOR: 'delegated-node-selector',
     TRACK_TOKEN: 'track-token',
-    COLLECTIBLES: 'collectibles'
+    COLLECTIBLES: 'collectibles',
+    TRACK_COLLECTIBLE: 'track-collectible'
 };

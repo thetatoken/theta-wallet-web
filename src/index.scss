@@ -212,6 +212,26 @@ a{
   line-break: anywhere;
 }
 
+.ModalHeader{
+  display: flex;
+  flex-direction: row;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-bottom: 10px;
+
+  div{
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .ModalTitle{
+    flex: 2;
+    margin-bottom: 0;
+    justify-content: center;
+  }
+}
+
 .ModalTitle{
   font-size: 28px;
   font-weight: bold;
@@ -245,6 +265,8 @@ a{
 @import "modals/DelegatedNodeSelectorModal";
 @import "modals/TrackTokenModal";
 @import "modals/CollectiblesModal";
+@import "modals/TrackCollectibleModal";
+
 
 
 

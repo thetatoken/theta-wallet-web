@@ -2,18 +2,59 @@
   display: flex;
   flex-direction: column;
   background-color: $background-color;
-  width: 500px;
+  width: 700px;
   min-height: 540px;
   padding: 20px;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
   box-sizing: border-box;
   border-radius: 12px;
+  max-height: 90vh;
+}
+
+.CollectiblesScrollContainer{
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .CollectiblesSectionTitle{
-  color: white;
+  color: $grey-color-100;
+  margin-bottom: 12px;
+  font-size: 18px;
 }
 
+.CollectibleItems{
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -7.5px;
+  margin-right: -7.5px;
+  justify-content: center;
+}
 
+.CollectibleItem{
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  margin-left: 7.5px;
+  margin-right: 7.5px;
+  margin-bottom: 15px;
+  cursor: pointer;
+
+  &__image{
+    width: 100%;
+  }
+
+  &__name{
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    padding: 12px;
+    background-color: darken($background-color, 5);
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+}
 
 
 

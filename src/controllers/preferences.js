@@ -57,6 +57,7 @@ export default class PreferencesController  extends EventEmitter {
         this.store = new ObservableStore(initState);
 
         this.onCollectibleAdded = opts.onCollectibleAdded;
+        this.onCollectibleRemoved = opts.onCollectibleRemoved;
 
         this.updateDelegatedGuardianNodes();
     }
@@ -134,11 +135,6 @@ export default class PreferencesController  extends EventEmitter {
             return tokens;
         }, {});
         this.store.updateState({ identities, accountTokens });
-
-
-        setTimeout(async () => {
-            await this.addCollectible('0x871887293ca8f48147b86659e4edc88c1f1d7aa2', '23');
-        }, 5000);
     }
 
     /**
@@ -359,8 +355,6 @@ export default class PreferencesController  extends EventEmitter {
         const chainId = network.chainId;
         const userAddress = selectedAddress;
         const { [baseStateKey]: oldState } = this.store.getState();
-        console.log('this.store.getState() == ');
-        console.log(this.store.getState());
 
         const addressState = oldState[userAddress];
         const newAddressState = {
@@ -456,7 +450,7 @@ export default class PreferencesController  extends EventEmitter {
                 collectibleId,
             );
             console.log('owner == ' + owner);
-            return ownerAddress.toLowerCase() === owner.toLowerCase();
+            return !_.isNil(owner) && (ownerAddress.toLowerCase() === owner.toLowerCase());
             // eslint-disable-next-line no-empty
         } catch {
             // Ignore ERC-721 contract error
@@ -675,22 +669,11 @@ export default class PreferencesController  extends EventEmitter {
      * @returns Promise resolving to the current collectible list.
      */
     async addIndividualCollectible(address, tokenId, collectibleMetadata, collectibleContract,) {
-        console.log('addIndividualCollectible :: address == ');
-        console.log(address);
-        console.log('addIndividualCollectible :: tokenId == ');
-        console.log(tokenId);
-        console.log('addIndividualCollectible :: collectibleMetadata == ');
-        console.log(collectibleMetadata);
-        console.log('addIndividualCollectible :: collectibleContract == ');
-        console.log(collectibleContract);
-
         try {
             const {allCollectibles, selectedAddress, network} = this.store.getState();
             const chainId = network.chainId;
 
             const collectibles = allCollectibles[selectedAddress]?.[chainId] || [];
-            console.log('addIndividualCollectible :: collectibles ==');
-            console.log(collectibles);
 
             const existingEntry = collectibles.find((collectible) => collectible.address.toLowerCase() === address.toLowerCase()
                 && collectible.tokenId === tokenId);
@@ -721,6 +704,10 @@ export default class PreferencesController  extends EventEmitter {
             console.log('isOwner == ');
             console.log(isOwner);
 
+            if(!isOwner){
+                throw new Error('You do not own this NFT.');
+            }
+
             const newEntry = {
                 address,
                 tokenId,
@@ -728,9 +715,6 @@ export default class PreferencesController  extends EventEmitter {
                 isCurrentlyOwned: isOwner,
                 ...collectibleMetadata,
             };
-
-            console.log('newEntry == ');
-            console.log(newEntry);
 
             const newCollectibles = [...collectibles, newEntry];
             this.updateNestedCollectibleState(
@@ -750,8 +734,10 @@ export default class PreferencesController  extends EventEmitter {
             return newCollectibles;
         }
         catch (e){
-            console.log('ERROR CAUGHT:::');
+            console.log('addIndividualCollectible :: error == ');
             console.log(e);
+
+            throw e;
         }
     }
 
@@ -764,16 +750,10 @@ export default class PreferencesController  extends EventEmitter {
      */
     async addCollectible(address, tokenId) {
         const newCollectibleContracts = await this.addCollectibleContract(address);
-        console.log('newCollectibleContracts == ');
-        console.log(newCollectibleContracts);
         const collectibleMetadata = await this.getCollectibleInformation(address, tokenId);
-        console.log('collectibleMetadata == ');
-        console.log(collectibleMetadata);
 
         // If collectible contract was not added, do not add individual collectible
         const collectibleContract = newCollectibleContracts.find((contract) => contract.address.toLowerCase() === address.toLowerCase(),);
-        console.log('collectibleContract == ');
-        console.log(collectibleContract);
 
         // If collectible contract information, add individual collectible
 
@@ -787,19 +767,52 @@ export default class PreferencesController  extends EventEmitter {
     }
 
     /**
-     * Removes a specified token from the tokens array.
+     * Removes an individual collectible to the stored collectible list.
      *
-     * @param {string} rawAddress - Hex address of the token contract to remove.
-     * @returns {Promise<array>} The new array of AddedToken objects
-     *
+     * @param address - Hex address of the collectible contract.
+     * @param tokenId - The collectible identifier.
+     * @returns Promise resolving to the current collectible list.
      */
-    removeToken(rawAddress) {
-        const { tokens } = this.store.getState();
-        const assetImages = this.getAssetImages();
-        const updatedTokens = tokens.filter((token) => token.address !== rawAddress);
-        delete assetImages[rawAddress];
-        this._updateAccountTokens(updatedTokens, assetImages);
-        return Promise.resolve(updatedTokens);
+    async removeIndividualCollectible(address, tokenId) {
+        try {
+            const {allCollectibles, selectedAddress, network} = this.store.getState();
+            const chainId = network.chainId;
+
+            const collectibles = allCollectibles[selectedAddress]?.[chainId] || [];
+            const newCollectibles = _.remove(collectibles, ((collectible) => collectible.address.toLowerCase() === address.toLowerCase()
+                && collectible.tokenId === tokenId));
+
+            this.updateNestedCollectibleState(
+                newCollectibles,
+                ALL_COLLECTIBLES_STATE_KEY
+            );
+
+            if (this.onCollectibleRemoved) {
+                this.onCollectibleRemoved({
+                    address,
+                    tokenId: tokenId.toString(),
+                });
+            }
+
+            return newCollectibles;
+        }
+        catch (e){
+            console.log('removeIndividualCollectible :: error == ');
+            console.log(e);
+        }
+    }
+
+    /**
+     * Adds a collectible and respective collectible contract to the stored collectible and collectible contracts lists.
+     *
+     * @param address - Hex address of the collectible contract.
+     * @param tokenId - The collectible identifier.
+     * @returns Promise resolving to the current collectible list.
+     */
+    async removeCollectible(address, tokenId) {
+        await this.removeIndividualCollectible(
+            address,
+            tokenId);
     }
 
     /**

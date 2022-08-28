@@ -13,6 +13,7 @@ import CreateTransactionModal from "../modals/CreateTransactionModal";
 import DelegatedNodeSelectorModal from "../modals/DelegatedNodeSelectorModal";
 import TrackTokenModal from "../modals/TrackTokenModal";
 import CollectiblesModal from "../modals/CollectiblesModal";
+import TrackCollectibleModal from "../modals/TrackCollectibleModal";
 
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
@@ -22,7 +23,8 @@ const ModalComponentByType = {
     [ModalTypes.CONFIRM_TRANSACTION]: ConfirmTransactionModal,
     [ModalTypes.DELEGATED_NODE_SELECTOR]: DelegatedNodeSelectorModal,
     [ModalTypes.TRACK_TOKEN]: TrackTokenModal,
-    [ModalTypes.COLLECTIBLES]: CollectiblesModal
+    [ModalTypes.COLLECTIBLES]: CollectiblesModal,
+    [ModalTypes.TRACK_COLLECTIBLE]: TrackCollectibleModal
 };
 
 class ModalContainer extends React.Component {
@@ -77,12 +79,15 @@ class Modals extends React.Component {
     render() {
         let modal1 = this.getModal(0);
         let modal2 = this.getModal(1);
+        let modal3 = this.getModal(2);
 
         return (
             <div>
                 <ModalContainer modal={modal1}
                                 closeModal={this.closeModal}/>
                 <ModalContainer modal={modal2}
+                                closeModal={this.closeModal}/>
+                <ModalContainer modal={modal3}
                                 closeModal={this.closeModal}/>
             </div>
         )

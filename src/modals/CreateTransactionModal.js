@@ -12,6 +12,7 @@ import {updateAccountBalances} from "../state/actions/Wallet";
 import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import DelegateVoteTxForm from "../components/transactions/DelegateVoteTxForm";
+import SendCollectibleTxForm from "../components/transactions/SendCollectibleTxForm";
 
 export class CreateTransactionModal extends React.Component {
     constructor() {
@@ -53,7 +54,7 @@ export class CreateTransactionModal extends React.Component {
     }
 
     render() {
-        const {selectedIdentity, selectedAccount, transactionType, assets, chainId} = this.props;
+        const {selectedIdentity, selectedAccount, transactionType, assets, chainId, collectible} = this.props;
         const title = transactionType.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
         return (
@@ -68,6 +69,17 @@ export class CreateTransactionModal extends React.Component {
                                 assets={assets}
                                 chainId={chainId}
                                 onSubmit={this.onSubmit}/>
+                }
+                {
+                    (transactionType === 'send-collectible') &&
+                    <SendCollectibleTxForm formRef={this.formRef}
+                                           selectedAccount={selectedAccount}
+                                           collectible={collectible}
+                                           chainId={chainId}
+                                           onSubmit={(formData) => {
+                                               // Inject the collectible
+                                               this.onSubmit(Object.assign({}, formData, {collectible: collectible}))
+                                           }}/>
                 }
                 {
                     (transactionType === 'deposit-stake') &&
@@ -105,7 +117,7 @@ export class CreateTransactionModal extends React.Component {
 }
 
 const mapStateToProps = (state, props) => {
-    const {transactionType} = props;
+    const {transactionType, collectible} = props;
     const {thetaWallet} = state;
     const selectedAddress = thetaWallet.selectedAddress;
     const identities = thetaWallet.identities;
@@ -115,6 +127,8 @@ const mapStateToProps = (state, props) => {
 
     return {
         transactionType: transactionType,
+
+        collectible: collectible,
 
         selectedAddress: selectedAddress,
         selectedIdentity: identities[selectedAddress],

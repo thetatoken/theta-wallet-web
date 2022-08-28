@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import {Ten18} from '@thetalabs/theta-js/src/constants';
 import {DefaultAssets, getAllAssets, tokenToAsset} from "../constants/assets";
 import * as thetajs from "@thetalabs/theta-js";
-import {TDropStakingABI, TNT20ABI} from "../constants/contracts";
+import {TDropStakingABI, TNT20ABI, TNT721ABI} from "../constants/contracts";
 import {StakePurposeForTDROP, TDropAddressByChainId, TDropStakingAddressByChainId} from "../constants";
 
 
@@ -258,6 +258,15 @@ export const formDataToTransaction = async (transactionType, txFormData, thetaWa
 
             return new thetajs.transactions.SendTransaction(txData);
         }
+    }
+    else if (transactionType === 'send-collectible') {
+        const {to, collectible} = txFormData;
+        const {address, tokenId} = collectible;
+
+        // TNT721 collectible
+        const tnt721Contract = new thetajs.Contract(address, TNT721ABI, null);
+        const safeTransferFrom = tnt721Contract.populateTransaction['safeTransferFrom(address,address,uint256)'];
+        return await safeTransferFrom(selectedAddress, to, tokenId);
     }
     if(transactionType === 'withdraw-stake'){
         const {holder, purpose, amount} = txFormData;
