@@ -80,3 +80,7 @@
 .WalletTokenListItem--is-active .WalletTokenListItem__active-indicator{
     display: block;
 }
+
+.WalletTokenListItem__button-container{
+    margin-left: auto;
+}

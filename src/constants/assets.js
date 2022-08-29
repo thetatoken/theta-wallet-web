@@ -57,6 +57,26 @@ const TDropAsset = (chainId) => {
     return TNT20Asset;
 };
 
+const WThetaAsset = (chainId) => {
+    const address = TDropAddressByChainId[chainId];
+    let TNT20Asset = null;
+
+    if(address){
+        TNT20Asset = {
+            id: address,
+            name: 'wTHETA',
+            symbol: 'WTHETA',
+            contractAddress: address,
+            address: address,
+            decimals: 18,
+            iconUrl: getTokenIconUrl(_.get(tokensByChainId, [chainId, address, 'logo'])),
+            balanceKey: address
+        };
+    }
+
+    return TNT20Asset;
+};
+
 const DefaultAssets = (chainId) => {
     const tdropAddress = TDropAddressByChainId[chainId];
     let TNT20Assets = [];

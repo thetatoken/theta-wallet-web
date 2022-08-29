@@ -16,6 +16,26 @@ class WalletTokenList extends React.Component {
         }))
     }
 
+    onWrapTHETAClick = () => {
+        console.log('onWrapTHETAClick!!!!!!');
+
+        store.dispatch(showModal({
+            type: ModalTypes.CREATE_TRANSACTION,
+            props: {
+                transactionType: 'wrap-theta'
+            }
+        }));
+    }
+
+    onUnwrapWTHETAClick = () => {
+        store.dispatch(showModal({
+            type: ModalTypes.CREATE_TRANSACTION,
+            props: {
+                transactionType: 'unwrap-theta'
+            }
+        }));
+    }
+
     render() {
         const {selectedAccount, tokens, assets, balancesRefreshedAt} = this.props;
 
@@ -31,6 +51,8 @@ class WalletTokenList extends React.Component {
                             <WalletTokenListItem key={asset.id}
                                                  token={asset}
                                                  balance={formatTNT20TokenAmountToLargestUnit(balanceStr, decimals)}
+                                                 onWrap={(asset.id === 'theta') && this.onWrapTHETAClick}
+                                                 onUnwrap={(asset.id === '0x119134418c03e4d469b45259e74c2848a19b6509') && this.onUnwrapWTHETAClick}
                             />
                         )
                     })

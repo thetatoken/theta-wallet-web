@@ -12,6 +12,7 @@ import {updateAccountBalances} from "../state/actions/Wallet";
 import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import DelegateVoteTxForm from "../components/transactions/DelegateVoteTxForm";
+import WrapThetaTxForm from "../components/transactions/WrapThetaTxForm";
 
 export class CreateTransactionModal extends React.Component {
     constructor() {
@@ -93,6 +94,14 @@ export class CreateTransactionModal extends React.Component {
                                         selectedAccount={selectedAccount}
                                         chainId={chainId}
                                         onSubmit={this.onSubmit}/>
+                }
+                {
+                    (transactionType === 'wrap-theta') &&
+                    <WrapThetaTxForm formRef={this.formRef}
+                                     selectedAccount={selectedAccount}
+                                     assets={assets}
+                                     chainId={chainId}
+                                     onSubmit={this.onSubmit}/>
                 }
                 <div className={'CreateTransactionModal__footer'}>
                     <GradientButton onClick={this.onNextClick}

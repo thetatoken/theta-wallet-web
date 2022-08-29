@@ -3,10 +3,12 @@ import React from "react";
 import './WalletTokenListItem.css';
 import {NavLink} from 'react-router-dom'
 import {Jazzicon} from "@ukstv/jazzicon-react";
+import GhostButton from "./buttons/GhostButton";
+import FlatButton from "./buttons/FlatButton";
 
 class WalletTokenListItem extends React.Component {
     render() {
-        const {token, balance} = this.props;
+        const {token, balance, onWrap, onUnwrap} = this.props;
         let balanceStr = balance || "-";
 
         return (
@@ -31,6 +33,23 @@ class WalletTokenListItem extends React.Component {
                     <div className="Balance__amount">
                         {balanceStr}
                     </div>
+                </div>
+                <div className="WalletTokenListItem__button-container">
+                    {
+                        onWrap &&
+                        <FlatButton title={'Wrap'}
+                                    size={'xsmall'}
+                                    onClick={onWrap}
+                        />
+                    }
+                    {
+                        onUnwrap &&
+                        <FlatButton title={'Unwrap'}
+                                    size={'xsmall'}
+                                    onClick={onUnwrap}
+                        />
+                    }
+
                 </div>
             </NavLink>
         );

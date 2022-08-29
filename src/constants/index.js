@@ -17,6 +17,10 @@ export const TDropAddressByChainId = {
     [thetajs.networks.ChainIds.Testnet]: '0x08a0c0e8EFd07A98db11d79165063B6Bc2469ADF',
 };
 
+export const WThetaAddressByChainId = {
+    [thetajs.networks.ChainIds.Privatenet]: '0x119134418c03e4d469b45259e74c2848a19b6509',
+};
+
 export const StakePurposeForTDROP = 1000;
 
 export const Urls = {
