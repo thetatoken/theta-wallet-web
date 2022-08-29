@@ -72,6 +72,7 @@ export class TrackTokenModal extends React.Component {
             address: _.trim(address),
             tokenId: _.trim(tokenId)
         }));
+        }
     }
 
     render() {

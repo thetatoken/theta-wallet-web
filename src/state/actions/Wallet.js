@@ -200,6 +200,7 @@ export function addCollectible(collectibleData) {
         }
         catch (error) {
             dispatch(hideLoader());
+            Alerts.showError(error.message);
             return false;
         }
     };
