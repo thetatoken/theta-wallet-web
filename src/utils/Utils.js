@@ -357,6 +357,14 @@ export const formDataToTransaction = async (transactionType, txFormData, thetaWa
 
         return tx;
     }
+    else if(transactionType === 'unwrap-theta'){
+        const {amount} = txFormData;
+        const wThetaAddress = WThetaAddressByChainId[chainId];
+        const wThetaContract = new thetajs.Contract(wThetaAddress, WThetaABI, null);
+        const tx = await wThetaContract.populateTransaction.withdraw(thetajs.utils.toWei(amount));
+
+        return tx;
+    }
 };
 
 export const transactionTypeToName = (txType) => {

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import * as thetajs from '@thetalabs/theta-js';
-import {TDropAddressByChainId} from './index';
+import {TDropAddressByChainId, WThetaAddressByChainId} from './index';
 
 const {tokensByChainId} = require('@thetalabs/tnt20-contract-metadata');
 
@@ -58,7 +58,7 @@ const TDropAsset = (chainId) => {
 };
 
 const WThetaAsset = (chainId) => {
-    const address = TDropAddressByChainId[chainId];
+    const address = WThetaAddressByChainId[chainId];
     let TNT20Asset = null;
 
     if(address){
@@ -119,6 +119,7 @@ export {
     ThetaAsset,
     TFuelAsset,
     TDropAsset,
+    WThetaAsset,
 
     tokenToAsset,
 

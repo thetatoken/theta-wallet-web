@@ -2,13 +2,13 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import FormField from '../../components/FormField';
 import {
-    isValidAmount, toNativeTokenLargestUnit
+    isValidAmount, toTNT20TokenLargestUnit
 } from '../../utils/Utils';
 import FlatButton from "../buttons/FlatButton";
-import {ThetaAsset} from "../../constants/assets";
+import {WThetaAsset} from "../../constants/assets";
 
-export default function WrapThetaTxForm(props){
-    const {onSubmit, defaultValues, selectedAccount, formRef, assets} = props;
+export default function UnwrapThetaTxForm(props){
+    const {onSubmit, defaultValues, selectedAccount, formRef, assets, chainId} = props;
     const {register, handleSubmit, errors, watch, setValue} = useForm({
         mode: 'onChange',
         defaultValues: defaultValues || {
@@ -16,7 +16,9 @@ export default function WrapThetaTxForm(props){
         }
     });
     const populateMaxAmount = () => {
-        let amount = toNativeTokenLargestUnit(selectedAccount.balances['thetawei']).toString(10);
+        const asset = WThetaAsset(chainId);
+        const balance = selectedAccount.balances[asset.address] || '0';
+        let amount = toTNT20TokenLargestUnit(balance, asset.decimals).toString(10);
 
         setValue('amount', amount);
     }
@@ -41,7 +43,8 @@ export default function WrapThetaTxForm(props){
                                },
                                validate: {
                                    sufficientBalance: (s) => {
-                                       const isValid = isValidAmount(selectedAccount, ThetaAsset, s);
+                                       const asset = WThetaAsset(chainId);
+                                       const isValid = isValidAmount(selectedAccount, asset, s);
 
                                        return isValid ? true : 'Insufficient balance';
                                    },
