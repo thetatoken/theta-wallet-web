@@ -65,7 +65,7 @@ const WThetaAsset = (chainId) => {
         TNT20Asset = {
             id: address,
             name: 'wTHETA',
-            symbol: 'WTHETA',
+            symbol: 'wTHETA',
             contractAddress: address,
             address: address,
             decimals: 18,
@@ -78,25 +78,30 @@ const WThetaAsset = (chainId) => {
 };
 
 const DefaultAssets = (chainId) => {
-    const tdropAddress = TDropAddressByChainId[chainId];
     let TNT20Assets = [];
     let tdropAsset = TDropAsset(chainId);
+    let wThetaAsset = WThetaAsset(chainId);
 
-    if(tdropAddress){
+    if(tdropAsset){
         TNT20Assets.push(tdropAsset);
+    }
+    if(wThetaAsset){
+        TNT20Assets.push(wThetaAsset);
     }
 
     return _.concat(NativeAssets, TNT20Assets);
 };
 
 const getAllAssets = (chainId, tokens) => {
-    const tdropAddress = TDropAddressByChainId[chainId];
+    const tdropAddress = TDropAddressByChainId[chainId]?.toLowerCase();
+    const wThetaAddress = WThetaAddressByChainId[chainId]?.toLowerCase();
     const tokenAssets = tokens.map(tokenToAsset);
-    const tokenAssetsWithoutTdrop = _.filter(tokenAssets, (asset) => {
-        return asset.contractAddress?.toLowerCase() !== tdropAddress?.toLowerCase();
+    const tokenAssetsWithoutDefaultTNT20s = _.filter(tokenAssets, (asset) => {
+        const address = asset.contractAddress?.toLowerCase();
+        return (address !== tdropAddress && address !== wThetaAddress);
     });
 
-    return _.concat(DefaultAssets(chainId), tokenAssetsWithoutTdrop);
+    return _.concat(DefaultAssets(chainId), tokenAssetsWithoutDefaultTNT20s);
 };
 
 const tokenToAsset = (token) => {
