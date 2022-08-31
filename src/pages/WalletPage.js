@@ -87,10 +87,6 @@ export class WalletPage extends React.Component {
 
     render() {
         const { selectedAccount, assets, tokens, isFetchingBalances, balancesRefreshedAt, transactions, isLoadingTransactions } = this.props;
-        console.log('assets == ');
-        console.log(assets);
-        console.log('tokens == ');
-        console.log(tokens);
 
         return (
             <div className="WalletPage">

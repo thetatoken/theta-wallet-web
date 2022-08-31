@@ -17,8 +17,6 @@ class WalletTokenList extends React.Component {
     }
 
     onWrapTHETAClick = () => {
-        console.log('onWrapTHETAClick!!!!!!');
-
         store.dispatch(showModal({
             type: ModalTypes.CREATE_TRANSACTION,
             props: {
