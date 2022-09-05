@@ -6,7 +6,7 @@
     "@ledgerhq/hw-app-eth": "^4.72.1",
     "@ledgerhq/hw-transport-u2f": "^4.72.1",
     "@ledgerhq/hw-transport-webusb": "^6.2.0",
-    "@thetalabs/theta-js": "^0.0.68",
+    "@thetalabs/theta-js": "^0.0.69",
     "@thetalabs/tnt20-contract-metadata": "^1.0.2",
     "@ukstv/jazzicon-react": "^1.0.0",
     "await-timeout": "^0.3.0",
