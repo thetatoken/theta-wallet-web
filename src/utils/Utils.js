@@ -278,7 +278,7 @@ export const formDataToTransaction = async (transactionType, txFormData, thetaWa
         else{
             const txData = {
                 holder: holder,
-                purpose: purpose
+                purpose: purposeInt
             };
 
             return new thetajs.transactions.WithdrawStakeTransaction(txData);
