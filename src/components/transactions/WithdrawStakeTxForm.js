@@ -64,7 +64,7 @@ export default function WithdrawStakeTxForm(props){
                             value={thetajs.constants.StakePurpose.StakeForValidator}>
                         Validator Node
                     </option>
-                    <option key={'validator'}
+                    <option key={'een'}
                             value={thetajs.constants.StakePurpose.StakeForEliteEdge}>
                         Edge Node
                     </option>
