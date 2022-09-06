@@ -18,6 +18,7 @@ export const TDropAddressByChainId = {
 };
 
 export const WThetaAddressByChainId = {
+    [thetajs.networks.ChainIds.Testnet]: '0x90e6ca1087a2340da858069cb8d78d595e4ac798',
     [thetajs.networks.ChainIds.Privatenet]: '0x119134418c03e4d469b45259e74c2848a19b6509',
 };
 
