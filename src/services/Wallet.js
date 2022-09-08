@@ -4,7 +4,7 @@ import _ from "lodash";
 import Ethereum from './Ethereum'
 import Theta from "./Theta";
 import Api from './Api';
-import TrezorConnect from 'trezor-connect';
+import TrezorConnect from '@trezor/connect-web';
 import Trezor from './Trezor';
 import Ledger from './Ledger';
 import Eth from "@ledgerhq/hw-app-eth";

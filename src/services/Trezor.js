@@ -1,5 +1,5 @@
 import ThetaJS from '../libs/thetajs.esm';
-import TrezorConnect from 'trezor-connect';
+import TrezorConnect from '@trezor/connect-web';
 import Web3 from 'web3';
 import Wallet from './Wallet'
 import Theta from "./Theta.js"

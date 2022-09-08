@@ -3,7 +3,7 @@ import Trezor from "../../services/Trezor";
 const { EventEmitter } = require('events')
 const ethUtil = require('ethereumjs-util')
 const HDKey = require('hdkey')
-const TrezorConnect = require('trezor-connect').default
+const TrezorConnect = require('@trezor/connect-web').default
 const hdPathString = `m/44'/60'/0'/0`
 const keyringType = 'Trezor Hardware'
 const pathBase = 'm'
