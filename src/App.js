@@ -83,8 +83,8 @@ class WalletTabBar extends Component {
                 <TabBarItem
                     title="Collectibles"
                     onClick={this.onCollectiblesClick}
-                    normalIconUrl="/img/tab-bar/stakes@2x.png"
-                    activeIconUrl="/img/tab-bar/stakes-active@2x.png"
+                    normalIconUrl="/img/tab-bar/collectibles@2x.png"
+                    activeIconUrl="/img/tab-bar/collectibles-active@2x.png"
                 />
                 {
                     areSmartContractsAvailable() &&

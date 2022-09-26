@@ -57,6 +57,19 @@
 }
 
 
+.CollectibleItemMenu{
+  background-color: darken($background-color, 5);
+  padding: 6px;
+  width: calc(200px - 15px);
+
+  .FlatButton{
+    margin-bottom: 10px;
+
+    &:last-of-type{
+      margin-bottom: 0;
+    }
+  }
+}
 
 
 

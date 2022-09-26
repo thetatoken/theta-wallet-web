@@ -444,6 +444,9 @@ export default class PreferencesController  extends EventEmitter {
      */
     async isCollectibleOwner(ownerAddress, collectibleAddress, collectibleId) {
         // Checks the ownership for ERC-721.
+        console.log('isCollectibleOwner :: ownerAddress == ' + ownerAddress);
+        console.log('isCollectibleOwner :: collectibleAddress == ' + collectibleAddress);
+        console.log('isCollectibleOwner :: collectibleId == ' + collectibleId);
         try {
             const owner = await this.getERC721OwnerOf(
                 collectibleAddress,
@@ -664,6 +667,47 @@ export default class PreferencesController  extends EventEmitter {
      *
      * @param address - Hex address of the collectible contract.
      * @param tokenId - The collectible identifier.
+     * @param isOwner - If the user owns this NFT
+     * @returns Promise resolving to the current collectible list.
+     */
+    async updateIndividualCollectible(address, tokenId, isOwner) {
+        try {
+            const {allCollectibles, selectedAddress, network} = this.store.getState();
+            const chainId = network.chainId;
+
+            const collectibles = allCollectibles[selectedAddress]?.[chainId] || [];
+
+            const newCollectibles = _.map(collectibles, ((collectible) => {
+                if(collectible.address.toLowerCase() === address.toLowerCase()
+                    && collectible.tokenId === tokenId){
+                    return Object.assign({}, collectible, {
+                        isCurrentlyOwned: isOwner
+                    });
+                }
+                else{
+                    return collectible
+                }
+            }));
+            this.updateNestedCollectibleState(
+                newCollectibles,
+                ALL_COLLECTIBLES_STATE_KEY
+            );
+
+            return newCollectibles;
+        }
+        catch (e){
+            console.log('updateIndividualCollectible :: error == ');
+            console.log(e);
+
+            throw e;
+        }
+    }
+
+    /**
+     * Adds an individual collectible to the stored collectible list.
+     *
+     * @param address - Hex address of the collectible contract.
+     * @param tokenId - The collectible identifier.
      * @param collectibleMetadata - Collectible optional information (name, image and description).
      * @param collectibleContract - An object containing contract data of the collectible being added.
      * @returns Promise resolving to the current collectible list.
@@ -699,10 +743,7 @@ export default class PreferencesController  extends EventEmitter {
                 }
             }
 
-            // TODO actually check if it is owned by this address?
             const isOwner = await this.isCollectibleOwner(selectedAddress, address, tokenId);
-            console.log('isOwner == ');
-            console.log(isOwner);
 
             if(!isOwner){
                 throw new Error('You do not own this NFT.');
@@ -767,6 +808,26 @@ export default class PreferencesController  extends EventEmitter {
     }
 
     /**
+     * Adds a collectible and respective collectible contract to the stored collectible and collectible contracts lists.
+     *
+     * @param address - Hex address of the collectible contract.
+     * @param tokenId - The collectible identifier.
+     * @returns Promise resolving to the current collectible list.
+     */
+    async addCollectibles(address) {
+        const provider = this._getProvider();
+        const selectedAddress = this.getSelectedAddress();
+        const contract = new thetajs.Contract(address, TNT721ABI, provider);
+        const balance = await contract.balanceOf(selectedAddress);
+
+        for(let idx = 0; idx < balance.toNumber(); idx++){
+            const tokenId = await contract.tokenOfOwnerByIndex(selectedAddress, idx);
+            const tokenIdStr = tokenId.toString();
+            await this.addCollectible(address, tokenIdStr);
+        }
+    }
+
+    /**
      * Removes an individual collectible to the stored collectible list.
      *
      * @param address - Hex address of the collectible contract.
@@ -779,8 +840,10 @@ export default class PreferencesController  extends EventEmitter {
             const chainId = network.chainId;
 
             const collectibles = allCollectibles[selectedAddress]?.[chainId] || [];
-            const newCollectibles = _.remove(collectibles, ((collectible) => collectible.address.toLowerCase() === address.toLowerCase()
-                && collectible.tokenId === tokenId));
+            const newCollectibles = _.filter(collectibles, ((collectible) => {
+                return !(collectible.address.toLowerCase() === address.toLowerCase()
+                    && collectible.tokenId === tokenId);
+            }));
 
             this.updateNestedCollectibleState(
                 newCollectibles,
@@ -815,13 +878,33 @@ export default class PreferencesController  extends EventEmitter {
             tokenId);
     }
 
+    async refreshCollectiblesOwnership(collectionAddress = null, tokenId = null){
+        const { collectibleContracts, collectibles } = this._getCollectibleRelatedStates();
+        const collectibleContractsToCheck = (_.isNil(collectionAddress) ? collectibleContracts : _.filter((collectibleContract) => {
+            return (collectibleContract.address.toLowerCase() === collectionAddress.toLowerCase());
+        }, collectibleContracts));
+        const selectedAddress = this.getSelectedAddress();
+
+        for(const collectibleContract of collectibleContractsToCheck){
+            for(const collectible of collectibles){
+                if(collectible.address.toLowerCase() === collectibleContract.address.toLowerCase()){
+                    if(_.isNil(tokenId) || collectible.tokenId === tokenId){
+                        const isOwner = await this.isCollectibleOwner(selectedAddress, collectibleContract.address, collectible.tokenId);
+                        console.log(`collectibleContract.address == ${collectibleContract.address}   collectible.address == ${collectible.address}    isOwner == ${isOwner}`);
+                        await this.updateIndividualCollectible(collectibleContract.address, collectibleContract.tokenId, isOwner);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * A getter for the `collectibles` property
      *
      * @returns {Array} The current array of AddedCollectible objects
      *
      */
-    getTokens() {
+    getCollectibles() {
         return this.store.getState().collectibles;
     }
 

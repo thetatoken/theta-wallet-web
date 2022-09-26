@@ -203,7 +203,9 @@ export default class ThetaWalletController extends EventEmitter {
             removeToken: this._removeToken.bind(this),
 
             // Collectibles
+            refreshCollectiblesOwnership: this._refreshCollectiblesOwnership.bind(this),
             addCollectible: this._addCollectible.bind(this),
+            addCollectibles: this._addCollectibles.bind(this),
             removeCollectible: this._removeCollectible.bind(this),
 
             // Preferences
@@ -287,13 +289,27 @@ export default class ThetaWalletController extends EventEmitter {
         return result;
     }
 
+    async _refreshCollectiblesOwnership(args){
+        const {address, tokenId} = args;
+
+        const result = await this.preferencesController.refreshCollectiblesOwnership(address, tokenId);
+
+        return result;
+    }
+
     async _addCollectible(args) {
         const {collectible} = args;
         const {address, tokenId} = collectible;
 
         const result = await this.preferencesController.addCollectible(address, tokenId);
-        console.log('_addCollectible :: result == ');
-        console.log(result);
+
+        return result;
+    }
+
+    async _addCollectibles(args) {
+        const {address} = args;
+
+        const result = await this.preferencesController.addCollectibles(address);
 
         return result;
     }

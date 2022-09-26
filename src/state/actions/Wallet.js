@@ -183,6 +183,28 @@ export function removeToken(address) {
 // Collectibles
 //
 
+export function refreshCollectiblesOwnership(args) {
+    return async (dispatch) => {
+        try {
+            dispatch(showLoader());
+
+            const result = await Wallet.controller.RPCApi.refreshCollectiblesOwnership({
+                address: args.address,
+                tokenId: args.tokenId
+            });
+
+            dispatch(hideLoader());
+
+            return result;
+        }
+        catch (error) {
+            dispatch(hideLoader());
+            Alerts.showError(error.message);
+            return false;
+        }
+    };
+}
+
 export function addCollectible(collectibleData) {
     return async (dispatch) => {
         try {
@@ -190,6 +212,29 @@ export function addCollectible(collectibleData) {
 
             const result = await Wallet.controller.RPCApi.addCollectible({
                 collectible: collectibleData
+            });
+
+            dispatch(hideModal());
+
+            dispatch(hideLoader());
+
+            return result;
+        }
+        catch (error) {
+            dispatch(hideLoader());
+            Alerts.showError(error.message);
+            return false;
+        }
+    };
+}
+
+export function addCollectibles(collectibleData) {
+    return async (dispatch) => {
+        try {
+            dispatch(showLoader());
+
+            const result = await Wallet.controller.RPCApi.addCollectibles({
+                address: collectibleData.address
             });
 
             dispatch(hideModal());
