@@ -105,7 +105,7 @@ export class CollectiblesModal extends React.Component {
             <div className={'CollectiblesModal'}>
                 <div className="ModalHeader">
                     <div>
-                        <FlatButton title={'Import NFT'}
+                        <FlatButton title={'Track NFT'}
                                     size={'small'}
                                     onClick={() => {
                                         store.dispatch(showModal({
