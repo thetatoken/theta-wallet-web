@@ -15,7 +15,7 @@ export default function SendCollectibleTxForm(props){
     });
 
     return (
-        <form className={'TxForm TxForm--Send-Collectible'}
+        <form className={'TxForm TxForm--Send-NFT'}
               onSubmit={handleSubmit(onSubmit)}
               ref={formRef}
         >

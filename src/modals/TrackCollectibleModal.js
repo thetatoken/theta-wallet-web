@@ -23,7 +23,7 @@ function TrackCollectibleForm(props){
               onSubmit={handleSubmit(onSubmit)}
               ref={formRef}
         >
-            <FormField title={'Collectible Contract Address'}
+            <FormField title={'NFT Contract Address'}
                        error={errors.address && 'A valid contract address is required'}
             >
                 <input name="address"

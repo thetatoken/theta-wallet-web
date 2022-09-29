@@ -29,7 +29,7 @@ class CollectibleItemMenu extends React.Component {
                                  store.dispatch(showModal({
                                      type: ModalTypes.CREATE_TRANSACTION,
                                      props: {
-                                         transactionType: 'send-collectible',
+                                         transactionType: 'send-nft',
                                          collectible: collectible
                                      }
                                  }));
@@ -114,7 +114,7 @@ export class CollectiblesModal extends React.Component {
                                     }}
                         />
                     </div>
-                    <div className={'ModalTitle'}>Collectibles</div>
+                    <div className={'ModalTitle'}>NFTs</div>
                     <div/>
                 </div>
 

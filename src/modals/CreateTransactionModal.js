@@ -71,7 +71,7 @@ export class CreateTransactionModal extends React.Component {
                                 onSubmit={this.onSubmit}/>
                 }
                 {
-                    (transactionType === 'send-collectible') &&
+                    (transactionType === 'send-nft') &&
                     <SendCollectibleTxForm formRef={this.formRef}
                                            selectedAccount={selectedAccount}
                                            collectible={collectible}

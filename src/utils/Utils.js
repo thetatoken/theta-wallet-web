@@ -259,7 +259,7 @@ export const formDataToTransaction = async (transactionType, txFormData, thetaWa
             return new thetajs.transactions.SendTransaction(txData);
         }
     }
-    else if (transactionType === 'send-collectible') {
+    else if (transactionType === 'send-nft') {
         const {to, collectible} = txFormData;
         const {address, tokenId} = collectible;
 

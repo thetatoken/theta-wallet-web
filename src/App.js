@@ -81,7 +81,7 @@ class WalletTabBar extends Component {
                     />
                 }
                 <TabBarItem
-                    title="Collectibles"
+                    title="NFTs"
                     onClick={this.onCollectiblesClick}
                     normalIconUrl="/img/tab-bar/collectibles@2x.png"
                     activeIconUrl="/img/tab-bar/collectibles-active@2x.png"
