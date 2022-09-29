@@ -27,6 +27,7 @@ export default class TransactionsController extends EventEmitter{
         this._getProvider = opts.getProvider;
 
         this._updateAccounts = opts.updateAccounts;
+        this._detectNewTokens = opts.detectNewTokens;
 
         this.pendingTransactionRequests = new Map();
     }
@@ -142,6 +143,10 @@ export default class TransactionsController extends EventEmitter{
 
             // Refresh balances because we just sent a tx
             this._updateAccounts();
+            setTimeout(async () => {
+                await this._detectNewTokens();
+                this._updateAccounts();
+            }, 2000);
 
             approval.resolve(result);
 

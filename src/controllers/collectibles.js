@@ -143,6 +143,10 @@ export default class CollectiblesController extends EventEmitter{
             // Refresh balances because we just sent a tx
             this._updateAccounts();
 
+            setTimeout(() => {
+                this._updateAccounts();
+            }, 6000);
+
             approval.resolve(result);
 
             return result;

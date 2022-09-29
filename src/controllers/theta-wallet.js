@@ -41,9 +41,10 @@ export default class ThetaWalletController extends EventEmitter {
             this.setProvider(newProvider);
 
             if(selectedAddress) {
+                this.accountManager.detectNewTokens();
                 this.accountManager.updateAccounts();
                 this.accountManager.updateAccountStakes(selectedAddress);
-                this.accountManager.detectNewTokens();
+
 
                 this.transactionsController.updateAccountTransactions(selectedAddress);
             }
@@ -87,7 +88,8 @@ export default class ThetaWalletController extends EventEmitter {
 
             signAndSendTransaction: this.keyringController.signAndSendTransaction.bind(this.keyringController),
 
-            updateAccounts: this.accountManager.updateAccounts.bind(this.accountManager)
+            updateAccounts: this.accountManager.updateAccounts.bind(this.accountManager),
+            detectNewTokens: this.accountManager.detectNewTokens.bind(this.accountManager)
         });
 
         this.store.updateStructure({

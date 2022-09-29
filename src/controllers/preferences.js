@@ -472,16 +472,15 @@ export default class PreferencesController  extends EventEmitter {
             const contract = new thetajs.Contract(contractAddress, TNT721ABI, provider);
             const contractURI = await contract.contractURI();
             const response = await fetch(contractURI);
-            const {name, description, image, external_url} = await response.json();
+            const {name, image, external_url} = await response.json();
 
             return {
                 address: contractAddress,
                 name: name,
                 image: image,
                 asset_contract_type: ERC721,
-                description: description,
                 external_link: external_url,
-                collection: { name: name, description: description, image_url: image },
+                collection: { name: name, image_url: image },
             };
         }
         catch (e){
@@ -511,11 +510,10 @@ export default class PreferencesController  extends EventEmitter {
     async addCollectibleContract(rawAddress) {
         const address = rawAddress;
         const contractInformation = await this.getCollectibleContractInformationFromContract(address);
-        const {asset_contract_type, name, description, image, external_link} = contractInformation;
+        const {asset_contract_type, name, image, external_link} = contractInformation;
         const newEntry = Object.assign(
             {},
             { address },
-            description && { description },
             name && { name },
             image && { image: image },
             asset_contract_type && { assetContractType: asset_contract_type },
