@@ -4,8 +4,13 @@ import BigNumber from 'bignumber.js';
 import {Ten18} from '@thetalabs/theta-js/src/constants';
 import {DefaultAssets, getAllAssets, tokenToAsset} from "../constants/assets";
 import * as thetajs from "@thetalabs/theta-js";
-import {TDropStakingABI, TNT20ABI, TNT721ABI} from "../constants/contracts";
-import {StakePurposeForTDROP, TDropAddressByChainId, TDropStakingAddressByChainId} from "../constants";
+import {TDropStakingABI, TNT20ABI, TNT721ABI, WThetaABI} from "../constants/contracts";
+import {
+    StakePurposeForTDROP,
+    TDropAddressByChainId,
+    TDropStakingAddressByChainId,
+    WThetaAddressByChainId
+} from "../constants";
 
 
 /**
@@ -350,6 +355,24 @@ export const formDataToTransaction = async (transactionType, txFormData, thetaWa
         const delegateTx = await tdropStakingContract.populateTransaction.delegate(address);
 
         return delegateTx;
+    }
+    else if(transactionType === 'wrap-theta'){
+        const {amount} = txFormData;
+        const wThetaAddress = WThetaAddressByChainId[chainId];
+        const wThetaContract = new thetajs.Contract(wThetaAddress, WThetaABI, null);
+        const tx = await wThetaContract.populateTransaction.deposit({
+            thetaValue: thetajs.utils.toWei(amount)
+        });
+
+        return tx;
+    }
+    else if(transactionType === 'unwrap-theta'){
+        const {amount} = txFormData;
+        const wThetaAddress = WThetaAddressByChainId[chainId];
+        const wThetaContract = new thetajs.Contract(wThetaAddress, WThetaABI, null);
+        const tx = await wThetaContract.populateTransaction.withdraw(thetajs.utils.toWei(amount));
+
+        return tx;
     }
 };
 

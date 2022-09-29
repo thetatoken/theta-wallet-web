@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import * as thetajs from '@thetalabs/theta-js';
-import {TDropAddressByChainId} from './index';
+import {TDropAddressByChainId, WThetaAddressByChainId} from './index';
 
 const {tokensByChainId} = require('@thetalabs/tnt20-contract-metadata');
 
@@ -62,26 +62,51 @@ const TDropAsset = (chainId) => {
     return TNT20Asset;
 };
 
+const WThetaAsset = (chainId) => {
+    const address = WThetaAddressByChainId[chainId];
+    let TNT20Asset = null;
+
+    if(address){
+        TNT20Asset = {
+            id: address,
+            name: 'wTHETA',
+            symbol: 'wTHETA',
+            contractAddress: address,
+            address: address,
+            decimals: 18,
+            iconUrl: getTokenIconUrl(_.get(tokensByChainId, [chainId, address, 'logo'])),
+            balanceKey: address
+        };
+    }
+
+    return TNT20Asset;
+};
+
 const DefaultAssets = (chainId) => {
-    const tdropAddress = TDropAddressByChainId[chainId];
     let TNT20Assets = [];
     let tdropAsset = TDropAsset(chainId);
+    let wThetaAsset = WThetaAsset(chainId);
 
-    if(tdropAddress){
+    if(tdropAsset){
         TNT20Assets.push(tdropAsset);
+    }
+    if(wThetaAsset){
+        TNT20Assets.push(wThetaAsset);
     }
 
     return _.concat(NativeAssets, TNT20Assets);
 };
 
 const getAllAssets = (chainId, tokens) => {
-    const tdropAddress = TDropAddressByChainId[chainId];
+    const tdropAddress = TDropAddressByChainId[chainId]?.toLowerCase();
+    const wThetaAddress = WThetaAddressByChainId[chainId]?.toLowerCase();
     const tokenAssets = tokens.map(tokenToAsset);
-    const tokenAssetsWithoutTdrop = _.filter(tokenAssets, (asset) => {
-        return asset.contractAddress?.toLowerCase() !== tdropAddress?.toLowerCase();
+    const tokenAssetsWithoutDefaultTNT20s = _.filter(tokenAssets, (asset) => {
+        const address = asset.contractAddress?.toLowerCase();
+        return (address !== tdropAddress && address !== wThetaAddress);
     });
 
-    return _.concat(DefaultAssets(chainId), tokenAssetsWithoutTdrop);
+    return _.concat(DefaultAssets(chainId), tokenAssetsWithoutDefaultTNT20s);
 };
 
 const tokenToAsset = (token) => {
@@ -104,6 +129,7 @@ export {
     ThetaAsset,
     TFuelAsset,
     TDropAsset,
+    WThetaAsset,
 
     tokenToAsset,
 

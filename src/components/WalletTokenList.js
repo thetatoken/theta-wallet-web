@@ -8,6 +8,7 @@ import {formatNativeTokenAmountToLargestUnit, formatTNT20TokenAmountToLargestUni
 import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import {store} from "../state";
+import {WThetaAsset} from "../constants/assets";
 
 class WalletTokenList extends React.Component {
     onAddTokenClick = () => {
@@ -16,8 +17,27 @@ class WalletTokenList extends React.Component {
         }))
     }
 
+    onWrapTHETAClick = () => {
+        store.dispatch(showModal({
+            type: ModalTypes.CREATE_TRANSACTION,
+            props: {
+                transactionType: 'wrap-theta'
+            }
+        }));
+    }
+
+    onUnwrapWTHETAClick = () => {
+        store.dispatch(showModal({
+            type: ModalTypes.CREATE_TRANSACTION,
+            props: {
+                transactionType: 'unwrap-theta'
+            }
+        }));
+    }
+
     render() {
-        const {selectedAccount, tokens, assets, balancesRefreshedAt} = this.props;
+        const {selectedAccount, tokens, assets, balancesRefreshedAt, chainId} = this.props;
+        const wThetaAsset = WThetaAsset(chainId);
 
         return (
             <div className="WalletTokenList">
@@ -31,6 +51,8 @@ class WalletTokenList extends React.Component {
                             <WalletTokenListItem key={asset.id}
                                                  token={asset}
                                                  balance={formatTNT20TokenAmountToLargestUnit(balanceStr, decimals)}
+                                                 onWrap={(asset.id === 'theta' && !_.isNil(wThetaAsset)) && this.onWrapTHETAClick}
+                                                 onUnwrap={(asset.id === wThetaAsset?.id) && this.onUnwrapWTHETAClick}
                             />
                         )
                     })

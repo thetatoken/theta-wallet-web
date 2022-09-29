@@ -13,6 +13,8 @@ import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import DelegateVoteTxForm from "../components/transactions/DelegateVoteTxForm";
 import SendCollectibleTxForm from "../components/transactions/SendCollectibleTxForm";
+import WrapThetaTxForm from "../components/transactions/WrapThetaTxForm";
+import UnwrapThetaTxForm from "../components/transactions/UnwrapThetaTxForm";
 
 export class CreateTransactionModal extends React.Component {
     constructor() {
@@ -105,6 +107,22 @@ export class CreateTransactionModal extends React.Component {
                                         selectedAccount={selectedAccount}
                                         chainId={chainId}
                                         onSubmit={this.onSubmit}/>
+                }
+                {
+                    (transactionType === 'wrap-theta') &&
+                    <WrapThetaTxForm formRef={this.formRef}
+                                     selectedAccount={selectedAccount}
+                                     assets={assets}
+                                     chainId={chainId}
+                                     onSubmit={this.onSubmit}/>
+                }
+                {
+                    (transactionType === 'unwrap-theta') &&
+                    <UnwrapThetaTxForm formRef={this.formRef}
+                                       selectedAccount={selectedAccount}
+                                       assets={assets}
+                                       chainId={chainId}
+                                       onSubmit={this.onSubmit}/>
                 }
                 <div className={'CreateTransactionModal__footer'}>
                     <GradientButton onClick={this.onNextClick}

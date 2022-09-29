@@ -86,7 +86,7 @@ export class WalletPage extends React.Component {
     }
 
     render() {
-        const { selectedAccount, assets, tokens, isFetchingBalances, balancesRefreshedAt, transactions, isLoadingTransactions } = this.props;
+        const { selectedAccount, assets, tokens, isFetchingBalances, balancesRefreshedAt, transactions, isLoadingTransactions, chainId } = this.props;
 
         return (
             <div className="WalletPage">
@@ -102,6 +102,7 @@ export class WalletPage extends React.Component {
                                      tokens={tokens}
                                      assets={assets}
                                      balancesRefreshedAt={balancesRefreshedAt}
+                                     chainId={chainId}
                     />
                 </div>
                 <div className="WalletPage__detail-view">
@@ -154,6 +155,8 @@ const mapStateToProps = (state, ownProps) => {
     const transactions = _.get(thetaWallet, ['transactions', selectedAddress], []);
 
     return {
+        chainId: chainId,
+
         selectedAddress: selectedAddress,
         selectedIdentity: identities[selectedAddress],
         selectedAccount: accounts[selectedAddress],
