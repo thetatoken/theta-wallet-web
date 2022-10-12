@@ -7,7 +7,12 @@ import PageHeader from '../components/PageHeader'
 import TransactionList from '../components/TransactionList'
 import {fetchWalletBalances} from "../state/actions/Wallet";
 import {fetchThetaTransactions} from "../state/actions/Transactions";
-import {getERC20Transactions, getEthereumTransactions, getThetaNetworkTransactions} from "../state/selectors/Transactions";
+import {
+    getERC20Transactions,
+    getEthereumTransactions,
+    getThetaNetworkTransactions,
+    transformThetaNetworkTransaction
+} from "../state/selectors/Transactions";
 import EmptyState from "../components/EmptyState";
 import TokenTypes from "../constants/TokenTypes";
 import MDSpinner from "react-md-spinner";
@@ -164,7 +169,9 @@ const mapStateToProps = (state, ownProps) => {
         tokens: tokens,
         assets: getAllAssets(chainId, tokens),
 
-        transactions: transactions,
+        transactions: _.map(transactions, (tx) => {
+            return transformThetaNetworkTransaction(selectedAddress, tx);
+        }),
     }
 };
 

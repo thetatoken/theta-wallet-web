@@ -22,7 +22,7 @@ function sortThetaNetworkTransactionOutputs(walletAddress, outputs){
     }]);
 }
 
-function transformThetaNetworkTransaction(walletAddress, transaction) {
+export function transformThetaNetworkTransaction(walletAddress, transaction) {
     let {outputs} = transaction;
     outputs = sortThetaNetworkTransactionOutputs(walletAddress, outputs);
 
@@ -38,7 +38,7 @@ function transformThetaNetworkTransaction(walletAddress, transaction) {
     address = output['address'];
 
     return Object.assign({}, transaction, {
-        bound: (walletAddress === address ? "inbound" : "outbound"),
+        bound: (_.isEqual(walletAddress.toLowerCase(), address.toLowerCase()) ? "inbound" : "outbound"),
         outputs: outputs
     });
 }
