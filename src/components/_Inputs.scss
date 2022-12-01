@@ -39,6 +39,11 @@
 }
 
 
+.RoundedInput:disabled{
+  cursor: not-allowed;
+  color: transparentize(white, 0.5)
+}
+
 .BottomBorderInput{
   height: 34px;
   border: none;

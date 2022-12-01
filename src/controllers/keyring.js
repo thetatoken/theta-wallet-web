@@ -165,10 +165,10 @@ export default class KeyringController extends EventEmitter {
             });
     }
 
-    signAndSendTransaction(fromAddress, transaction, networkChainId) {
+    signAndSendTransaction(fromAddress, transaction, provider) {
         return this._getKeyringForAccount(fromAddress)
             .then((keyring) => {
-                return keyring.signAndSendTransaction(fromAddress, transaction, networkChainId);
+                return keyring.signAndSendTransaction(fromAddress, transaction, provider);
             });
     }
 

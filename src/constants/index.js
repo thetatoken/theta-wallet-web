@@ -1,11 +1,21 @@
+import _ from 'lodash';
 import * as thetajs from '@thetalabs/theta-js';
-import ThetaJS from "../libs/thetajs.esm";
 
 export const SingleCallTokenBalancesAddressByChainId = {
     [thetajs.networks.ChainIds.Mainnet]: '0xb6ecbc094abd0ff7cf030ec9e81f6ca8045b87f9',
     [thetajs.networks.ChainIds.Testnet]: '0xf0cfe34a7e053520f08bf0a982391810ece9c582',
-    [thetajs.networks.ChainIds.Privatenet]: '0xb19271bf84ddd19fe5e580983414a1840123e871'
+    [thetajs.networks.ChainIds.Privatenet]: '0xb19271bf84ddd19fe5e580983414a1840123e871',
+    // All subchains will use the contact from the genesis
+    'tsub*': '0x29b2440db4A256B0c1E6d3B4CDcaA68E2440A08f'
 };
+
+export function getSingleCallTokenBalancesAddressByChainId(chainId){
+    if(_.startsWith(chainId, 'tsub')){
+        return SingleCallTokenBalancesAddressByChainId['tsub*'];
+    }
+
+    return SingleCallTokenBalancesAddressByChainId[chainId];
+}
 
 export const TDropStakingAddressByChainId = {
     [thetajs.networks.ChainIds.Mainnet]: '0xA89c744Db76266ecA60e2b0F62Afcd1f8581b7ed',

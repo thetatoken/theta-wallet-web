@@ -1,9 +1,13 @@
+import _ from 'lodash';
 import Theta from './services/Theta';
 import Networks, {canViewSmartContracts} from './constants/Networks';
 import ThetaJS from "./libs/thetajs.esm";
+import {getMetachainConfig} from "./constants/Metachain";
 
 export function isStakingAvailable(){
-    return true;
+    const network = Theta.getChainID();
+
+    return !network.startsWith('tsub');
 }
 
 export function canStakeFromHardwareWallet(){
@@ -14,6 +18,13 @@ export function areSmartContractsAvailable(){
     const network = Theta.getChainID();
 
     return canViewSmartContracts(network);
+}
+
+export function areCrossChainTransactionsAvailable(){
+    const network = Theta.getChainID();
+    let config = getMetachainConfig(network);
+
+    return (network.startsWith('tsub') || !_.isNil(config));
 }
 
 export function getMinStakeAmount(purpose){

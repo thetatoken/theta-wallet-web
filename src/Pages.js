@@ -11,6 +11,7 @@ import Wallet from './services/Wallet'
 import OfflinePage from "./pages/OfflinePage";
 import ContractPage from "./pages/ContractPage";
 import ContractModes from "./constants/ContractModes";
+import CrossChainTransferPage from "./pages/CrossChainTransferPage";
 
 export class Pages extends React.Component {
     render() {
@@ -53,6 +54,8 @@ export class WalletPages extends React.Component {
                     <Redirect from='/wallet' to='/wallet/tokens/theta' exact={true}/>
                     <Redirect from='/wallet/tokens' to='/wallet/tokens/theta' exact={true}/>
                     <Route path="/wallet/tokens/:tokenType" component={WalletPage}/>
+
+                    <Route path="/wallet/cross-chain-transfer" component={CrossChainTransferPage}/>
 
                     <Route path="/offline" component={OfflinePage}/>
                 </Switch>

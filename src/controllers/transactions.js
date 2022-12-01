@@ -217,14 +217,16 @@ export default class TransactionsController extends EventEmitter{
         try {
             const network = this.preferencesController.getNetwork();
             const chainId = network.chainId;
-            const explorerUrl = thetajs.networks.getExplorerUrlForChainId(chainId);
+            const explorerUrl = network.explorerUrl || thetajs.networks.getExplorerUrlForChainId(chainId);
             const explorerApiUrl = `${explorerUrl}:8443/api`;
             const listStakesUrl = `${explorerApiUrl}/accounttx/${address}`;
             const response = await fetch(listStakesUrl);
             const responseJson = await response.json();
             txs = _.get(responseJson, ['body'], []);
             txs = _.map(txs, (tx) => {
-                return this._transformTransaction(tx, address);
+                return Object.assign({}, this._transformTransaction(tx, address), {
+                    chainId: chainId
+                });
             });
             txs = _.filter(txs, (tx) => {
                 return !_.isNil(tx);

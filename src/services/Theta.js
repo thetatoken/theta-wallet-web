@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {BigNumber} from 'bignumber.js';
 import Ethereum from "./Ethereum";
 import ThetaJS from '../libs/thetajs.esm';
@@ -6,6 +7,7 @@ import Config from '../Config';
 import RLP from 'eth-lib/lib/rlp';
 import Bytes from 'eth-lib/lib/bytes';
 import {NetworkExplorerUrls} from '../constants/Networks';
+import {store} from "../state";
 
 export default class Theta {
     static _chainId = Config.defaultThetaChainID;
@@ -18,18 +20,24 @@ export default class Theta {
         return this._chainId;
     }
 
-    static getTransactionExplorerUrl(transaction){
-        const chainId = this.getChainID();
-        const urlBase = NetworkExplorerUrls[chainId];
+    static getExplorerUrl(account){
+        const selectedNetwork = _.get(store.getState(), 'thetaWallet.network');
+        const {chainId, explorerUrl} = selectedNetwork;
+        let urlBase = NetworkExplorerUrls[chainId];
 
-        return`${urlBase}/txs/${transaction.hash}`;
+        if(explorerUrl){
+            urlBase = explorerUrl;
+        }
+
+        return urlBase;
+    }
+
+    static getTransactionExplorerUrl(transaction){
+        return`${Theta.getExplorerUrl()}/txs/${transaction.hash}`;
     }
 
     static getAccountExplorerUrl(account){
-        const chainId = this.getChainID();
-        const urlBase = NetworkExplorerUrls[chainId];
-
-        return`${urlBase}/account/${account}`;
+        return`${Theta.getExplorerUrl()}/account/${account}`;
     }
 
     static getTransactionFee(){

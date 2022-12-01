@@ -28,7 +28,7 @@ export class NetworkSelector extends React.Component {
                 />
                 <div className='NetworkSelector__name'>
                     {
-                        selectedNetwork.name
+                        (selectedNetwork.name.includes(' | ') ? selectedNetwork.name : `${selectedNetwork.name}  |  Main Chain`)
                     }
                 </div>
                 <div className='NetworkSelector__arrow'>
@@ -48,7 +48,7 @@ const mapStateToProps = (state, ownProps) => {
     };
 
     return {
-        selectedNetwork: selectedNetwork
+        selectedNetwork: Object.assign({}, selectedNetwork, _.get(state, 'thetaWallet.network'))
     };
 };
 

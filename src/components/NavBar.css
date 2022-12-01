@@ -66,6 +66,14 @@
     transition: opacity, 0.2s, ease-in-out;
 }
 
+.NavBar__settings{
+    color: #8A8FB5;
+    margin-top: 6px;
+    cursor: pointer;
+    transition: opacity, 0.2s, ease-in-out;
+    margin-right: 15px;
+}
+
 .NavBar__network-badge{
     position: relative;
     padding: 0;

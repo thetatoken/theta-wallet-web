@@ -9,6 +9,8 @@ export default class Alerts {
 
     static _show(type, message){
         let reactAlert = Alerts.getRef().current;
+        console.log('reactAlert == ');
+        console.log(reactAlert);
         let showFn = reactAlert[type];
 
         showFn(message);

@@ -269,16 +269,25 @@ export default class PreferencesController  extends EventEmitter {
      * Updates `accountTokens` and `tokens` of current account and network according to it.
      *
      * @param {Array} tokens - Array of tokens to be updated.
+     * @param {Array} assetImages - Array of token images to be updated.
+     * @param {String} [chainId] - (Optional) chainId to update
      *
      */
-    _updateAccountTokens(tokens, assetImages) {
+    _updateAccountTokens(tokens, assetImages, chainId) {
         const {
             accountTokens,
             network,
             selectedAddress,
         } = this._getTokenRelatedStates();
-        accountTokens[selectedAddress][network.chainId] = tokens;
-        this.store.updateState({ accountTokens, tokens, assetImages });
+        const chainIdToUpdate = (chainId || network.chainId);
+        accountTokens[selectedAddress][chainIdToUpdate] = tokens;
+        if(chainId){
+            // Don't update the tokens because it may not be the selected chainId
+            this.store.updateState({ accountTokens, assetImages });
+        }
+        else{
+            this.store.updateState({ accountTokens, tokens, assetImages });
+        }
 
         this.emit('accountTokensUpdated');
     }
@@ -292,14 +301,21 @@ export default class PreferencesController  extends EventEmitter {
      * @param {string} symbol - The symbol of the token
      * @param {number} decimals - The number of decimals the token uses.
      * @param {string} image - The url for the token asset.
+     * @param {string} [chainId] - The chainId to add the token to
      * @returns {Promise<array>} Promises the new array of AddedToken objects.
      *
      */
-    async addToken(rawAddress, symbol, decimals, image) {
+    async addToken(rawAddress, symbol, decimals, image, chainId) {
         const address = rawAddress;
         const newEntry = { address, symbol, decimals };
-        const { tokens } = this.store.getState();
+        let { tokens } = this.store.getState();
+        const { accountTokens, selectedAddress,} = this._getTokenRelatedStates();
         const assetImages = this.getAssetImages();
+
+        if(!_.isNil(chainId)){
+            // We need to grab the chainId's tokens instead of the currently selected chain
+            tokens = accountTokens[selectedAddress][chainId];
+        }
         const previousEntry = tokens.find((token) => {
             return token.address === address;
         });
@@ -311,7 +327,8 @@ export default class PreferencesController  extends EventEmitter {
             tokens.push(newEntry);
         }
         assetImages[address] = image;
-        this._updateAccountTokens(tokens, assetImages);
+
+        this._updateAccountTokens(tokens, assetImages, chainId);
         return Promise.resolve(tokens);
     }
 
@@ -444,15 +461,15 @@ export default class PreferencesController  extends EventEmitter {
      */
     async isCollectibleOwner(ownerAddress, collectibleAddress, collectibleId) {
         // Checks the ownership for ERC-721.
-        console.log('isCollectibleOwner :: ownerAddress == ' + ownerAddress);
-        console.log('isCollectibleOwner :: collectibleAddress == ' + collectibleAddress);
-        console.log('isCollectibleOwner :: collectibleId == ' + collectibleId);
         try {
             const owner = await this.getERC721OwnerOf(
                 collectibleAddress,
                 collectibleId,
             );
-            console.log('owner == ' + owner);
+            console.log('owner == ');
+            console.log(owner);
+            console.log('ownerAddress.toLowerCase() == ');
+            console.log(ownerAddress.toLowerCase());
             return !_.isNil(owner) && (ownerAddress.toLowerCase() === owner.toLowerCase());
             // eslint-disable-next-line no-empty
         } catch {
@@ -888,7 +905,6 @@ export default class PreferencesController  extends EventEmitter {
                 if(collectible.address.toLowerCase() === collectibleContract.address.toLowerCase()){
                     if(_.isNil(tokenId) || collectible.tokenId === tokenId){
                         const isOwner = await this.isCollectibleOwner(selectedAddress, collectibleContract.address, collectible.tokenId);
-                        console.log(`collectibleContract.address == ${collectibleContract.address}   collectible.address == ${collectible.address}    isOwner == ${isOwner}`);
                         await this.updateIndividualCollectible(collectibleContract.address, collectibleContract.tokenId, isOwner);
                     }
                 }
@@ -963,11 +979,11 @@ export default class PreferencesController  extends EventEmitter {
 
     /**
      * Updates the `network` property.
-     * @param {object} network - {chainId: String}
+     * @param {object} network - {chainId: String, rpcUrl: String}
      * @returns {Promise<Boolean>} Promises a new object; the updated preferences object.
      */
     setNetwork(network) {
-        if(network.chainId === undefined || network.chainId === null){
+        if(_.isNil(network.chainId) || _.isNil(network.rpcUrl)){
             throw new Error('PreferencesController :: setNetwork - network is invalid');
         }
 

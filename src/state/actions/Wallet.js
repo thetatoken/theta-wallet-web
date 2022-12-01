@@ -13,16 +13,14 @@ import {hideLoader, hideModal, showLoader} from "./ui";
 import Theta from "../../services/Theta";
 
 
-export function setNetwork(networkId){
-    Theta.setChainID(networkId);
-    Wallet.controller.preferencesController.setNetwork({
-        chainId: networkId
-    });
+export function setNetwork(network){
+    Theta.setChainID(network.chainId);
+    Wallet.controller.preferencesController.setNetwork(network);
 
     return async function(dispatch, getState){
         dispatch({
                 type: SET_NETWORK,
-                network: networkId
+                network: network.chainId
             }
         );
     };
@@ -136,13 +134,14 @@ export function updateAccountStakes(address, shouldShowLoader){
 // Tokens
 //
 
-export function addToken(tokenData) {
+export function addToken(tokenData, chainId) {
     return async (dispatch) => {
         try {
             dispatch(showLoader());
 
             const result = await Wallet.controller.RPCApi.addToken({
-                token: tokenData
+                token: tokenData,
+                chainId: chainId
             });
 
             dispatch(hideModal());

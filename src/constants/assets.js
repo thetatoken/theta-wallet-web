@@ -42,6 +42,12 @@ const NativeAssets = [
     TFuelAsset
 ];
 
+const NativeAssetsForSubchain = [
+    Object.assign({}, TFuelAsset, {
+        symbol: `v${TFuelAsset.symbol}`
+    })
+];
+
 const TDropAsset = (chainId) => {
     const tdropAddress = TDropAddressByChainId[chainId];
     let TNT20Asset = null;
@@ -94,7 +100,7 @@ const DefaultAssets = (chainId) => {
         TNT20Assets.push(wThetaAsset);
     }
 
-    return _.concat(NativeAssets, TNT20Assets);
+    return _.concat((_.startsWith(chainId, 'tsub') ? NativeAssetsForSubchain : NativeAssets), TNT20Assets);
 };
 
 const getAllAssets = (chainId, tokens) => {

@@ -10,12 +10,8 @@ import TrezorKeyring from '../keyrings/trezor';
 import LedgerKeyring from "../keyrings/ledger";
 import {
     EthereumDerivationPath, EthereumLedgerLiveDerivationPath,
-    EthereumOtherDerivationPath,
-    NumPathsPerPage,
-    ThetaDevDerivationPath
+    EthereumOtherDerivationPath
 } from "../services/Wallet";
-import {updateAccountBalances} from "../state/actions/Wallet";
-import CollectiblesController from "./collectibles";
 
 const { EventEmitter } = require('events');
 
@@ -37,7 +33,7 @@ export default class ThetaWalletController extends EventEmitter {
         });
         this.preferencesController.on('networkChanged', (newNetwork) => {
             const selectedAddress = this.preferencesController.getSelectedAddress();
-            const newProvider = new thetajs.providers.HttpProvider(newNetwork.chainId);
+            const newProvider = new thetajs.providers.HttpProvider(newNetwork.chainId, newNetwork.rpcUrl);
             this.setProvider(newProvider);
 
             if(selectedAddress) {
@@ -64,13 +60,6 @@ export default class ThetaWalletController extends EventEmitter {
         this.keyringController.memStore.subscribe((s) =>
             this._onKeyringVaultUpdate(s),
         );
-
-        this.collectiblesController = new CollectiblesController({
-            getProvider: this.getProvider,
-            getNetwork: this.preferencesController.getNetwork.bind(this.preferencesController),
-            getCollectibles: this.preferencesController.getTokens.bind(this.preferencesController),
-            preferencesController: this.preferencesController,
-        });
 
         this.accountManager = new AccountManager({
             getProvider: this.getProvider,
@@ -113,7 +102,6 @@ export default class ThetaWalletController extends EventEmitter {
             preferencesController: this.preferencesController.store,
             transactionsController: this.transactionsController.memStore,
             accountManager: this.accountManager.store,
-            collectiblesController: this.collectiblesController.store
         });
         this.memStore.subscribe((data) => {
             this.sendUpdate();
@@ -275,10 +263,10 @@ export default class ThetaWalletController extends EventEmitter {
     }
 
     async _addToken(args) {
-        const {token} = args;
+        const {token, chainId} = args;
         const {address, symbol, decimals, image} = token;
 
-        const result = await this.preferencesController.addToken(address, symbol, decimals, image);
+        const result = await this.preferencesController.addToken(address, symbol, decimals, image, chainId);
 
         return result;
     }

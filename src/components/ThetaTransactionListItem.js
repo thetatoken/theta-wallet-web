@@ -9,7 +9,7 @@ import Theta from '../services/Theta';
 class ThetaTransactionListItem extends React.Component {
     render() {
         let { transaction } = this.props;
-        let {inputs, outputs, timestamp, bound, hash, is_local} = transaction;
+        let {inputs, outputs, timestamp, bound, hash, is_local, chainId} = transaction;
         let input = (inputs ? inputs[0] : null);
         let output = (outputs ? outputs[0] : null);
         let from = _.get(input, ['address']);
@@ -45,18 +45,25 @@ class ThetaTransactionListItem extends React.Component {
                 </div>
 
                 <div className="ThetaTransactionListItem__right-container">
-                    <div className="ThetaTransactionListItem__amount-container">
-                        <div className="ThetaTransactionListItem__amount">{formatNativeTokenAmountToLargestUnit(thetaAmount)}</div>
-                        <img className="ThetaTransactionListItem__amount-icon"
-                             src="/img/tokens/theta_large@2x.png"
-                        />
-                    </div>
-                    <div className="ThetaTransactionListItem__amount-container">
-                        <div className="ThetaTransactionListItem__amount">{formatNativeTokenAmountToLargestUnit(tfuelAmount)}</div>
-                        <img className="ThetaTransactionListItem__amount-icon"
-                             src="/img/tokens/tfuel_large@2x.png"
-                        />
-                    </div>
+                    {
+                        thetaAmount !== '0' &&
+                        <div className="ThetaTransactionListItem__amount-container">
+                            <div className="ThetaTransactionListItem__amount">{formatNativeTokenAmountToLargestUnit(thetaAmount)}</div>
+                            <img className="ThetaTransactionListItem__amount-icon"
+                                 src="/img/tokens/theta_large@2x.png"
+                            />
+                        </div>
+                    }
+                    {
+                        tfuelAmount !== '0' &&
+                        <div className="ThetaTransactionListItem__amount-container">
+                            <div className="ThetaTransactionListItem__amount">{formatNativeTokenAmountToLargestUnit(tfuelAmount)}</div>
+                            <img className="ThetaTransactionListItem__amount-icon"
+                                 src="/img/tokens/tfuel_large@2x.png"
+                            />
+                        </div>
+                    }
+
                 </div>
             </a>
         );

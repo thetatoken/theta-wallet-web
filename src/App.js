@@ -11,7 +11,7 @@ import {store} from "./state";
 import Router from "./services/Router";
 import UnsupportedDevice from './components/UnsupportedDevice'
 import Wallet from "./services/Wallet";
-import {isStakingAvailable, areSmartContractsAvailable} from './Flags';
+import {isStakingAvailable, areSmartContractsAvailable, areCrossChainTransactionsAvailable} from './Flags';
 import LoadingOverlay from "./components/LoadingOverlay";
 import {connect} from "react-redux";
 
@@ -48,6 +48,15 @@ class WalletTabBar extends Component {
         }))
     }
 
+    onCrossChainTransferClick(){
+        store.dispatch(showModal({
+            type: ModalTypes.CREATE_TRANSACTION,
+            props: {
+                transactionType: 'cross-chain-transfer'
+            }
+        }));
+    }
+
 
     render() {
 
@@ -65,12 +74,12 @@ class WalletTabBar extends Component {
                     normalIconUrl="/img/tab-bar/send@2x.png"
                     activeIconUrl="/img/tab-bar/send-active@2x.png"
                 />
-                <TabBarItem
-                    title="Receive"
-                    onClick={this.onReceiveClick}
-                    normalIconUrl="/img/tab-bar/receive@2x.png"
-                    activeIconUrl="/img/tab-bar/receive-active@2x.png"
-                />
+                {/*<TabBarItem*/}
+                {/*    title="Receive"*/}
+                {/*    onClick={this.onReceiveClick}*/}
+                {/*    normalIconUrl="/img/tab-bar/receive@2x.png"*/}
+                {/*    activeIconUrl="/img/tab-bar/receive-active@2x.png"*/}
+                {/*/>*/}
                 {
                     isStakingAvailable() &&
                     <TabBarItem
@@ -95,20 +104,34 @@ class WalletTabBar extends Component {
                         activeIconUrl="/img/tab-bar/contract-active@2x.png"
                     />
                 }
+                {
+                    areCrossChainTransactionsAvailable() &&
+                    <TabBarItem
+                        title={'Cross Chain Transfer'}
+                        href={'/wallet/cross-chain-transfer'}
+                        normalIconUrl="/img/tab-bar/transfer@2x.png"
+                        activeIconUrl="/img/tab-bar/transfer-active@2x.png"
+                    />
+                }
 
-                <TabBarItem
-                    title="Settings"
-                    href="/wallet/settings"
-                    normalIconUrl="/img/tab-bar/settings@2x.png"
-                    activeIconUrl="/img/tab-bar/settings-active@2x.png"
-                />
+
+                {/*<TabBarItem*/}
+                {/*    title="Settings"*/}
+                {/*    href="/wallet/settings"*/}
+                {/*    normalIconUrl="/img/tab-bar/settings@2x.png"*/}
+                {/*    activeIconUrl="/img/tab-bar/settings-active@2x.png"*/}
+                {/*/>*/}
             </TabBar>
         );
     }
 }
 
 const mapStateToProps = (state) => {
+    const {thetaWallet} = state;
+    const chainId = thetaWallet?.network?.chainId;
+
     return {
+        chainId: chainId,
         isLoading: state.ui.isLoading,
         loadingMessage: state.ui.loadingMessage,
     };

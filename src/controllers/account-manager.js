@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as thetajs from '@thetalabs/theta-js';
 import BigNumber from 'bignumber.js';
 import ObservableStore from '../utils/ObservableStore';
-import {SingleCallTokenBalancesAddressByChainId, TDropStakingAddressByChainId} from '../constants';
+import {getSingleCallTokenBalancesAddressByChainId, TDropStakingAddressByChainId} from '../constants';
 import {SingleCallTokenBalancesABI, TDropStakingABI} from '../constants/contracts';
 
 const {tokensByChainId} = require('@thetalabs/tnt20-contract-metadata');
@@ -217,7 +217,7 @@ export default class AccountManager {
         const tokens = this._getTokens();
         let tokenAddresses = _.map(tokens, 'address');
         tokenAddresses = _.map(tokenAddresses, _.trim);
-        const deployedContractAddress = SingleCallTokenBalancesAddressByChainId[chainId];
+        const deployedContractAddress = getSingleCallTokenBalancesAddressByChainId(chainId);
 
         if(_.isNil(deployedContractAddress)){
             // TODO not supported... call each token?
@@ -386,7 +386,7 @@ export default class AccountManager {
             tokensToDetect.slice(0, 1000),
             tokensToDetect.slice(1000, tokensToDetect.length - 1),
         ];
-        const balanceCheckContract = new thetajs.Contract(SingleCallTokenBalancesAddressByChainId[chainId], SingleCallTokenBalancesABI, provider);
+        const balanceCheckContract = new thetajs.Contract(getSingleCallTokenBalancesAddressByChainId(chainId), SingleCallTokenBalancesABI, provider);
 
         for (const tokensSlice of sliceOfTokensToDetect) {
             let result;

@@ -14,7 +14,7 @@ import {TFuelAsset, ThetaAsset} from "../../constants/assets";
 import FlatButton from "../buttons/FlatButton";
 
 export default function SendTxForm(props){
-    const {onSubmit, defaultValues, selectedAccount, formRef, assets} = props;
+    const {onSubmit, defaultValues, selectedAccount, formRef, assets, chainId} = props;
     const {register, handleSubmit, errors, watch, setValue} = useForm({
         mode: 'onChange',
         defaultValues: defaultValues || {
@@ -125,13 +125,27 @@ export default function SendTxForm(props){
                 </div>
             </FormField>
 
-            <Warning message={'Do not send to Ethereum/ERC20 addresses.'}
-                     learnMoreHref={Urls.PreventingLostTokens}
-                     style={{
-                         maxWidth: '250px',
-                         marginBottom: 10
-                     }}
-            />
+            {
+                !_.startsWith(chainId, 'tsub') &&
+                <Warning message={'Do not send to Ethereum/ERC20 addresses.'}
+                         learnMoreHref={Urls.PreventingLostTokens}
+                         style={{
+                             maxWidth: '250px',
+                             marginBottom: 10
+                         }}
+                />
+            }
+
+            {
+                _.startsWith(chainId, 'tsub') &&
+                <Warning message={'Do not send voucher tokens to exchanges.'}
+                         learnMoreHref={Urls.PreventingLostTokens}
+                         style={{
+                             maxWidth: '250px',
+                             marginBottom: 10
+                         }}
+                />
+            }
 
         </form>
     );
