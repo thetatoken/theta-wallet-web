@@ -15,7 +15,6 @@ import ThetaJS from "../libs/thetajs.esm";
 import {store} from "../state";
 import PageHeader from "../components/PageHeader";
 import {getQueryParameters, zipMap} from "../utils/Utils";
-import Api from "../services/Api";
 import {createSmartContractTransaction} from "../state/actions/Transactions";
 
 const web3 = new Web3("http://localhost");
@@ -461,9 +460,8 @@ class InteractWithContractContent extends React.Component {
             const rawTxBytes = ThetaJS.TxSigner.serializeTx(tx);
 
             try{
-                const callResponse = await Api.callSmartContract({data: rawTxBytes.toString('hex').slice(2)}, {network: Theta.getChainID()});
-                const callResponseJSON = await callResponse.json();
-                const result = _.get(callResponseJSON, 'result');
+                const provider = Wallet.controller.getProvider();
+                const result = await provider.perform("theta.CallSmartContract", { sctx_bytes: rawTxBytes.toString('hex').slice(2) });
                 const errorMessage  = _.get(result, 'vm_error');
 
                 this.setState({
