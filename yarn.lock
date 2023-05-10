@@ -2300,10 +2300,10 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@thetalabs/theta-js@^0.0.81":
-  version "0.0.81"
-  resolved "https://registry.yarnpkg.com/@thetalabs/theta-js/-/theta-js-0.0.81.tgz#427cac7ace3522d181adcb559c2317d57c13f2b3"
-  integrity sha512-Njwidr9UEk2bZZyGkXgAoICio1GrKC7aWop5YSmAyH/7mTyMtg89cPSLFpKmGSCrBxuA8byr2C+sUY9JQRXoxQ==
+"@thetalabs/theta-js@^0.0.82":
+  version "0.0.82"
+  resolved "https://registry.yarnpkg.com/@thetalabs/theta-js/-/theta-js-0.0.82.tgz#5e5ae0d924d0fd5cb322662227c5d8690525c765"
+  integrity sha512-x4vgwNxgIy4KuORiyOYkBbbBymV1+oXLarN8uuwsrYIdJnQY3jE9NUnEVnPlmrF0nAMAnNpfcWX0qT9wjnhQqw==
   dependencies:
     "@ethersproject/bignumber" "^5.0.9"
     "@ethersproject/bytes" "^5.0.11"
@@ -2315,10 +2315,10 @@
     rlp "^2.2.2"
     secp256k1 "^3.6.1"
 
-"@thetalabs/tnt20-contract-metadata@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@thetalabs/tnt20-contract-metadata/-/tnt20-contract-metadata-1.0.6.tgz#611d95aaea28eefb4aea900af9b9e2457032c2ec"
-  integrity sha512-YSg1FjK8466l7GzSxnMQcySezJ09cPdy+T1RAd5uvg54Yy+u+kDlTcC5ylhcny8EGPrxYJ3hKvEH3HwXByLctA==
+"@thetalabs/tnt20-contract-metadata@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@thetalabs/tnt20-contract-metadata/-/tnt20-contract-metadata-1.0.7.tgz#10816c4ef8e4067c4f3e82b5b203438c8cf3a00f"
+  integrity sha512-v/OuFPq8XKV+2ZwHflvRY3U6CzCn0a6TJ3nTQjOAK4x0nA6yTW9ARXZxc0Un4NFjdVICd0Bbl5g+N2DbntvUIA==
 
 "@tootallnate/once@1":
   version "1.1.2"

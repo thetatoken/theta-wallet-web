@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const {getMetachainInfoForChainId} = require('@thetalabs/theta-js/src/networks')
 
 let _cfg = null;
