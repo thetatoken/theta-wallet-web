@@ -5,7 +5,7 @@ import ObservableStore from '../utils/ObservableStore';
 import {getSingleCallTokenBalancesAddressByChainId, TDropStakingAddressByChainId} from '../constants';
 import {SingleCallTokenBalancesABI, TDropStakingABI} from '../constants/contracts';
 
-const {tokensByChainId} = require('@thetalabs/tnt20-contract-metadata');
+const walletMetadata = require('@thetalabs/wallet-metadata');
 const DEFAULT_INTERVAL = 60 * 1000;
 
 /**
@@ -362,11 +362,12 @@ export default class AccountManager {
     }
 
     async detectNewTokens() {
+        await walletMetadata.sync();
         const selectedAddress = this._preferencesController.getSelectedAddress();
         const provider = this._getProvider();
         const network = this._getNetwork();
         const chainId = network.chainId;
-        const knownTokenList = tokensByChainId[chainId];
+        const knownTokenList = walletMetadata.getKnownTokens(chainId);
         const tokens = this._getTokens();
         let tokenAddresses = _.map(tokens, 'address');
         let trackedTokens = new Set(_.map(tokenAddresses, _.trim));

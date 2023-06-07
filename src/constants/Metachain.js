@@ -1,12 +1,13 @@
 import _ from 'lodash';
-import {getMetachainInfoForChainId} from '@thetalabs/theta-js/src/networks';
+
+const walletMetadata = require('@thetalabs/wallet-metadata');
 
 export const getMetachainConfig = (mainChainIdStr) => {
     if(_.startsWith(mainChainIdStr, 'tsub')){
         return null;
     }
 
-    return getMetachainInfoForChainId(mainChainIdStr);
+    return walletMetadata.getMetachain(mainChainIdStr);
 }
 
 export const getCrossTransferFee = (mainChainIdStr, subchainIDStr) => {

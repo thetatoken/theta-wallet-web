@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as thetajs from '@thetalabs/theta-js';
 import {TDropAddressByChainId, WThetaAddressByChainId} from './index';
 
-const {tokensByChainId} = require('@thetalabs/tnt20-contract-metadata');
+const {getKnownToken} = require('@thetalabs/wallet-metadata');
 
 // TOKEN STANDARDS
 const ERC721 = 'ERC721';
@@ -13,8 +13,7 @@ const getTokenIconUrl = (fileName) => {
     if(_.isEmpty(fileName)){
         return null;
     }
-    return `https://s3.us-east-2.amazonaws.com/assets.thetatoken.org/tokens/${fileName}`;
-    // return `https://assets.thetatoken.org/tokens/${fileName}`;
+    return `https://assets.thetatoken.org/tokens/${fileName}`;
 };
 
 const ThetaAsset = {
@@ -49,19 +48,20 @@ const NativeAssetsForSubchain = [
 ];
 
 const TDropAsset = (chainId) => {
-    const tdropAddress = TDropAddressByChainId[chainId];
+    const address = TDropAddressByChainId[chainId];
     let TNT20Asset = null;
+    const knownToken = getKnownToken(chainId, address);
 
-    if(tdropAddress){
+    if(address){
         TNT20Asset = {
-            id: tdropAddress,
+            id: address,
             name: 'TDROP',
             symbol: 'TDROP',
-            contractAddress: tdropAddress,
-            address: tdropAddress,
+            contractAddress: address,
+            address: address,
             decimals: 18,
-            iconUrl: getTokenIconUrl(_.get(tokensByChainId, [chainId, tdropAddress, 'logo'])),
-            balanceKey: tdropAddress
+            iconUrl:  knownToken?.logoUrl,
+            balanceKey: address
         };
     }
 
@@ -71,6 +71,7 @@ const TDropAsset = (chainId) => {
 const WThetaAsset = (chainId) => {
     const address = WThetaAddressByChainId[chainId];
     let TNT20Asset = null;
+    const knownToken = getKnownToken(chainId, address);
 
     if(address){
         TNT20Asset = {
@@ -80,7 +81,7 @@ const WThetaAsset = (chainId) => {
             contractAddress: address,
             address: address,
             decimals: 18,
-            iconUrl: getTokenIconUrl(_.get(tokensByChainId, [chainId, address, 'logo'])),
+            iconUrl:  knownToken?.logoUrl,
             balanceKey: address
         };
     }
@@ -116,7 +117,10 @@ const getAllAssets = (chainId, tokens) => {
 };
 
 const tokenToAsset = (token) => {
-    const knownToken = (tokensByChainId[thetajs.networks.ChainIds.Mainnet][token.address] || tokensByChainId[thetajs.networks.ChainIds.Testnet][token.address]);
+    const knownToken = (
+        getKnownToken(thetajs.networks.ChainIds.Mainnet, token.address) ||
+        getKnownToken(thetajs.networks.ChainIds.Testnet, token.address)
+    );
 
     return {
         id: token.address,
@@ -124,7 +128,7 @@ const tokenToAsset = (token) => {
         symbol: token.symbol,
         contractAddress: token.address,
         decimals: token.decimals,
-        iconUrl: (knownToken ? getTokenIconUrl(knownToken.logo) : null),
+        iconUrl: (knownToken ? knownToken.logoUrl : null),
         balanceKey: token.address
     };
 };

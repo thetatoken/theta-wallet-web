@@ -1,18 +1,18 @@
 const _ = require('lodash');
-const {getMetachainInfoForChainId} = require('@thetalabs/theta-js/src/networks')
+const walletMetadata = require('@thetalabs/wallet-metadata');
 
 let _cfg = null;
 
-function setMetachainCfg(networkType, subchain) {
-    let mainchainConfig = getMetachainInfoForChainId(networkType);
+function setMetachainCfg(chainIdStr, subchain) {
+    let mainchainConfig = walletMetadata.getMetachain(chainIdStr);
 
-    // playground subchain is using legacy token banks
-    if(parseInt(subchain.subchainID) === 360888){
+    // This subchain is overriding the default mainchain token banks
+    if(subchain.mainchainTFuelTokenBankAddr){
         mainchainConfig = _.cloneDeep(mainchainConfig);
-        mainchainConfig.mainchainTFuelTokenBankAddr = mainchainConfig.__LEGACY__mainchainTFuelTokenBankAddr;
-        mainchainConfig.mainchainTNT20TokenBankAddr = mainchainConfig.__LEGACY__mainchainTNT20TokenBankAddr;
-        mainchainConfig.mainchainTNT721TokenBankAddr = mainchainConfig.__LEGACY__mainchainTNT721TokenBankAddr;
-        mainchainConfig.mainchainTNT1155TokenBankAddr = mainchainConfig.__LEGACY__mainchainTNT1155TokenBankAddr;
+        mainchainConfig.mainchainTFuelTokenBankAddr = subchain.mainchainTFuelTokenBankAddr;
+        mainchainConfig.mainchainTNT20TokenBankAddr = subchain.mainchainTNT20TokenBankAddr;
+        mainchainConfig.mainchainTNT721TokenBankAddr = subchain.mainchainTNT721TokenBankAddr;
+        mainchainConfig.mainchainTNT1155TokenBankAddr = subchain.mainchainTNT1155TokenBankAddr;
     }
 
     _cfg = Object.assign({}, mainchainConfig, subchain);
