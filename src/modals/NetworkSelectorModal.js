@@ -9,8 +9,7 @@ const classNames = require('classnames');
 
 const OrderedNetworks = [
     thetajs.networks.Mainnet,
-    thetajs.networks.Testnet,
-    thetajs.networks.Privatenet
+    thetajs.networks.Testnet
 ];
 
 export class NetworkSelectorModal extends React.Component {
