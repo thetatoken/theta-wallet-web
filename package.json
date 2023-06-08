@@ -8,7 +8,7 @@
     "@ledgerhq/hw-transport-u2f": "^4.72.1",
     "@ledgerhq/hw-transport-webusb": "^6.2.0",
     "@thetalabs/theta-js": "^0.0.82",
-    "@thetalabs/wallet-metadata": "1.0.5",
+    "@thetalabs/wallet-metadata": "1.0.9",
     "@ukstv/jazzicon-react": "^1.0.0",
     "await-timeout": "^0.3.0",
     "bignumber.js": "^8.0.1",
