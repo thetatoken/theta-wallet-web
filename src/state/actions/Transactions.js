@@ -130,10 +130,13 @@ export function createSmartContractTransaction(contractMode, contractAbi, txData
         try {
             let address = Wallet.getWalletAddress();
             const provider = Wallet.controller.provider;
+            console.log('txData == ', txData);
             const transaction = new thetajs.transactions.SmartContractTransaction(txData);
+            console.log('transaction == ', transaction);
             let sequence = await provider.getTransactionCount(address);
             sequence = sequence + 1;
             transaction.setSequence(sequence);
+            console.log('sequence == ', sequence);
             const callResult = await provider.callSmartContract(transaction);
             await sleep(1000);
             dispatch(hideLoader());

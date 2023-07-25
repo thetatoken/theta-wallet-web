@@ -47,6 +47,8 @@ function parseJSON(value) {
 }
 
 function isValidByteCode(value) {
+    return true;
+
     const json = parseJSON(value);
 
     return (_.isNil((json && json['object'])) === false);
@@ -348,7 +350,7 @@ class DeployContractContent extends React.Component {
 
     onSubmit = (formData) => {
         const {abi, byteCode, inputs} = formData;
-        const byteCodeJson = parseJSON(byteCode);
+        const byteCodeJson = byteCode;
         const contract = initContract(abi, null);
         const jsonInterface = _.get(contract, ['options', 'jsonInterface']);
         const constructor = getConstructor(jsonInterface);
@@ -371,8 +373,17 @@ class DeployContractContent extends React.Component {
         });
         const encodedParameters = web3.eth.abi.encodeParameters(constructorInputTypes, constructorInputValues).slice(2);
         const from = Wallet.getWalletAddress();
-        const data = byteCodeJson.object + encodedParameters;
+        const data = byteCodeJson + encodedParameters;
         const value = 0;
+
+        console.log('data', data);
+        console.log('value', value);
+        console.log('from', from);
+        console.log('abi', abi);
+        console.log('byteCode', byteCode);
+        console.log('encodedParameters', encodedParameters);
+        console.log('constructorInputTypes', constructorInputTypes);
+        console.log('constructorInputValues', constructorInputValues);
 
         store.dispatch(createSmartContractTransaction(ContractModes.DEPLOY, abi, {
                 from: from,
