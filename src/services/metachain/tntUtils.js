@@ -278,7 +278,7 @@ async function transferTNT(tokenType, from, sourceChainTokenOrVoucherContractAdd
         targetChainIDStr, targetChainRPC, targetChainTokenOrVoucherContractAddr, tokenID, targetChainReceiver, getTNTTokenBalance);
 
     // Track the token / voucher on the target chain
-    if(tokenType === TokenType.TNT20){
+    if(tokenType === TokenType.TNT20 && targetChainID !== cfg().mainchainID){
         // Get the token data...
         const {thetaWallet} = store.getState();
         const {tokens} = thetaWallet;
@@ -288,12 +288,16 @@ async function transferTNT(tokenType, from, sourceChainTokenOrVoucherContractAdd
         });
 
         // Take the attributes from the source token but change the address
+        console.log('transferTNT :: TRACKING TOKEN...');
         await store.dispatch(addToken({
             address: _.trim(targetChainTokenOrVoucherContractAddr),
             name: asset.name,
             symbol: `v${asset.symbol}`,
             decimals: asset.decimals
         }, targetChainIDStr));
+    }
+    else{
+        console.log('transferTNT :: NOT TRACKING TOKEN BECAUSE IT IS SENDING TO MAINCHAIN!');
     }
 
     Alerts.showSuccess("Your cross chain transfer has completed.");
