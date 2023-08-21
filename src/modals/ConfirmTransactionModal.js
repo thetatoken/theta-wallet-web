@@ -21,6 +21,8 @@ import FlatButton from "../components/buttons/FlatButton";
 import {store} from "../state";
 import MDSpinner from "react-md-spinner";
 import BigNumber from "bignumber.js";
+import config from "../Config";
+import TemporaryState from "../services/TemporaryState";
 
 
 const renderDataRow = (title, value, suffix = '', isLarge = false) => {
@@ -46,7 +48,7 @@ export class ConfirmTransactionModal extends React.Component {
         super();
 
         this.state = {
-            password: '',
+            password: config.isEmbedMode ? TemporaryState.getWalletData().password : '',
             estimatedGasFee: null
         };
 
@@ -193,7 +195,7 @@ export class ConfirmTransactionModal extends React.Component {
         let txDataRows = this.renderDataRows();
         let passwordRow = null;
 
-        if(!Wallet.getWalletHardware()){
+        if(!Wallet.getWalletHardware() && !config.isEmbedMode){
             passwordRow = (
                 <div className="TxConfirmationModal__password-container">
                     <div className="TxConfirmationModal__password-title">Enter your wallet password to sign this transaction</div>

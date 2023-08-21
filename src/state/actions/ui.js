@@ -1,4 +1,13 @@
 import * as actionTypes from '../types/ui';
+import config from "../../Config";
+
+export function setEmbedMode(){
+    config.isEmbedMode = true;
+
+    return {
+        type: actionTypes.SET_EMBED_MODE
+    }
+}
 
 export function showModal(modal){
     return {

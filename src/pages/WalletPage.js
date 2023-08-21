@@ -21,6 +21,7 @@ import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
 import {DefaultAssets, getAllAssets, tokenToAsset} from "../constants/assets";
 import Theta from "../services/Theta";
+import config from "../Config";
 
 export class WalletPage extends React.Component {
     constructor(){
@@ -95,7 +96,8 @@ export class WalletPage extends React.Component {
 
         return (
             <div className="WalletPage">
-                <div className="WalletPage__master-view">
+                <div className="WalletPage__master-view"
+                style={config.isEmbedMode ? {width: '100%'} : null}>
                     {
                         isFetchingBalances && _.isEmpty(selectedAccount) &&
                         <MDSpinner singleColor="#ffffff"
@@ -108,43 +110,47 @@ export class WalletPage extends React.Component {
                                      assets={assets}
                                      balancesRefreshedAt={balancesRefreshedAt}
                                      chainId={chainId}
+                                     style={config.isEmbedMode ? {marginRight: 0} : null}
                     />
                 </div>
-                <div className="WalletPage__detail-view">
-                    <PageHeader title="Theta/Tfuel Transactions"
-                                sticky={true}>
-                        <div className="WalletPage__header-buttons">
-                            <GhostButton title="Send"
-                                         iconUrl="/img/icons/send@2x.png"
-                                         onClick={this.handleSendClick}/>
-                            <GhostButton title="Receive"
-                                         iconUrl="/img/icons/receive@2x.png"
-                                         style={{marginLeft: 12}}
-                                         onClick={this.handleReceiveClick}/>
-                        </div>
-                    </PageHeader>
+                {
+                    !config.isEmbedMode &&
+                    <div className="WalletPage__detail-view">
+                        <PageHeader title="Theta/Tfuel Transactions"
+                                    sticky={true}>
+                            <div className="WalletPage__header-buttons">
+                                <GhostButton title="Send"
+                                             iconUrl="/img/icons/send@2x.png"
+                                             onClick={this.handleSendClick}/>
+                                <GhostButton title="Receive"
+                                             iconUrl="/img/icons/receive@2x.png"
+                                             style={{marginLeft: 12}}
+                                             onClick={this.handleReceiveClick}/>
+                            </div>
+                        </PageHeader>
 
-                    {
-                        isLoadingTransactions &&
-                        <MDSpinner singleColor="#ffffff" className="WalletPage__detail-view-spinner"/>
-                    }
+                        {
+                            isLoadingTransactions &&
+                            <MDSpinner singleColor="#ffffff" className="WalletPage__detail-view-spinner"/>
+                        }
 
-                    <a href={Theta.getAccountExplorerUrl(selectedAccount.address)}
-                       target={"_blank"}
-                       style={{marginTop: 12, marginBottom: 12}}
-                    >View all transactions on explorer</a>
-                    {
-                        transactions.length > 0 &&
-                        <TransactionList transactions={transactions}/>
-                    }
+                        <a href={Theta.getAccountExplorerUrl(selectedAccount.address)}
+                           target={"_blank"}
+                           style={{marginTop: 12, marginBottom: 12}}
+                        >View all transactions on explorer</a>
+                        {
+                            transactions.length > 0 &&
+                            <TransactionList transactions={transactions}/>
+                        }
 
-                    {
-                        (transactions.length === 0 && isLoadingTransactions === false) &&
-                        <EmptyState icon="/img/icons/empty-transactions@2x.png"
-                                    title="No Transactions"
-                        />
-                    }
-                </div>
+                        {
+                            (transactions.length === 0 && isLoadingTransactions === false) &&
+                            <EmptyState icon="/img/icons/empty-transactions@2x.png"
+                                        title="No Transactions"
+                            />
+                        }
+                    </div>
+                }
             </div>
         );
     }

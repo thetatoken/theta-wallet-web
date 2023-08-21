@@ -14,6 +14,8 @@ import Wallet from "./services/Wallet";
 import {isStakingAvailable, areSmartContractsAvailable, areCrossChainTransactionsAvailable} from './Flags';
 import LoadingOverlay from "./components/LoadingOverlay";
 import {connect} from "react-redux";
+import config from "./Config";
+import classNames from "classnames";
 
 class WalletTabBar extends Component {
     constructor() {
@@ -81,7 +83,7 @@ class WalletTabBar extends Component {
                 {/*    activeIconUrl="/img/tab-bar/receive-active@2x.png"*/}
                 {/*/>*/}
                 {
-                    isStakingAvailable() &&
+                    isStakingAvailable() && !config.isEmbedMode &&
                     <TabBarItem
                         title="Stakes"
                         href="/wallet/stakes"
@@ -89,14 +91,18 @@ class WalletTabBar extends Component {
                         activeIconUrl="/img/tab-bar/stakes-active@2x.png"
                     />
                 }
-                <TabBarItem
-                    title="NFTs"
-                    onClick={this.onCollectiblesClick}
-                    normalIconUrl="/img/tab-bar/collectibles@2x.png"
-                    activeIconUrl="/img/tab-bar/collectibles-active@2x.png"
-                />
                 {
-                    areSmartContractsAvailable() &&
+                    !config.isEmbedMode &&
+                    <TabBarItem
+                        title="NFTs"
+                        onClick={this.onCollectiblesClick}
+                        normalIconUrl="/img/tab-bar/collectibles@2x.png"
+                        activeIconUrl="/img/tab-bar/collectibles-active@2x.png"
+                    />
+                }
+
+                {
+                    areSmartContractsAvailable() && !config.isEmbedMode &&
                     <TabBarItem
                         title="Contract"
                         href="/wallet/contract"
@@ -169,7 +175,9 @@ export class UnconnectedWalletApp extends Component {
         let {isLoading, loadingMessage} = this.props;
 
         return (
-            <div className="App WalletApp">
+            <div className={classNames("App WalletApp", {
+                "App--embed": config.isEmbedMode
+            })}>
                 {isLoading && <LoadingOverlay loadingMessage={loadingMessage} />}
                 <NavBar/>
                 <WalletTabBar/>

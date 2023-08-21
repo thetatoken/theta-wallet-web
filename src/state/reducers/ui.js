@@ -9,6 +9,11 @@ const INITIAL_STATE = {
 
 export const uiReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
+        case actionTypes.SET_EMBED_MODE:{
+            return Object.assign({}, state, {
+                isEmbedMode: true
+            })
+        }
         case actionTypes.SHOW_MODAL:{
             let { type, props } = action.modal;
 

@@ -274,3 +274,17 @@ a{
 div#TrezorConnectInteractionLayer {
   z-index: 1000000000000000 !important;
 }
+
+
+.App--embed{
+  padding-left: 12px;
+  padding-right: 12px;
+
+  .TabBar{
+    justify-content: center;
+  }
+
+  .NavBar{
+    justify-content: center;
+  }
+}
