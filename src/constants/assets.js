@@ -107,7 +107,7 @@ const DefaultAssets = (chainId) => {
 const getAllAssets = (chainId, tokens) => {
     const tdropAddress = TDropAddressByChainId[chainId]?.toLowerCase();
     const wThetaAddress = WThetaAddressByChainId[chainId]?.toLowerCase();
-    const tokenAssets = tokens.map(tokenToAsset);
+    const tokenAssets = tokens.map((token) => tokenToAsset(token, chainId)  );
     const tokenAssetsWithoutDefaultTNT20s = _.filter(tokenAssets, (asset) => {
         const address = asset.contractAddress?.toLowerCase();
         return (address !== tdropAddress && address !== wThetaAddress);
@@ -116,10 +116,11 @@ const getAllAssets = (chainId, tokens) => {
     return _.concat(DefaultAssets(chainId), tokenAssetsWithoutDefaultTNT20s);
 };
 
-const tokenToAsset = (token) => {
+const tokenToAsset = (token, currentChainId) => {
     const knownToken = (
         getKnownToken(thetajs.networks.ChainIds.Mainnet, token.address) ||
-        getKnownToken(thetajs.networks.ChainIds.Testnet, token.address)
+        getKnownToken(thetajs.networks.ChainIds.Testnet, token.address) ||
+        getKnownToken(currentChainId, token.address)
     );
 
     return {

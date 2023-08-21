@@ -2315,10 +2315,10 @@
     rlp "^2.2.2"
     secp256k1 "^3.6.1"
 
-"@thetalabs/wallet-metadata@1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@thetalabs/wallet-metadata/-/wallet-metadata-1.0.10.tgz#6d58ee276ae87fd8dd40c2cef1b6d9b8d44051de"
-  integrity sha512-Hwu9Wbc5mpT/ZtgpWS6GX/IjSkJQ5YI+ERA7TgpoiuzRAf0T7L0fYiFk2ppmA1nNxsVCKGVtm4hxgwmtidhfbQ==
+"@thetalabs/wallet-metadata@1.0.20":
+  version "1.0.20"
+  resolved "https://registry.yarnpkg.com/@thetalabs/wallet-metadata/-/wallet-metadata-1.0.20.tgz#3900e3926ee280e570aeb1e36f7cec9b61f7174c"
+  integrity sha512-1oxAm9bboM7G0qhIz9KJMPTmj4JiwBW+/YGp7wnuEBLFRjUl334WbolR8oIB0+Z7JkiIjR0SXEb0MJqN7LxS7g==
 
 "@tootallnate/once@1":
   version "1.1.2"
