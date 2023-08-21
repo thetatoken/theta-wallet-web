@@ -19,9 +19,10 @@ import {connect} from "react-redux";
 import {getAllAssets} from "./constants/assets";
 import {transformThetaNetworkTransaction} from "./state/selectors/Transactions";
 import TemporaryState from "./services/TemporaryState";
+import MDSpinner from "react-md-spinner";
 
 class UnconnectedEmbedPage extends React.Component{
-    componentDidMount() {
+    loadWallet(){
         const {location} = this.props;
         const {search} = location;
         const params = new URLSearchParams(search);
@@ -38,9 +39,17 @@ class UnconnectedEmbedPage extends React.Component{
         }));
     }
 
+    componentDidMount() {
+        setTimeout(() => {
+            this.loadWallet();
+        }, 1000)
+    }
+
     render() {
         return (
-            <div/>
+            <div className={'EmbedPage'}>
+                <MDSpinner singleColor="#1BDED0" className={'EmbedPage__spinner'}/>
+            </div>
         )
     }
 }

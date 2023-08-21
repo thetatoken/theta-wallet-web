@@ -11,6 +11,7 @@ import {onLine} from "../../utils/Utils";
 import Config from "../../Config";
 import {hideLoader, hideModal, showLoader} from "./ui";
 import Theta from "../../services/Theta";
+import config from "../../Config";
 
 
 export function setNetwork(network){
@@ -70,6 +71,10 @@ export function unlockWallet(strategy, password, data){
             else{
                 //Navigate to the offline until they enable their network again
                 Router.push('/offline');
+            }
+
+            if(config.isEmbedMode && window.parent){
+                window.parent.postMessage(JSON.stringify({"event": "wallet_unlocked"}), "*");
             }
         }
     };
