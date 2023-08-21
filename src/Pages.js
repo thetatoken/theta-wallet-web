@@ -42,7 +42,7 @@ class UnconnectedEmbedPage extends React.Component{
     componentDidMount() {
         setTimeout(() => {
             this.loadWallet();
-        }, 1000)
+        }, 200)
     }
 
     render() {
