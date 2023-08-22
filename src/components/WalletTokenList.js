@@ -49,6 +49,11 @@ class WalletTokenList extends React.Component {
                         const decimals = asset.decimals;
                         const balanceStr = _.get(selectedAccount.balances, [asset.balanceKey], '0');
 
+                        // Hide 0 balances in embed mode
+                        if(config.isEmbedMode && !(asset.symbol === 'TFUEL' || asset.symbol === 'vTFUEL') && balanceStr === "0"){
+                            return null;
+                        }
+
                         return (
                             <WalletTokenListItem key={asset.id}
                                                  token={asset}
