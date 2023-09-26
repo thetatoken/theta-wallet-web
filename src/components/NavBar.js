@@ -69,6 +69,12 @@ class NavBar extends React.Component {
                         </a>
                     </div>
                     <div>
+                        <a className="NavBar__support"
+                           href="https://support.thetanetwork.org/hc/en-us"
+                           target={'_blank'}
+                        >
+                            Support
+                        </a>
                         <NavLink className="NavBar__settings"
                            to="/wallet/settings"
                         >
