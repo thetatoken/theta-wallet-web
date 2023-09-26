@@ -116,7 +116,7 @@ export default class Wallet {
         // window.__TREZOR_CONNECT_SRC = 'https://localhost:8088/'; //TODO: for dev
 
         TrezorConnect.manifest({
-            email: 'support@thetatoken.org',
+            email: 'walletsupport@thetanetwork.org',
             appUrl: 'https://wallet.thetatoken.org',
             keepSession: true
         });
