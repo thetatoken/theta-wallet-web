@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import Trezor from "../../services/Trezor";
+import TrezorConnect from '@trezor/connect-web';
 const { EventEmitter } = require('events')
 const ethUtil = require('ethereumjs-util')
 const HDKey = require('hdkey')
-const TrezorConnect = require('trezor-connect').default
+
 const hdPathString = `m/44'/60'/0'/0`
 const keyringType = 'Trezor Hardware'
 const pathBase = 'm'
@@ -55,9 +56,8 @@ class TrezorKeyring extends EventEmitter {
     unlock () {
         if (this.isUnlocked()) return Promise.resolve('already unlocked')
         return new Promise((resolve, reject) => {
-            TrezorConnect.getPublicKey({
-                path: this.hdPath,
-                coin: 'ETH',
+            TrezorConnect.ethereumGetPublicKey({
+                path: this.hdPath
             }).then(response => {
                 if (response.success) {
                     this.hdk.publicKey = new Buffer(response.payload.publicKey, 'hex')
