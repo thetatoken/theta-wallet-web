@@ -1,11 +1,12 @@
 import _ from 'lodash';
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import './SettingsPage.css';
 import PageHeader from "../components/PageHeader";
 import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet';
 import {downloadFile} from "../utils/Utils";
 import Alerts from '../services/Alerts';
+import { useSettings } from '../components/SettingContext';
 
 class ExportKeystoreContent extends React.Component {
     constructor(){
@@ -120,6 +121,38 @@ class ExportKeystoreContent extends React.Component {
     }
 }
 
+const EnableTnsContent = () => {
+    const { tnsEnable, updateTnsEnable } = useSettings();
+    const [localTnsEnable, setLocalTnsEnable] = useState(tnsEnable);
+
+    const handleCheckboxChange = (event) => {
+        const isChecked = event.target.checked;
+        setLocalTnsEnable(isChecked);
+        updateTnsEnable(isChecked);
+    };
+
+    useEffect(() => {
+        setLocalTnsEnable(tnsEnable);
+    }, [tnsEnable]);
+
+    return (
+        <>
+            <div className="InputTitle">
+                Enable Theta Name Service (TNS):
+            </div>
+            <input
+                type="checkbox"
+                name="tnsEnabled"
+                checked={localTnsEnable}
+                onChange={handleCheckboxChange}
+            /> <span className="InputTitle">{localTnsEnable ? "Yes" : "No"}</span>
+        </>
+    );
+};
+
+export { EnableTnsContent };
+
+
 class SettingsSection extends React.Component {
     render() {
         return (
@@ -148,11 +181,14 @@ class SettingsPage extends React.Component {
                     />
 
                     {
-                        canExport &&
+                        canExport &&<>
                         <SettingsSection title="Export Keystore">
                             <ExportKeystoreContent/>
                         </SettingsSection>
-                    }
+                        <SettingsSection title="TNS">
+                            <EnableTnsContent />
+                    </SettingsSection></>
+                }
                 </div>
             </div>
         );

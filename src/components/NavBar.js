@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import {connect} from 'react-redux'
-import React from "react";
+import React, { useState, useEffect } from "react";
 import './NavBar.css';
 import Wallet from "../services/Wallet";
 import { store } from '../state';
@@ -14,31 +14,32 @@ import NetworkSelector from "./NetworkSelector";
 import {NavLink} from "react-router-dom";
 import config from "../Config";
 import tns from "../libs/tns"
+import { useSettings } from "./SettingContext";
 
 const classNames = require('classnames');
 
-class NavBar extends React.Component {
-    constructor(){
-        super();
+const NavBar = () => {
+    const { tnsEnable } = useSettings(); // Access tnsEnable from useSettings
+    const [tnsName, setTnsName] = useState(false);
 
-        this.state = { tnsName: false };
-        this.logout = this.logout.bind(this);
-        this.copyAddress = this.copyAddress.bind(this);
-    }
-
-    async componentDidMount() {
-        let address = Wallet.getWalletAddress();
-        if(address){
+    useEffect(() => {
+        const fetchTnsName = async () => {
+          let address = Wallet.getWalletAddress();
+          if (address) {
             const name = await tns.getDomainName(address);
-            this.setState({tnsName: name});
-        }
-    }
-
-    logout(){
+            setTnsName(name);
+          }
+        };
+    
+        fetchTnsName();
+    }, [tnsEnable]); // Update tnsName when tnsEnable changes
+    
+    
+    const logout = () => {
         store.dispatch(logout());
     }
 
-    copyAddress(){
+    const copyAddress = () => {
         let address = Wallet.getWalletAddress();
 
         copyToClipboard(address);
@@ -46,7 +47,7 @@ class NavBar extends React.Component {
         Alerts.showSuccess("Your address has been copied");
     }
 
-    onNetworkBadgeClick = () => {
+    const onNetworkBadgeClick = () => {
         let address = Wallet.getWalletAddress();
 
         if(address){
@@ -59,7 +60,7 @@ class NavBar extends React.Component {
         }
     };
 
-    renderAccountIfNeeded(){
+    const renderAccountIfNeeded = () => {
         let address = Wallet.getWalletAddress();
 
         if(address && !config.isEmbedMode){
@@ -70,10 +71,10 @@ class NavBar extends React.Component {
                             My Wallet:
                         </div>
                         <div className="NavBar__wallet-address">
-                            <TNS addr={address} tnsName={this.state.tnsName} />
+                            {tnsEnable ? <TNS addr={address} tnsName={tnsName} /> : address}
                         </div>
                         <a className="NavBar__wallet-copy-address-icon"
-                           onClick={this.copyAddress}
+                           onClick={copyAddress}
                         >
                             <img src="/img/icons/copy@2x.png"/>
                         </a>
@@ -91,7 +92,7 @@ class NavBar extends React.Component {
                             Settings
                         </NavLink>
                         <a className="NavBar__logout"
-                           onClick={this.logout}>
+                           onClick={logout}>
                             Log out
                         </a>
                     </div>
@@ -104,25 +105,17 @@ class NavBar extends React.Component {
         }
     }
 
-    render() {
-        const {network} = this.props;
-
-        return (
-            <div className={classNames("NavBar", { 'NavBar--is-centered': this.props.centered })}>
-                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                    <img className="NavBar__logo" src={'/img/logo/theta_wallet_logo@2x.png'}/>
-                    {
-                        !this.props.centered &&
-                        <NetworkSelector/>
-                    }
-                </div>
-
-                { this.renderAccountIfNeeded() }
+    return (
+        <div className={classNames("NavBar")}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <img className="NavBar__logo" src={"/img/logo/theta_wallet_logo@2x.png"} />
+                <NetworkSelector />
             </div>
-        );
-    }
-}
-
+            {renderAccountIfNeeded()}
+        </div>
+    );
+};
+        
 const TNS = ({addr, tnsName}) => {
     return (
         <div className="value tooltip">
