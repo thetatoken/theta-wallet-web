@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
 import _ from 'lodash';
@@ -12,6 +12,8 @@ import * as thetajs from "@thetalabs/theta-js";
 import BigNumber from "bignumber.js";
 import {TFuelAsset, ThetaAsset} from "../../constants/assets";
 import FlatButton from "../buttons/FlatButton";
+import { validateInput } from "../../libs/tns"
+import debouncePromise from 'awesome-debounce-promise';
 
 export default function SendTxForm(props){
     const {onSubmit, defaultValues, selectedAccount, formRef, assets, chainId} = props;
@@ -19,10 +21,17 @@ export default function SendTxForm(props){
         mode: 'onChange',
         defaultValues: defaultValues || {
             to: '',
+            tnsAddress: '',
             amount: '',
+            tnsLoading: false,
             assetId: ''
         }
     });
+    const [tnsName, setTnsName] = useState(false);
+    const [tnsAddress, setTnsAddress] = useState(false);
+    const [isTns, setIsTns] = useState(false);
+    const [isTnsLoading, setIsTnsLoading] = useState(false);
+
     const assetId = watch('assetId');
     const populateMaxAmount = () => {
         if(_.isEmpty(assetId)){
@@ -49,23 +58,52 @@ export default function SendTxForm(props){
         setValue('amount', amount);
     }
 
-    return (
-        <form className={'TxForm TxForm--Send'}
-              onSubmit={handleSubmit(onSubmit)}
-              ref={formRef}
-        >
-            <FormField title={'To'}
-                       error={(errors.to && 'A valid address is required')}
-            >
-                <input name="to"
-                       className={'RoundedInput'}
-                       placeholder={'Enter address'}
-                       ref={register({
-                           required: true,
-                           validate: (s) => ethers.utils.isAddress(s)
-                       })} />
-            </FormField>
+    const validateTo = async (val) => {
+        setTnsState({
+            domain: '',
+            address: '',
+            isTnsDomain: false,
+            loading: true});
+        const validation = await validateInput(val);
+        setTnsState(validation.state)
+        return validation.result;
+    }
 
+    const setTnsState = (state) => {
+        setTnsName(state.domain);
+        setTnsAddress(state.address);
+        setValue('tnsAddress', state.address);
+        setIsTns(state.isTnsDomain);
+        setIsTnsLoading(state.loading);
+        setValue('tnsLoading', state.loading);
+    }
+
+    return (
+        <form className={'TxForm TxForm--Send'} onSubmit={handleSubmit(onSubmit)} ref={formRef}>
+            <FormField title={'To'} error={(errors.to && 'A valid address is required')}>
+                <input
+                    name="to"
+                    className={'RoundedInput'}
+                    placeholder={'Enter address or TNS'}
+                    ref={register({
+                        required: true,
+                        validate: debouncePromise(async (value) => await validateTo(value), 200)
+                    })}
+                />
+                <input name="tnsAddress" ref={register({})} type="hidden"/>
+                <input name="tnsLoading" ref={register({})} type="hidden"/>
+            </FormField>
+            
+            {isTnsLoading && <div className="lds-css css-trncy8">
+                <div className="lds-dual-ring">
+                    <div></div>
+                </div>
+            </div>}
+            {tnsName && <div className="TNS-badge">
+                <p className='TNS-badge_title'>{isTns ? "Address:" : "TNS:"}</p>
+                <p className='TNS-badge_content'>{isTns ? tnsAddress : tnsName}</p>
+            </div>}
+            
             <FormField title={'Asset'}
                        error={errors.assetId && 'Asset is required'}
             >

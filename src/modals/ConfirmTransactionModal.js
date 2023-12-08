@@ -23,6 +23,7 @@ import MDSpinner from "react-md-spinner";
 import BigNumber from "bignumber.js";
 import config from "../Config";
 import TemporaryState from "../services/TemporaryState";
+import tns from "../libs/tns"
 
 
 const renderDataRow = (title, value, suffix = '', isLarge = false) => {
@@ -35,7 +36,8 @@ const renderDataRow = (title, value, suffix = '', isLarge = false) => {
                     {title}
                 </div>
                 <div className="TxDataRow__value">
-                    {value + suffix || ''}
+                    {typeof value === 'object' && value}
+                    {typeof value !== 'object' && (value + suffix || '')}
                 </div>
             </div>
         );
@@ -49,7 +51,9 @@ export class ConfirmTransactionModal extends React.Component {
 
         this.state = {
             password: config.isEmbedMode ? TemporaryState.getWalletData().password : '',
-            estimatedGasFee: null
+            estimatedGasFee: null,
+            fromTns: false,
+            toTns: false
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -60,6 +64,22 @@ export class ConfirmTransactionModal extends React.Component {
         let value = event.target.value;
 
         this.setState({[name]: value});
+    }
+
+    async setTnsState(selectedAddress, transactionRequest) {
+        if(!transactionRequest || !selectedAddress) return;
+        if (this.state.fromTns === false) {
+            const fromTns = await tns.getDomainName(selectedAddress);
+            this.setState({fromTns: fromTns});
+        }
+        if (this.state.toTns === false) {
+            let toPath = 'txData.holder';
+            if (!transactionRequest.txData.holder) {
+                toPath = 'txData.outputs[0].address';
+            }
+            const toTns = await tns.getDomainName(_.get(transactionRequest, toPath));
+            this.setState({toTns: toTns});
+        }
     }
 
     onConfirmClick = () => {
@@ -83,12 +103,14 @@ export class ConfirmTransactionModal extends React.Component {
         if(txType === thetajs.constants.TxType.Send){
             const thetaWei = _.get(transactionRequest, 'txData.outputs[0].thetaWei', null);
             const tfuelWei = _.get(transactionRequest, 'txData.outputs[0].tfuelWei', null);
+            const fromAddress = truncate(selectedAddress);
+            const toAddress = truncate(_.get(transactionRequest, 'txData.outputs[0].address'));
 
             return (
                 <React.Fragment>
                     { renderDataRow('Transaction Type', transactionTypeToName(txType)) }
-                    { renderDataRow('From', truncate(selectedAddress)) }
-                    { renderDataRow('To', truncate(_.get(transactionRequest, 'txData.outputs[0].address'))) }
+                    { renderDataRow('From', this.state.fromTns ? <p>{this.state.fromTns}<br/>{fromAddress}</p> : fromAddress) }
+                    { renderDataRow('To', this.state.toTns ? <p>{this.state.toTns}<br/>{toAddress}</p> : toAddress) }
                     { thetaWei && (thetaWei !== '0') && renderDataRow('Amount', formatNativeTokenAmountToLargestUnit(thetaWei), ' THETA') }
                     { tfuelWei && (tfuelWei !== '0') && renderDataRow('Amount', formatNativeTokenAmountToLargestUnit(tfuelWei), ' TFUEL') }
                 </React.Fragment>
@@ -132,12 +154,14 @@ export class ConfirmTransactionModal extends React.Component {
                 </React.Fragment>
             );
         }
-        if(txType === thetajs.constants.TxType.WithdrawStake){
+        if(txType === thetajs.constants.TxType.WithdrawStake) {
+            const fromAddress = truncate(selectedAddress);
+            const holderAddress = truncate(_.get(transactionRequest, 'txData.holder'));
             return (
                 <React.Fragment>
                     { renderDataRow('Transaction Type', transactionTypeToName(txType)) }
-                    { renderDataRow('From', truncate(selectedAddress)) }
-                    { renderDataRow('Holder', truncate(_.get(transactionRequest, 'txData.holder'))) }
+                    { renderDataRow('From', this.state.fromTns ? <p>{this.state.fromTns}<br/>{fromAddress}</p> : fromAddress) }
+                    { renderDataRow('Holder', this.state.toTns ? <p>{this.state.toTns}<br/>{holderAddress}</p> : holderAddress) }
                 </React.Fragment>
             );
         }
@@ -190,7 +214,8 @@ export class ConfirmTransactionModal extends React.Component {
     }
 
     render() {
-        const {transactionRequest} = this.props;
+        const {selectedAddress, transactionRequest} = this.props;
+        this.setTnsState(selectedAddress, transactionRequest);
         let isValid = Wallet.getWalletHardware() || this.state.password.length > 0;
         let txDataRows = this.renderDataRows();
         let passwordRow = null;

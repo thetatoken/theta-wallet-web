@@ -28,6 +28,7 @@ export class CreateTransactionModal extends React.Component {
     };
 
     onSubmit = async (data) => {
+        if (data.tnsLoading === 'true') return
         const {transactionType, thetaWallet} = this.props;
         const tx = await formDataToTransaction(transactionType, data, thetaWallet);
         const deps = tx.dependencies || [];

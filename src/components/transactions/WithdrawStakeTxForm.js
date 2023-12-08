@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
 import * as thetajs from '@thetalabs/theta-js';
@@ -8,6 +8,8 @@ import {formatTNT20TokenAmountToLargestUnit} from '../../utils/Utils';
 import _ from 'lodash';
 import BigNumber from 'bignumber.js';
 import {TDropAsset} from '../../constants/assets';
+import { validateInput } from "../../libs/tns"
+import debouncePromise from 'awesome-debounce-promise';
 
 export default function WithdrawStakeTxForm(props){
     const {onSubmit, defaultValues, formRef, selectedAccount, assets, chainId} = props;
@@ -16,12 +18,18 @@ export default function WithdrawStakeTxForm(props){
         defaultValues: defaultValues || {
             purpose: thetajs.constants.StakePurpose.StakeForGuardian,
             holder: '',
-            amount: ''
+            amount: '',
+            tnsAddress: '',
+            tnsLoading: false,
         }
     });
     const purpose = parseInt(watch('purpose'));
     const amount = watch('amount');
 
+    const [tnsName, setTnsName] = useState(false);
+    const [tnsAddress, setTnsAddress] = useState(false);
+    const [isTns, setIsTns] = useState(false);
+    const [isTnsLoading, setIsTnsLoading] = useState(false);
 
     const renderEstTDROPToReturn = () => {
         const percentageToUnstake = Math.min(parseFloat(amount), 100.0) / 100;
@@ -37,6 +45,26 @@ export default function WithdrawStakeTxForm(props){
             </div>
         );
     };
+
+    const validateTo = async (val) => {
+        setTnsState({
+            domain: '',
+            address: '',
+            isTnsDomain: false,
+            loading: true});
+        const validation = await validateInput(val);
+        setTnsState(validation.state)
+        return validation.result;
+    }
+
+    const setTnsState = (state) => {
+        setTnsName(state.domain);
+        setTnsAddress(state.address);
+        setValue('tnsAddress', state.address);
+        setIsTns(state.isTnsDomain);
+        setIsTnsLoading(state.loading);
+        setValue('tnsLoading', state.loading);
+    }
 
     return (
         <form className={'TxForm TxForm--WithdrawStake'}
@@ -81,17 +109,29 @@ export default function WithdrawStakeTxForm(props){
 
             {
                 purpose !== StakePurposeForTDROP &&
-                <FormField title={'Holder'}
-                           error={errors.holder && 'A valid node address is required'}
-                >
-                    <input name="holder"
-                           className={'RoundedInput'}
-                           placeholder={'Enter node address'}
-                           ref={register({
-                               required: true,
-                               validate: (s) => ethers.utils.isAddress(s)
-                           })} />
-                </FormField>
+                <div>
+                    <FormField title={'Holder'} error={errors.holder && 'A valid node address is required'}>
+                        <input
+                            name="holder"
+                            className={'RoundedInput'}
+                            placeholder={'Enter node address or TNS'}
+                            ref={register({
+                                required: true,
+                                validate: debouncePromise(async (value) => await validateTo(value), 200)
+                            })} />
+                        <input name="tnsAddress" ref={register({})} type="hidden"/>
+                        <input name="tnsLoading" ref={register({})} type="hidden"/>
+                    </FormField>
+                    {isTnsLoading && <div className="lds-css css-trncy8">
+                        <div className="lds-dual-ring">
+                            <div></div>
+                        </div>
+                    </div>}
+                    {tnsName && <div className="TNS-badge">
+                        <p className='TNS-badge_title'>{isTns ? "Address:" : "TNS:"}</p>
+                        <p className='TNS-badge_content'>{isTns ? tnsAddress : tnsName}</p>
+                    </div>}
+                </div>
             }
 
             {
