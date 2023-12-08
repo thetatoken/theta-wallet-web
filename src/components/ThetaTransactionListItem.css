@@ -85,6 +85,18 @@
     height: 18px;
     padding-right: 5px;
     text-overflow: ellipsis;
+    position: relative;
+}
+
+.ThetaTransactionListItem__address div.value.tooltip .tooltip--text {
+    top: 25px;
+    margin-left: 0px;
+    color: #8a8fb5;
+    font-size: 12px;
+}
+
+.ThetaTransactionListItem__address div.value.tooltip .tooltip--text:before {
+    left: 15%;
 }
 
 .ThetaTransactionListItem__amount-container{
