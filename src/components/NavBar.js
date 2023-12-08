@@ -19,7 +19,7 @@ import { useSettings } from "./SettingContext";
 const classNames = require('classnames');
 
 const NavBar = () => {
-    const { tnsEnable } = useSettings(); // Access tnsEnable from useSettings
+    const { tnsEnable } = useSettings();
     const [tnsName, setTnsName] = useState(false);
 
     useEffect(() => {

@@ -17,7 +17,7 @@ export const validateInput = async (val) => {
     if(ethers.utils.isAddress(val)) {
         state.address = val;
         state.domain = await tns.getDomainName(val);
-    } else if(val.endsWith(".theta")) {
+    } else if(val && val.endsWith(".theta")) {
         state.address = await tns.getAddress(val);
         if (!state.address) {
             return {

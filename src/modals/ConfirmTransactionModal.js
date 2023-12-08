@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import * as thetajs from '@thetalabs/theta-js';
 import './TxConfirmationModal.css';
 import connect from "react-redux/es/connect/connect";
@@ -24,7 +24,7 @@ import BigNumber from "bignumber.js";
 import config from "../Config";
 import TemporaryState from "../services/TemporaryState";
 import tns from "../libs/tns"
-
+import { useSettings } from "../components/SettingContext";
 
 const renderDataRow = (title, value, suffix = '', isLarge = false) => {
     suffix = suffix ? suffix : '';
@@ -45,60 +45,56 @@ const renderDataRow = (title, value, suffix = '', isLarge = false) => {
     return null;
 };
 
-export class ConfirmTransactionModal extends React.Component {
-    constructor(){
-        super();
+const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, dispatch}) => {
+    const { tnsEnable } = useSettings();
+  
+    const [password, setPassword] = useState(
+        config.isEmbedMode ? TemporaryState.getWalletData().password : ''
+    );
+    const [estimatedGasFee, setEstimatedGasFee] = useState(null);
+    const [fromTns, setFromTns] = useState(false);
+    const [toTns, setToTns] = useState(false);
 
-        this.state = {
-            password: config.isEmbedMode ? TemporaryState.getWalletData().password : '',
-            estimatedGasFee: null,
-            fromTns: false,
-            toTns: false
-        };
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setPassword(value);
+    };
+    
 
-        this.handleChange = this.handleChange.bind(this);
-    }
-
-    handleChange(event) {
-        let name = event.target.name;
-        let value = event.target.value;
-
-        this.setState({[name]: value});
-    }
-
-    async setTnsState(selectedAddress, transactionRequest) {
-        if(!transactionRequest || !selectedAddress) return;
-        if (this.state.fromTns === false) {
-            const fromTns = await tns.getDomainName(selectedAddress);
-            this.setState({fromTns: fromTns});
+    const setTnsState = async () => {
+        if (!transactionRequest || !selectedAddress) return;
+        if (!fromTns) {
+          const fromTnsResult = await tns.getDomainName(selectedAddress);
+          setFromTns(fromTnsResult);
         }
-        if (this.state.toTns === false) {
-            let toPath = 'txData.holder';
-            if (!transactionRequest.txData.holder) {
-                toPath = 'txData.outputs[0].address';
-            }
-            const toTns = await tns.getDomainName(_.get(transactionRequest, toPath));
-            this.setState({toTns: toTns});
+        if (!toTns) {
+          let toPath = 'txData.holder';
+          if (!transactionRequest.txData.holder) {
+            toPath = 'txData.outputs[0].address';
+          }
+          const toTnsResult = await tns.getDomainName(
+            _.get(transactionRequest, toPath)
+          );
+          setToTns(toTnsResult);
         }
-    }
-
-    onConfirmClick = () => {
+    };
+    
+    const onConfirmClick = () => {
         // TODO approve the request if the password matches
         // this.props.dispatch(createSendTransaction(this.props.network, this.props.transaction, this.state.password));
-        const {transactionRequest} = this.props;
-        this.props.dispatch(approveTransactionRequest(transactionRequest.id, this.state.password));
+        dispatch(approveTransactionRequest(transactionRequest.id, password));
     }
 
-    onRejectClick = () => {
-        const {transactionRequest} = this.props;
-        this.props.dispatch(rejectTransactionRequest(transactionRequest.id));
+    const onRejectClick = () => {
+        dispatch(rejectTransactionRequest(transactionRequest.id));
     }
 
-    renderDataRows = () => {
-        const {selectedAddress, transactionRequest, assets} = this.props;
+    const renderDataRows = () => {
+        // const {selectedAddress, transactionRequest, assets} = this.props;
         const txType = _.get(transactionRequest, 'txType');
         const txData = _.get(transactionRequest, 'txData');
         const stakePurpose = _.get(transactionRequest, 'txData.purpose');
+    
 
         if(txType === thetajs.constants.TxType.Send){
             const thetaWei = _.get(transactionRequest, 'txData.outputs[0].thetaWei', null);
@@ -107,13 +103,13 @@ export class ConfirmTransactionModal extends React.Component {
             const toAddress = truncate(_.get(transactionRequest, 'txData.outputs[0].address'));
 
             return (
-                <React.Fragment>
+                <>
                     { renderDataRow('Transaction Type', transactionTypeToName(txType)) }
-                    { renderDataRow('From', this.state.fromTns ? <p>{this.state.fromTns}<br/>{fromAddress}</p> : fromAddress) }
-                    { renderDataRow('To', this.state.toTns ? <p>{this.state.toTns}<br/>{toAddress}</p> : toAddress) }
+                    {renderDataRow('From', fromTns ? <p>{fromTns}<br />{fromAddress}</p> : fromAddress)}
+                    {renderDataRow('To', toTns ? <p>{toTns}<br />{toAddress}</p> : toAddress)}
                     { thetaWei && (thetaWei !== '0') && renderDataRow('Amount', formatNativeTokenAmountToLargestUnit(thetaWei), ' THETA') }
                     { tfuelWei && (tfuelWei !== '0') && renderDataRow('Amount', formatNativeTokenAmountToLargestUnit(tfuelWei), ' TFUEL') }
-                </React.Fragment>
+                </>
             );
         }
         if(txType === thetajs.constants.TxType.SmartContract){
@@ -142,7 +138,7 @@ export class ConfirmTransactionModal extends React.Component {
             }
 
             return (
-                <React.Fragment>
+                <>
                     { renderDataRow('Transaction Type', transactionName) }
                     { !_.isNil(contractAddress) && renderDataRow('Contract', truncate(_.get(transactionRequest, 'txData.to'))) }
                     { renderDataRow('From', truncate(selectedAddress)) }
@@ -150,35 +146,39 @@ export class ConfirmTransactionModal extends React.Component {
                     { (!_.isNil(transferToAddress) && symbol && transferToValue) && renderDataRow('Token Amount', formatTNT20TokenAmountToLargestUnit(transferToValue, decimals), ` ${symbol}`) }
                     { (!_.isNil(value) && value > 0) && renderDataRow('Value', formatNativeTokenAmountToLargestUnit(value), ' TFUEL') }
                     { renderDataRow('Data', _.get(transactionRequest, 'txData.data'), null, true) }
-
-                </React.Fragment>
+                </>
             );
         }
         if(txType === thetajs.constants.TxType.WithdrawStake) {
             const fromAddress = truncate(selectedAddress);
             const holderAddress = truncate(_.get(transactionRequest, 'txData.holder'));
             return (
-                <React.Fragment>
+                <>
                     { renderDataRow('Transaction Type', transactionTypeToName(txType)) }
-                    { renderDataRow('From', this.state.fromTns ? <p>{this.state.fromTns}<br/>{fromAddress}</p> : fromAddress) }
-                    { renderDataRow('Holder', this.state.toTns ? <p>{this.state.toTns}<br/>{holderAddress}</p> : holderAddress) }
-                </React.Fragment>
+                    { renderDataRow('From', fromTns ? <p>{fromTns}<br/>{fromAddress}</p> : fromAddress) }
+                    { renderDataRow('Holder', toTns ? <p>{toTns}<br/>{holderAddress}</p> : holderAddress) }
+                </>
             );
         }
         if(txType === thetajs.constants.TxType.DepositStake){
+            const fromAddress = truncate(selectedAddress);
+            const holderAddress = truncate(_.get(transactionRequest, 'txData.holder'));
+
             return (
-                <React.Fragment>
+                <>
                     { renderDataRow('Transaction Type', transactionTypeToName(txType)) }
                     { renderDataRow('Purpose', 'Validator Node') }
-                    { renderDataRow('From', truncate(selectedAddress)) }
-                    { renderDataRow('Holder', truncate(_.get(transactionRequest, 'txData.holder'))) }
+                    { renderDataRow('From', fromTns ? <p>{fromTns}<br/>{fromAddress}</p> : fromAddress) }
+                    { renderDataRow('Holder', toTns ? <p>{toTns}<br/>{holderAddress}</p> : holderAddress) }
                     { renderDataRow('Amount', formatNativeTokenAmountToLargestUnit(_.get(transactionRequest, 'txData.amount')), ' THETA') }
-                </React.Fragment>
+                </>
             );
         }
         if(txType === thetajs.constants.TxType.DepositStakeV2){
+            const fromAddress = truncate(selectedAddress);
+
             return (
-                <React.Fragment>
+                <>
                     { renderDataRow('Transaction Type', transactionTypeToName(txType)) }
                     {
                         (stakePurpose === thetajs.constants.StakePurpose.StakeForEliteEdge) &&
@@ -188,7 +188,7 @@ export class ConfirmTransactionModal extends React.Component {
                         (stakePurpose === thetajs.constants.StakePurpose.StakeForGuardian) &&
                         renderDataRow('Purpose', 'Guardian Node')
                     }
-                    { renderDataRow('From', truncate(selectedAddress)) }
+                    { renderDataRow('From', fromTns ? <p>{fromTns}<br/>{fromAddress}</p> : fromAddress) }
                     { renderDataRow('Holder summary', _.get(transactionRequest, 'txData.holderSummary'), null, true) }
                     {
                         (stakePurpose === thetajs.constants.StakePurpose.StakeForEliteEdge) &&
@@ -198,14 +198,12 @@ export class ConfirmTransactionModal extends React.Component {
                         (stakePurpose === thetajs.constants.StakePurpose.StakeForGuardian) &&
                         renderDataRow('Amount', formatNativeTokenAmountToLargestUnit(_.get(transactionRequest, 'txData.amount')), ' THETA')
                     }
-                </React.Fragment>
+                </>
             );
         }
     };
 
-    calculateTotalGasPrice = () => {
-        const {transactionRequest} = this.props;
-
+    const calculateTotalGasPrice = () => {
         if(transactionRequest?.gasFeeData?.totalGasFee){
             const dependencyGasFee = new BigNumber(_.get(transactionRequest, ['dependencies', 0, 'gasFeeData', 'totalGasFee'], '0'));
 
@@ -213,77 +211,85 @@ export class ConfirmTransactionModal extends React.Component {
         }
     }
 
-    render() {
-        const {selectedAddress, transactionRequest} = this.props;
-        this.setTnsState(selectedAddress, transactionRequest);
-        let isValid = Wallet.getWalletHardware() || this.state.password.length > 0;
-        let txDataRows = this.renderDataRows();
-        let passwordRow = null;
 
-        if(!Wallet.getWalletHardware() && !config.isEmbedMode){
-            passwordRow = (
-                <div className="TxConfirmationModal__password-container">
-                    <div className="TxConfirmationModal__password-title">Enter your wallet password to sign this transaction</div>
-                    <input className="ChoosePasswordCard__password-input"
-                           placeholder="Enter wallet password"
-                           name="password"
-                           type="password"
-                           value={this.state.password}
-                           onChange={this.handleChange.bind(this)}
+    useEffect(() => {
+        if (tnsEnable) {
+            setTnsState();
+        }
+      }, [transactionRequest, selectedAddress, tnsEnable]);
+    
+
+    let isValid = Wallet.getWalletHardware() || password.length > 0;
+    let txDataRows = renderDataRows();
+    let passwordRow = null;
+
+
+    if (!Wallet.getWalletHardware() && !config.isEmbedMode) {
+        passwordRow = (
+          <div className="TxConfirmationModal__password-container">
+            <div className="TxConfirmationModal__password-title">
+              Enter your wallet password to sign this transaction
+            </div>
+            <input
+              className="ChoosePasswordCard__password-input"
+              placeholder="Enter wallet password"
+              name="password"
+              type="password"
+              value={password}
+              onChange={handleChange}
+            />
+          </div>
+        );
+      }
+
+    return (
+        <Modal closeable={false}>
+            <div className="TxConfirmationModal">
+                <div className="ModalTitle">
+                    Confirm Transaction
+                </div>
+
+                <div className={'TxDataRows'}>
+                    {
+                        txDataRows
+                    }
+                    <div className={`TxDataRow`}>
+                        <div className="TxDataRow__title">
+                            Estimated Gas Fee
+                        </div>
+                        {
+                            _.isNil(transactionRequest?.gasFeeData) &&
+                            <div className="TxDataRow__value">
+                                <MDSpinner singleColor={'#1BDED0'} size={20}/>
+                            </div>
+                        }
+                        {
+                            !_.isNil(transactionRequest?.gasFeeData) &&
+                            <div className="TxDataRow__value">
+                                <span>{`${formatNativeTokenAmountToLargestUnit(calculateTotalGasPrice())} TFUEL`}</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                { passwordRow }
+
+                <div className={'TxConfirmationModal__footer'}>
+                    <FlatButton title={'Reject'}
+                                className={'ConfirmTransactionPage__reject-button'}
+                                size={'large'}
+                                onClick={onRejectClick}
+                                borderless centered/>
+                    <GradientButton title={'Confirm'}
+                                    className={'ConfirmTransactionPage__confirm-button'}
+                                    disabled={isValid === false}
+                                    onClick={onConfirmClick}
                     />
                 </div>
-            );
-        }
 
-        return (
-            <Modal closeable={false}>
-                <div className="TxConfirmationModal">
-                    <div className="ModalTitle">
-                        Confirm Transaction
-                    </div>
-
-                    <div className={'TxDataRows'}>
-                        {
-                            txDataRows
-                        }
-                        <div className={`TxDataRow`}>
-                            <div className="TxDataRow__title">
-                                Estimated Gas Fee
-                            </div>
-                            {
-                                _.isNil(transactionRequest?.gasFeeData) &&
-                                <div className="TxDataRow__value">
-                                    <MDSpinner singleColor={'#1BDED0'} size={20}/>
-                                </div>
-                            }
-                            {
-                                !_.isNil(transactionRequest?.gasFeeData) &&
-                                <div className="TxDataRow__value">
-                                    <span>{`${formatNativeTokenAmountToLargestUnit(this.calculateTotalGasPrice())} TFUEL`}</span>
-                                </div>
-                            }
-                        </div>
-                    </div>
-
-                    { passwordRow }
-
-                    <div className={'TxConfirmationModal__footer'}>
-                        <FlatButton title={'Reject'}
-                                    className={'ConfirmTransactionPage__reject-button'}
-                                    size={'large'}
-                                    onClick={this.onRejectClick}
-                                    borderless centered/>
-                        <GradientButton title={'Confirm'}
-                                        className={'ConfirmTransactionPage__confirm-button'}
-                                        disabled={isValid === false}
-                                        onClick={this.onConfirmClick}
-                        />
-                    </div>
-
-                </div>
-            </Modal>
-        )
-    }
+            </div>
+        </Modal>
+    )
 }
 
 const mapStateToProps = state => {

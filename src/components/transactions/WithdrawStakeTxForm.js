@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
 import * as thetajs from '@thetalabs/theta-js';
@@ -10,8 +10,10 @@ import BigNumber from 'bignumber.js';
 import {TDropAsset} from '../../constants/assets';
 import { validateInput } from "../../libs/tns"
 import debouncePromise from 'awesome-debounce-promise';
+import { useSettings } from "../SettingContext";
 
 export default function WithdrawStakeTxForm(props){
+    const { tnsEnable } = useSettings();
     const {onSubmit, defaultValues, formRef, selectedAccount, assets, chainId} = props;
     const {register, handleSubmit, errors, watch, setValue} = useForm({
         mode: 'onChange',
@@ -30,6 +32,19 @@ export default function WithdrawStakeTxForm(props){
     const [tnsAddress, setTnsAddress] = useState(false);
     const [isTns, setIsTns] = useState(false);
     const [isTnsLoading, setIsTnsLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchTnsName = async () => {
+            if (tnsEnable) {
+                const validation = await validateTo(watch('to'));
+                setTnsState(validation.state);
+            }
+        };
+
+        fetchTnsName();
+    }, [watch('to'), tnsEnable]);
+
+
 
     const renderEstTDROPToReturn = () => {
         const percentageToUnstake = Math.min(parseFloat(amount), 100.0) / 100;
@@ -58,12 +73,12 @@ export default function WithdrawStakeTxForm(props){
     }
 
     const setTnsState = (state) => {
-        setTnsName(state.domain);
-        setTnsAddress(state.address);
-        setValue('tnsAddress', state.address);
-        setIsTns(state.isTnsDomain);
-        setIsTnsLoading(state.loading);
-        setValue('tnsLoading', state.loading);
+        setTnsName(state ? state.domain : '');
+        setTnsAddress(state ? state.address : '');
+        setValue('tnsAddress', state ? state.address : '');
+        setIsTns(state ? state.isTnsDomain : '');
+        setIsTnsLoading(state ? state.loading : '');
+        setValue('tnsLoading', state ? state.loading : '');
     }
 
     return (
@@ -111,14 +126,24 @@ export default function WithdrawStakeTxForm(props){
                 purpose !== StakePurposeForTDROP &&
                 <div>
                     <FormField title={'Holder'} error={errors.holder && 'A valid node address is required'}>
-                        <input
-                            name="holder"
-                            className={'RoundedInput'}
-                            placeholder={'Enter node address or TNS'}
-                            ref={register({
+                        {tnsEnable ?
+                            <input
+                                name="holder"
+                                className={'RoundedInput'}
+                                placeholder={'Enter node address or TNS'}
+                                ref={register({
                                 required: true,
                                 validate: debouncePromise(async (value) => await validateTo(value), 200)
                             })} />
+                        :
+                            <input name="holder"
+                                className={'RoundedInput'}
+                                placeholder={'Enter node address'}
+                                ref={register({
+                                required: true,
+                                validate: (s) => ethers.utils.isAddress(s)
+                            })} />}
+
                         <input name="tnsAddress" ref={register({})} type="hidden"/>
                         <input name="tnsLoading" ref={register({})} type="hidden"/>
                     </FormField>

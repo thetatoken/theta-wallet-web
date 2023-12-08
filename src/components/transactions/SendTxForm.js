@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
 import _ from 'lodash';
@@ -14,8 +14,11 @@ import {TFuelAsset, ThetaAsset} from "../../constants/assets";
 import FlatButton from "../buttons/FlatButton";
 import { validateInput } from "../../libs/tns"
 import debouncePromise from 'awesome-debounce-promise';
+import { useSettings } from "../SettingContext";
+
 
 export default function SendTxForm(props){
+    const { tnsEnable } = useSettings();
     const {onSubmit, defaultValues, selectedAccount, formRef, assets, chainId} = props;
     const {register, handleSubmit, errors, watch, setValue} = useForm({
         mode: 'onChange',
@@ -33,6 +36,18 @@ export default function SendTxForm(props){
     const [isTnsLoading, setIsTnsLoading] = useState(false);
 
     const assetId = watch('assetId');
+
+    useEffect(() => {
+        const fetchTnsName = async () => {
+            if (tnsEnable) {
+                const validation = await validateTo(watch('to'));
+                setTnsState(validation.state);
+            }
+        };
+
+        fetchTnsName();
+    }, [watch('to'), tnsEnable]);
+
     const populateMaxAmount = () => {
         if(_.isEmpty(assetId)){
             return;
@@ -70,26 +85,36 @@ export default function SendTxForm(props){
     }
 
     const setTnsState = (state) => {
-        setTnsName(state.domain);
-        setTnsAddress(state.address);
-        setValue('tnsAddress', state.address);
-        setIsTns(state.isTnsDomain);
-        setIsTnsLoading(state.loading);
-        setValue('tnsLoading', state.loading);
+        setTnsName(state ? state.domain : '');
+        setTnsAddress(state ? state.address : '');
+        setValue('tnsAddress', state ? state.address : '');
+        setIsTns(state ? state.isTnsDomain : '');
+        setIsTnsLoading(state ? state.loading : '');
+        setValue('tnsLoading', state ? state.loading : '');
     }
 
     return (
         <form className={'TxForm TxForm--Send'} onSubmit={handleSubmit(onSubmit)} ref={formRef}>
             <FormField title={'To'} error={(errors.to && 'A valid address is required')}>
-                <input
-                    name="to"
-                    className={'RoundedInput'}
-                    placeholder={'Enter address or TNS'}
-                    ref={register({
+                {tnsEnable ?
+                    <input
+                        name="to"
+                        className={'RoundedInput'}
+                        placeholder={'Enter address or TNS'}
+                        ref={register({
+                            required: true,
+                            validate: debouncePromise(async (value) => await validateTo(value), 200)
+                        })}
+                    />
+                :
+                    <input name="to"
+                        className={'RoundedInput'}
+                        placeholder={'Enter address'}
+                        ref={register({
                         required: true,
-                        validate: debouncePromise(async (value) => await validateTo(value), 200)
-                    })}
-                />
+                        validate: (s) => ethers.utils.isAddress(s)
+                    })} />
+                }
                 <input name="tnsAddress" ref={register({})} type="hidden"/>
                 <input name="tnsLoading" ref={register({})} type="hidden"/>
             </FormField>

@@ -11,7 +11,7 @@ import { useSettings } from "./SettingContext";
 
 const ThetaTransactionListItem = (props) => {
     const [tnsName, setTnsName] = useState(false);
-    const { tnsEnable } = useSettings(); // Access tnsEnable from useSettings
+    const { tnsEnable } = useSettings();
 
     useEffect(() => {
         const fetchTnsName = async () => {
