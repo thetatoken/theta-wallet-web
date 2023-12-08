@@ -15,14 +15,25 @@ import Config from '../Config';
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import TransportU2F from "@ledgerhq/hw-transport-u2f";
 import Eth from "@ledgerhq/hw-app-eth";
+import tns from "../libs/tns"
 
 export default class ReceiveModal extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            isLoading: false
+            isLoading: false,
+            tnsName: false
         };
+    }
+
+    async componentDidMount() {
+        let address = Wallet.getWalletAddress();
+
+        if(address){
+            const name = await tns.getDomainName(address);
+            this.setState({tnsName: name});
+        }
     }
 
     handleCopyAddressClick = () => {
@@ -32,6 +43,15 @@ export default class ReceiveModal extends React.Component {
 
         Alerts.showSuccess("Your address has been copied");
     };
+
+    handleCopyTnsClick = () => {
+        let { tnsName } = this.state;
+
+        copyToClipboard(tnsName);
+
+        Alerts.showSuccess("Your TNS has been copied");
+    };
+
 
     handleDisplayOnLedgerClick = async () => {
         try {
@@ -99,6 +119,7 @@ export default class ReceiveModal extends React.Component {
                                      onClick={this.handleCopyAddressClick}
                         />
                     </div>
+                    <TNS tnsName={this.state.tnsName} onCopyTnsClick={this.handleCopyTnsClick}/>
                     {Wallet.getWalletHardware() ==='ledger' &&
                     <div className="ReceiveModal__buttons">
                         <GhostButton title="Display on Ledger"
@@ -130,3 +151,22 @@ export default class ReceiveModal extends React.Component {
         )
     }
 }
+
+const TNS = ({tnsName, onCopyTnsClick}) => {
+    if (!tnsName) return (<></>)
+    return (
+    <div className="ReceiveModal__tns">
+        <div className="ReceiveModal__public-address-title">
+            My TNS
+        </div>
+        <div className="ReceiveModal__public-address">
+            {tnsName}
+        </div>
+        <div className="ReceiveModal__buttons">
+            <GhostButton title="Copy"
+                iconUrl="/img/icons/copy@2x.png"
+                onClick={onCopyTnsClick}
+            />
+        </div>
+    </div>)
+};

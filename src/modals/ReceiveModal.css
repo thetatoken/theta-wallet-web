@@ -38,7 +38,11 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: 10px 0 20px;
+}
+
+.ReceiveModal__tns {
+    padding: 10px 0 20px;
 }
 
 .ReceiveModal__qr{
