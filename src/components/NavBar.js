@@ -33,8 +33,7 @@ const NavBar = () => {
     
         fetchTnsName();
     }, [tnsEnable]); // Update tnsName when tnsEnable changes
-    
-    
+
     const logout = () => {
         store.dispatch(logout());
     }
