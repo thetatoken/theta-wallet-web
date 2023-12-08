@@ -129,6 +129,7 @@ const EnableTnsContent = () => {
         const isChecked = event.target.checked;
         setLocalTnsEnable(isChecked);
         updateTnsEnable(isChecked);
+        Alerts.showSuccess(`Theta Name Service (TNS) is now ${isChecked ? 'enabled': 'disabled'}`);
     };
 
     useEffect(() => {
@@ -145,7 +146,7 @@ const EnableTnsContent = () => {
                 name="tnsEnabled"
                 checked={localTnsEnable}
                 onChange={handleCheckboxChange}
-            /> <span className="InputTitle">{localTnsEnable ? "Yes" : "No"}</span>
+            />
         </>
     );
 };

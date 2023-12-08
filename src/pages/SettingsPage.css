@@ -37,6 +37,9 @@
     font-size: 16px;
     font-weight: normal;
     color: #7A88B5;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
+}
 
+.RoundedInput {
+    margin-bottom: 15px;
 }
