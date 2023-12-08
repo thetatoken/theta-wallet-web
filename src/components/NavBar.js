@@ -13,6 +13,7 @@ import {getNetworkName} from "../constants/Networks";
 import NetworkSelector from "./NetworkSelector";
 import {NavLink} from "react-router-dom";
 import config from "../Config";
+import tns from "../libs/tns"
 
 const classNames = require('classnames');
 
@@ -20,8 +21,17 @@ class NavBar extends React.Component {
     constructor(){
         super();
 
+        this.state = { tnsName: false };
         this.logout = this.logout.bind(this);
         this.copyAddress = this.copyAddress.bind(this);
+    }
+
+    async componentDidMount() {
+        let address = Wallet.getWalletAddress();
+        if(address){
+            const name = await tns.getDomainName(address);
+            this.setState({tnsName: name});
+        }
     }
 
     logout(){
@@ -60,7 +70,7 @@ class NavBar extends React.Component {
                             My Wallet:
                         </div>
                         <div className="NavBar__wallet-address">
-                            {address}
+                            <TNS addr={address} tnsName={this.state.tnsName} />
                         </div>
                         <a className="NavBar__wallet-copy-address-icon"
                            onClick={this.copyAddress}
@@ -112,6 +122,20 @@ class NavBar extends React.Component {
         );
     }
 }
+
+const TNS = ({addr, tnsName}) => {
+    return (
+        <div className="value tooltip">
+            {tnsName &&
+            <div className="tooltip--text">
+                <p>
+                    {tnsName}<br/>
+                    ({addr})
+                </p>
+            </div>}
+            {tnsName ? tnsName : addr ? addr : ''}
+        </div>)
+};
 
 const mapStateToProps = (state, ownProps) => {
     return {

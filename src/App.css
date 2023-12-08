@@ -5,3 +5,44 @@
     height: 100%;
     width: 100%;
 }
+
+div.value.tooltip {
+    z-index: 100;
+    width: -moz-fit-content;
+    width: fit-content;
+}
+
+div.value.tooltip .tooltip--text {
+    width: 289px;
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+    background: #000;
+    padding: 10px 0 10px 10px;
+    text-align: left;
+    line-height: 15px;
+    color: #8a8fb5;
+    font-size: 12px;
+    top: 54px;
+    margin-left: -215px;
+    font-weight: normal;
+}
+
+div.value.tooltip .tooltip--text:before {
+    content: "";
+    position: absolute;
+    border-style: solid;
+    bottom: 100%;
+    left: 76%;
+    margin-left: -5px;
+    border-color: transparent transparent #000;
+    border-width: 5px;
+}
+
+div.value.tooltip .tooltip--text p {
+    margin: 0
+}
+
+div.value.tooltip:hover .tooltip--text {
+    visibility: visible
+}
