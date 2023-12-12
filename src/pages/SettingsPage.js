@@ -147,6 +147,12 @@ const EnableTnsContent = () => {
                 checked={localTnsEnable}
                 onChange={handleCheckboxChange}
             />
+            <div className="InputTitle">
+                <p>Theta Name Service (TNS) is a feature that allows you to replace your wallet address (42 characters long starting with "0x") with a name of your choice (i.e. myname.theta).</p>
+                <p>By enabling, you will be able to see and use any assigned TNS throughout the Theta Wallet.</p>
+                <p>When disabled, you will only see wallet adresses and won't be able to use any TNS to refer to a wallet.</p>
+                <p>You can purchase and assign TNS at <a target="_blank" href="https://thetaboard.io/domain/search">Thetaboard.io</a></p>
+            </div>
         </>
     );
 };
