@@ -163,12 +163,23 @@ export default class Api {
     //
 
     static callFaucet(address, faucetId) {
-        let url = `https://public-faucet.thetatoken.org/tfuel_faucet`;
-
-        return sendRequest(url, "GET", null, {
+        let path = `https://public-faucet.thetatoken.org/tfuel_faucet`;
+        let queryParams = {
             address: address.toLowerCase(),
             chain: faucetId
-        }, null);
+        };
+
+        let url = buildURL(path, queryParams);
+        let headers = {
+            'Accept': 'application/json'
+        };
+
+        let opts = {
+            method: 'GET',
+            headers: headers,
+        };
+
+        return fetch(url, opts);
     }
 
     //
