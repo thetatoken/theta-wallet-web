@@ -1,0 +1,44 @@
+.TNS-badge {
+    padding: 15px;
+    background: #1BD3D4;
+    transition: all 0.2s ease-in-out;
+    border-radius: 4px;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.TNS-badge p {
+    margin: 0;
+    padding: 0;
+}
+
+.css-trncy8 .lds-dual-ring div {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 0px;
+    left: 0px;
+    border-radius: 50%;
+    border-width: 2px;
+    border-style: solid;
+    border-image: initial;
+    border-color: #1BD3D4 transparent;
+    animation: 1.5s linear 0s infinite normal none running lds-dual-ring;
+}
+
+.css-trncy8 .lds-dual-ring {
+    width: 20px;
+    height: 20px;
+    transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+    position: relative;
+    margin: auto;
+}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

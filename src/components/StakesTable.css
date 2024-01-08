@@ -60,3 +60,16 @@
     height: 20px;
     margin-right: 6px;
 }
+
+.StakesTableRow .value.tooltip {
+    position: relative;
+}
+
+.StakesTableRow .value.tooltip .tooltip--text {
+    top: 36px;
+    margin-left: -80px;
+}
+
+.StakesTableRow div.value.tooltip .tooltip--text:before {
+    left: 40%;
+}

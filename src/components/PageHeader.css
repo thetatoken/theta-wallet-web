@@ -22,4 +22,5 @@
     position: relative;
     position: sticky;
     background-color: #242b45;
+    z-index: 1;
 }

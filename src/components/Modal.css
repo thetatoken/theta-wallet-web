@@ -11,6 +11,7 @@
     left: 0;
     background-color: #13182aeb;
     cursor: pointer;
+    z-index: 100;
 }
 
 .Modal{

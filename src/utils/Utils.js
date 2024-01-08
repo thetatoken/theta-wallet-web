@@ -236,7 +236,9 @@ export const formDataToTransaction = async (transactionType, txFormData, thetaWa
     const assets = getAllAssets(chainId, tokens);
 
     if (transactionType === 'send') {
-        const {to, assetId, amount} = txFormData;
+        const {assetId, amount, tnsAddress} = txFormData;
+        const to = tnsAddress ? tnsAddress : txFormData.to;
+
         const asset = _.find(assets, function (a) {
             return a.id === assetId;
         });
@@ -274,7 +276,8 @@ export const formDataToTransaction = async (transactionType, txFormData, thetaWa
         return await safeTransferFrom(selectedAddress, to, tokenId);
     }
     if(transactionType === 'withdraw-stake'){
-        const {holder, purpose, amount} = txFormData;
+        const {tnsAddress, purpose, amount} = txFormData;
+        const holder = tnsAddress ? tnsAddress : txFormData.holder;
         const purposeInt = parseInt(purpose);
 
         if(purposeInt === StakePurposeForTDROP){
