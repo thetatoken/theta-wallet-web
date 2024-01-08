@@ -1,14 +1,15 @@
 import React from "react";
 import { createContext, useContext, useState } from 'react';
+import SafeLocalStorage from "../utils/SafeLocalStorage";
 
 const SettingsContext = createContext();
 
 export const SettingsProvider = ({ children }) => {
-  const [tnsEnable, setTnsEnable] = useState(localStorage.getItem('tnsEnable') === 'true');
+  const [tnsEnable, setTnsEnable] = useState(SafeLocalStorage.getItem('tnsEnable') === 'true');
 
   const updateTnsEnable = (value) => {
     setTnsEnable(value);
-    localStorage.setItem('tnsEnable', value);
+    SafeLocalStorage.setItem('tnsEnable', value);
   };
 
   const contextValue = {
