@@ -130,3 +130,13 @@
 .NavBar__network-badge.NavBar__network-badge--is-disabled:after{
     display: none;
 }
+
+.NavBar__logo-and-network-wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.NavBar--is-centered{
+    margin-bottom: 20px;
+}

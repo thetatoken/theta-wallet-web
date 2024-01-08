@@ -18,7 +18,7 @@ import { useSettings } from "./SettingContext";
 
 const classNames = require('classnames');
 
-const NavBar = () => {
+const NavBar = ({centered}) => {
     const { tnsEnable } = useSettings();
     const [tnsName, setTnsName] = useState(false);
 
@@ -105,8 +105,8 @@ const NavBar = () => {
     }
 
     return (
-        <div className={classNames("NavBar")}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div className={classNames("NavBar", { 'NavBar--is-centered': centered })}>
+            <div className={'NavBar__logo-and-network-wrapper'}>
                 <img className="NavBar__logo" src={"/img/logo/theta_wallet_logo@2x.png"} />
                 <NetworkSelector />
             </div>
