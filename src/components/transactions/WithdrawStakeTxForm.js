@@ -11,6 +11,8 @@ import {TDropAsset} from '../../constants/assets';
 import { validateInput } from "../../libs/tns"
 import debouncePromise from 'awesome-debounce-promise';
 import { useSettings } from "../SettingContext";
+import TNSInputAttachment from "../TNSInputAttachment";
+import classNames from "classnames";
 
 export default function WithdrawStakeTxForm(props){
     const { tnsEnable } = useSettings();
@@ -27,6 +29,7 @@ export default function WithdrawStakeTxForm(props){
     });
     const purpose = parseInt(watch('purpose'));
     const amount = watch('amount');
+    const to = watch('to');
 
     const [tnsName, setTnsName] = useState(false);
     const [tnsAddress, setTnsAddress] = useState(false);
@@ -36,13 +39,13 @@ export default function WithdrawStakeTxForm(props){
     useEffect(() => {
         const fetchTnsName = async () => {
             if (tnsEnable) {
-                const validation = await validateTo(watch('to'));
+                const validation = await validateTo(to);
                 setTnsState(validation.state);
             }
         };
 
         fetchTnsName();
-    }, [watch('to'), tnsEnable]);
+    }, [to, tnsEnable]);
 
 
 
@@ -125,11 +128,13 @@ export default function WithdrawStakeTxForm(props){
             {
                 purpose !== StakePurposeForTDROP &&
                 <div>
-                    <FormField title={'Holder'} error={errors.holder && 'A valid node address is required'}>
+                    <FormField title={'Holder'} error={errors.holder && tnsEnable ? 'A valid node address is required' : 'A valid node address or TNS is required'}>
                         {tnsEnable ?
                             <input
                                 name="holder"
-                                className={'RoundedInput'}
+                                className={classNames('RoundedInput', {
+                                    'RoundedInput--has-attachment': (isTnsLoading || !(_.isEmpty(tnsName) && _.isEmpty(tnsAddress)))
+                                })}
                                 placeholder={'Enter node address or TNS'}
                                 ref={register({
                                 required: true,
@@ -144,18 +149,15 @@ export default function WithdrawStakeTxForm(props){
                                 validate: (s) => ethers.utils.isAddress(s)
                             })} />}
 
+                        <TNSInputAttachment isTns={isTns}
+                                            isTnsLoading={isTnsLoading}
+                                            tnsName={tnsName}
+                                            tnsAddress={tnsAddress}
+                        />
+
                         <input name="tnsAddress" ref={register({})} type="hidden"/>
                         <input name="tnsLoading" ref={register({})} type="hidden"/>
                     </FormField>
-                    {isTnsLoading && <div className="lds-css css-trncy8">
-                        <div className="lds-dual-ring">
-                            <div></div>
-                        </div>
-                    </div>}
-                    {tnsName && <div className="TNS-badge">
-                        <p className='TNS-badge_title'>{isTns ? "Address:" : "TNS:"}</p>
-                        <p className='TNS-badge_content'>{isTns ? tnsAddress : tnsName}</p>
-                    </div>}
                 </div>
             }
 

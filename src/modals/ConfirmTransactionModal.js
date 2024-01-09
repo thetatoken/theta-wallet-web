@@ -54,12 +54,12 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, d
     const [estimatedGasFee, setEstimatedGasFee] = useState(null);
     const [fromTns, setFromTns] = useState(false);
     const [toTns, setToTns] = useState(false);
+    const [contractTns, setContractTns] = useState(false);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
         setPassword(value);
     };
-    
 
     const setTnsState = async () => {
         if (!transactionRequest || !selectedAddress) return;
@@ -68,14 +68,41 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, d
           setFromTns(fromTnsResult);
         }
         if (!toTns) {
-          let toPath = 'txData.holder';
-          if (!transactionRequest.txData.holder) {
-            toPath = 'txData.outputs[0].address';
+          let toAddress = null;
+          if(transactionRequest.txType === thetajs.constants.TxType.Send){
+              toAddress = _.get(transactionRequest, 'txData.outputs[0].address');
           }
-          const toTnsResult = await tns.getDomainName(
-            _.get(transactionRequest, toPath)
-          );
-          setToTns(toTnsResult);
+          else if( transactionRequest.txType === thetajs.constants.TxType.DepositStake){
+              toAddress = _.get(transactionRequest, 'txData.holder');
+          }
+          else if( transactionRequest.txType === thetajs.constants.TxType.WithdrawStake){
+              toAddress = _.get(transactionRequest, 'txData.holder');
+          }
+          else if( transactionRequest.txType === thetajs.constants.TxType.SmartContract){
+              try {
+                  const contractData = _.get(transactionRequest.txData, 'data');
+                  const tnt20Contract = new thetajs.Contract(null, TNT20ABI, null);
+                  const data = tnt20Contract.interface.decodeFunctionData('transfer(address,uint256)',contractData);
+                  toAddress = data[0];
+              }
+              catch (e) {
+
+              }
+          }
+
+          if(toAddress){
+              const toTnsResult = await tns.getDomainName(
+                  toAddress
+              );
+              setToTns(toTnsResult);
+          }
+        }
+        if (transactionRequest.txType === thetajs.constants.TxType.SmartContract && !contractTns) {
+            const contractAddress = _.get(transactionRequest, 'txData.to', null);
+            if(contractAddress){
+                const contractTnsResult = await tns.getDomainName(contractAddress);
+                setContractTns(contractTnsResult);
+            }
         }
     };
     
@@ -105,8 +132,8 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, d
             return (
                 <>
                     { renderDataRow('Transaction Type', transactionTypeToName(txType)) }
-                    {renderDataRow('From', fromTns ? <p>{fromTns}<br />{fromAddress}</p> : fromAddress)}
-                    {renderDataRow('To', toTns ? <p>{toTns}<br />{toAddress}</p> : toAddress)}
+                    {renderDataRow('From', fromTns ? <p>{fromTns}<br /><span className={'TxDataRow__value-secondary'}>{fromAddress}</span></p> : fromAddress)}
+                    {renderDataRow('To', toTns ? <p>{toTns}<br /><span className={'TxDataRow__value-secondary'}>{toAddress}</span></p> : toAddress)}
                     { thetaWei && (thetaWei !== '0') && renderDataRow('Amount', formatNativeTokenAmountToLargestUnit(thetaWei), ' THETA') }
                     { tfuelWei && (tfuelWei !== '0') && renderDataRow('Amount', formatNativeTokenAmountToLargestUnit(tfuelWei), ' TFUEL') }
                 </>
@@ -140,9 +167,9 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, d
             return (
                 <>
                     { renderDataRow('Transaction Type', transactionName) }
-                    { !_.isNil(contractAddress) && renderDataRow('Contract', truncate(_.get(transactionRequest, 'txData.to'))) }
-                    { renderDataRow('From', truncate(selectedAddress)) }
-                    { !_.isNil(transferToAddress) && renderDataRow('To', truncate(transferToAddress)) }
+                    { !_.isNil(contractAddress) && renderDataRow('Contract', contractTns ? <p>{contractTns}<br/><span className={'TxDataRow__value-secondary'}>{truncate(contractAddress)}</span></p> : truncate(contractAddress)) }
+                    { renderDataRow('From', fromTns ? <p>{fromTns}<br/><span className={'TxDataRow__value-secondary'}>{truncate(selectedAddress)}</span></p> : truncate(selectedAddress)) }
+                    { !_.isNil(transferToAddress) && renderDataRow('To', toTns ? <p>{toTns}<br/><span className={'TxDataRow__value-secondary'}>{truncate(transferToAddress)}</span></p> : truncate(transferToAddress)) }
                     { (!_.isNil(transferToAddress) && symbol && transferToValue) && renderDataRow('Token Amount', formatTNT20TokenAmountToLargestUnit(transferToValue, decimals), ` ${symbol}`) }
                     { (!_.isNil(value) && value > 0) && renderDataRow('Value', formatNativeTokenAmountToLargestUnit(value), ' TFUEL') }
                     { renderDataRow('Data', _.get(transactionRequest, 'txData.data'), null, true) }
@@ -155,8 +182,8 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, d
             return (
                 <>
                     { renderDataRow('Transaction Type', transactionTypeToName(txType)) }
-                    { renderDataRow('From', fromTns ? <p>{fromTns}<br/>{fromAddress}</p> : fromAddress) }
-                    { renderDataRow('Holder', toTns ? <p>{toTns}<br/>{holderAddress}</p> : holderAddress) }
+                    { renderDataRow('From', fromTns ? <p>{fromTns}<br/><span className={'TxDataRow__value-secondary'}>{fromAddress}</span></p> : fromAddress) }
+                    { renderDataRow('Holder', toTns ? <p>{toTns}<br/><span className={'TxDataRow__value-secondary'}>{holderAddress}</span></p> : holderAddress) }
                 </>
             );
         }
@@ -168,8 +195,8 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, d
                 <>
                     { renderDataRow('Transaction Type', transactionTypeToName(txType)) }
                     { renderDataRow('Purpose', 'Validator Node') }
-                    { renderDataRow('From', fromTns ? <p>{fromTns}<br/>{fromAddress}</p> : fromAddress) }
-                    { renderDataRow('Holder', toTns ? <p>{toTns}<br/>{holderAddress}</p> : holderAddress) }
+                    { renderDataRow('From', fromTns ? <p>{fromTns}<br/><span className={'TxDataRow__value-secondary'}>{fromAddress}</span></p> : fromAddress) }
+                    { renderDataRow('Holder', toTns ? <p>{toTns}<br/><span className={'TxDataRow__value-secondary'}>{holderAddress}</span></p> : holderAddress) }
                     { renderDataRow('Amount', formatNativeTokenAmountToLargestUnit(_.get(transactionRequest, 'txData.amount')), ' THETA') }
                 </>
             );
@@ -188,7 +215,7 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, d
                         (stakePurpose === thetajs.constants.StakePurpose.StakeForGuardian) &&
                         renderDataRow('Purpose', 'Guardian Node')
                     }
-                    { renderDataRow('From', fromTns ? <p>{fromTns}<br/>{fromAddress}</p> : fromAddress) }
+                    { renderDataRow('From', fromTns ? <p>{fromTns}<br/><span className={'TxDataRow__value-secondary'}>{fromAddress}</span></p> : fromAddress) }
                     { renderDataRow('Holder summary', _.get(transactionRequest, 'txData.holderSummary'), null, true) }
                     {
                         (stakePurpose === thetajs.constants.StakePurpose.StakeForEliteEdge) &&

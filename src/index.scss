@@ -175,11 +175,22 @@ a{
   justify-content: space-between;
   align-items: center;
   min-height: 40px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
   border-bottom: 1px solid $grey-color-20;
   padding-left: 15px;
   padding-right: 15px;
+
+  &__value-secondary{
+    color: $grey-color;
+
+    &::before{
+      content: "(";
+    }
+    &::after{
+      content: ")";
+    }
+  }
 
   &--large {
     align-items: flex-start;

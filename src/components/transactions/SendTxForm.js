@@ -15,7 +15,8 @@ import FlatButton from "../buttons/FlatButton";
 import { validateInput } from "../../libs/tns"
 import debouncePromise from 'awesome-debounce-promise';
 import { useSettings } from "../SettingContext";
-
+import TNSInputAttachment from "../TNSInputAttachment";
+const classNames = require('classnames');
 
 export default function SendTxForm(props){
     const { tnsEnable } = useSettings();
@@ -36,17 +37,17 @@ export default function SendTxForm(props){
     const [isTnsLoading, setIsTnsLoading] = useState(false);
 
     const assetId = watch('assetId');
+    const to = watch('to');
 
     useEffect(() => {
         const fetchTnsName = async () => {
             if (tnsEnable) {
-                const validation = await validateTo(watch('to'));
+                const validation = await validateTo(to);
                 setTnsState(validation.state);
             }
         };
-
         fetchTnsName();
-    }, [watch('to'), tnsEnable]);
+    }, [to, tnsEnable]);
 
     const populateMaxAmount = () => {
         if(_.isEmpty(assetId)){
@@ -95,11 +96,13 @@ export default function SendTxForm(props){
 
     return (
         <form className={'TxForm TxForm--Send'} onSubmit={handleSubmit(onSubmit)} ref={formRef}>
-            <FormField title={'To'} error={(errors.to && 'A valid address is required')}>
+            <FormField title={'To'} error={(errors.to && !isTnsLoading && (tnsEnable ? 'A valid address or TNS is required' : 'A valid address is required'))}>
                 {tnsEnable ?
                     <input
                         name="to"
-                        className={'RoundedInput'}
+                        className={classNames('RoundedInput', {
+                            'RoundedInput--has-attachment': (isTnsLoading || !(_.isEmpty(tnsName) && _.isEmpty(tnsAddress)))
+                        })}
                         placeholder={'Enter address or TNS'}
                         ref={register({
                             required: true,
@@ -115,19 +118,15 @@ export default function SendTxForm(props){
                         validate: (s) => ethers.utils.isAddress(s)
                     })} />
                 }
+                <TNSInputAttachment isTns={isTns}
+                                    isTnsLoading={isTnsLoading}
+                                    tnsName={tnsName}
+                                    tnsAddress={tnsAddress}
+                />
+
                 <input name="tnsAddress" ref={register({})} type="hidden"/>
                 <input name="tnsLoading" ref={register({})} type="hidden"/>
             </FormField>
-            
-            {isTnsLoading && <div className="lds-css css-trncy8">
-                <div className="lds-dual-ring">
-                    <div></div>
-                </div>
-            </div>}
-            {tnsName && <div className="TNS-badge">
-                <p className='TNS-badge_title'>{isTns ? "Address:" : "TNS:"}</p>
-                <p className='TNS-badge_content'>{isTns ? tnsAddress : tnsName}</p>
-            </div>}
             
             <FormField title={'Asset'}
                        error={errors.assetId && 'Asset is required'}

@@ -35,9 +35,16 @@
     color: darken(#787DA1, 5);
   }
 
-
+  &--has-attachment{
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-bottom: 0 !important;
+  }
 }
 
+.InputAttachment{
+
+}
 
 .RoundedInput:disabled{
   cursor: not-allowed;
@@ -108,5 +115,43 @@ textarea{
   img{
     height: 20px;
     cursor: pointer;
+  }
+}
+
+.TNSInputAttachment{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  height: 51px;
+  max-height: 51px;
+  flex-basis: 51px;
+  background-color: #8A8FB51F;
+  padding-left: 12px;
+  padding-right: 12px;
+  border-top: 1px solid #444C66;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+
+  &__title{
+    display: none;
+  }
+
+  &__content{
+    margin: 0;
+    color: #8A8FB5;
+    font-size: 16px;
+  }
+
+  &--is-loading{
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  &__loading-message{
+    margin-left: 15px;
+    color: #8A8FB5;
+    font-size: 16px;
   }
 }
