@@ -10,7 +10,7 @@ import {
 } from "../utils/Utils";
 import _ from 'lodash';
 import Theta from '../services/Theta';
-const {getKnownToken, getKnownTokens} = require('@thetalabs/wallet-metadata');
+const {getKnownToken} = require('@thetalabs/wallet-metadata');
 
 class ThetaTransactionListItem extends React.Component {
     render() {
@@ -63,7 +63,7 @@ class ThetaTransactionListItem extends React.Component {
                             <div className="ThetaTransactionListItem__amount-container">
                                 <div className="ThetaTransactionListItem__amount">{formatTNT20TokenAmountToLargestUnit(tokenValue, tokenDecimals)}</div>
                                 <img className="ThetaTransactionListItem__amount-icon"
-                                     src={knownToken.logoUrl}
+                                     src={knownToken?.logoUrl || 'https://explorer.thetatoken.org/images/icons/token_default%402x.png'}
                                 />
                             </div>
                         }
