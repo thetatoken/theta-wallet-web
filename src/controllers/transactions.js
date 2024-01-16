@@ -170,7 +170,7 @@ export default class TransactionsController extends EventEmitter{
         return true;
     }
 
-    _transformTransaction(rawXact, priorityAddress) {
+    _transformTransaction(rawXact, priorityAddress, tokenSummariesByContractAddress) {
         if (rawXact.type === thetajs.constants.TxType.Send) {
             let xact = {};
 
@@ -203,6 +203,38 @@ export default class TransactionsController extends EventEmitter{
 
             return xact;
         }
+        else if (rawXact.type === 'TNT-20') {
+            if(_.isNil(tokenSummariesByContractAddress[rawXact.contract_address])){
+                return null
+            }
+
+            let xact = {};
+
+            xact.type = thetajs.constants.TxType.Send;
+            xact.hash = rawXact.hash.toLowerCase();
+            xact.timestamp = rawXact.timestamp;
+            xact.value = rawXact.value;
+            xact.inputs = [{
+                address: rawXact.from,
+                coins: {
+                    name: tokenSummariesByContractAddress[rawXact.contract_address].name,
+                    contract_address: rawXact.contract_address,
+                    value: rawXact.value,
+                    decimals: tokenSummariesByContractAddress[rawXact.contract_address].decimals
+                }
+            }];
+            xact.outputs = [{
+                address: rawXact.to,
+                coins: {
+                    name: tokenSummariesByContractAddress[rawXact.contract_address].name,
+                    contract_address: rawXact.contract_address,
+                    value: rawXact.value,
+                    decimals: tokenSummariesByContractAddress[rawXact.contract_address].decimals
+                }
+            }];
+
+            return xact;
+        }
 
         return null;
     }
@@ -218,13 +250,39 @@ export default class TransactionsController extends EventEmitter{
             const network = this.preferencesController.getNetwork();
             const chainId = network.chainId;
             const explorerUrl = network.explorerUrl || thetajs.networks.getExplorerUrlForChainId(chainId);
-            const explorerApiUrl = `${explorerUrl}:8443/api`;
-            const listStakesUrl = `${explorerApiUrl}/accounttx/${address}`;
-            const response = await fetch(listStakesUrl);
-            const responseJson = await response.json();
+            let explorerApiUrl = `${explorerUrl}:8443/api`;
+            let url = `${explorerApiUrl}/accounttx/${address}`;
+            let response = await fetch(url);
+            let responseJson = await response.json();
             txs = _.get(responseJson, ['body'], []);
+
+            //TNT20
+            url = `${explorerApiUrl}/account/tokenTx/${address}?type=TNT-20&pageNumber=1&limit=20`;
+            response = await fetch(url);
+            responseJson = await response.json();
+            const tnt20Txs = _.get(responseJson, ['body'], []);
+            const tokenAddresses = _.uniq(_.map(tnt20Txs, (tx) => {
+                return tx.contract_address;
+            }));
+            const tokenAddressesStr = _.join(_.map(tokenAddresses, (tokenAddress) => {
+                return `"${tokenAddress}"`;
+            }));
+
+
+            // Fetch token summaries
+            url = `${explorerApiUrl}/tokenSummaries?addressList=[${encodeURIComponent(tokenAddressesStr)}]`;
+            response = await fetch(url);
+            responseJson = await response.json();
+            let tokenSummaries = _.get(responseJson, ['body'], []);
+            let tokenSummariesByContractAddress = _.keyBy(tokenSummaries, 'contract_address');
+
+            txs = _.concat(txs, tnt20Txs);
+            txs = _.sortBy(txs, (tx) => {
+                return -parseInt(tx.timestamp);
+            });
+
             txs = _.map(txs, (tx) => {
-                return Object.assign({}, this._transformTransaction(tx, address), {
+                return Object.assign({}, this._transformTransaction(tx, address, tokenSummariesByContractAddress), {
                     chainId: chainId
                 });
             });
@@ -233,6 +291,7 @@ export default class TransactionsController extends EventEmitter{
             });
         }
         catch (e) {
+            console.log(e);
             // No Update
             return [];
         }
