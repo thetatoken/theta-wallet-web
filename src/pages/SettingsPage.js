@@ -192,9 +192,10 @@ class SettingsPage extends React.Component {
                         <SettingsSection title="Export Keystore">
                             <ExportKeystoreContent/>
                         </SettingsSection>
-                        <SettingsSection title="TNS">
-                            <EnableTnsContent />
-                    </SettingsSection></>
+                        {/*<SettingsSection title="TNS">*/}
+                        {/*    <EnableTnsContent />*/}
+                        {/*</SettingsSection>*/}
+                        </>
                 }
                 </div>
             </div>

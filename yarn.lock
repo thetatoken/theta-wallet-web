@@ -2679,10 +2679,10 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@thetalabs/theta-js@^0.0.82":
-  version "0.0.82"
-  resolved "https://registry.yarnpkg.com/@thetalabs/theta-js/-/theta-js-0.0.82.tgz#5e5ae0d924d0fd5cb322662227c5d8690525c765"
-  integrity sha512-x4vgwNxgIy4KuORiyOYkBbbBymV1+oXLarN8uuwsrYIdJnQY3jE9NUnEVnPlmrF0nAMAnNpfcWX0qT9wjnhQqw==
+"@thetalabs/theta-js@^0.0.86":
+  version "0.0.86"
+  resolved "https://registry.yarnpkg.com/@thetalabs/theta-js/-/theta-js-0.0.86.tgz#8472b30e1005a921c4ab273fdfd84e302e82f901"
+  integrity sha512-Ij2Rppn22+N05j1WTPcXW2a7CSg3kSU2CtgPJuQVFCJrNRy1gSWw1p1L8EBYhte7FOFPcPEQV13GLkB8E9xLOg==
   dependencies:
     "@ethersproject/bignumber" "^5.0.9"
     "@ethersproject/bytes" "^5.0.11"
@@ -2694,10 +2694,10 @@
     rlp "^2.2.2"
     secp256k1 "^3.6.1"
 
-"@thetalabs/wallet-metadata@1.0.27":
-  version "1.0.27"
-  resolved "https://registry.yarnpkg.com/@thetalabs/wallet-metadata/-/wallet-metadata-1.0.27.tgz#aed0a97cc7fedd8bb04defbcf7fcf87d0bfbc48b"
-  integrity sha512-jF+uzmHw1i2nKLl0c1ogQYCM7Q4xnFwF1bkUEYcj4E1pxulJ+CkP/cLSB+b7GaBD4zdxBqkkM8/mKnyBP45sag==
+"@thetalabs/wallet-metadata@1.0.33":
+  version "1.0.33"
+  resolved "https://registry.yarnpkg.com/@thetalabs/wallet-metadata/-/wallet-metadata-1.0.33.tgz#1e50d4a1375c5e3490822bf4bf29969cd7b72305"
+  integrity sha512-itYKmuRb5JTkpLUHkm+IqmNLC2IUVbdkMwKaXD7fBERD3UuYpT0w/UD37xyLtPj3YgnX9JV+2KqWOoSLLQugdg==
 
 "@tootallnate/once@1":
   version "1.1.2"
@@ -12255,7 +12255,7 @@ tmpl@1.0.x:
   version "1.0.4"
   resolved "https://registry.npmjs.org/tmpl/-/tmpl-1.0.4.tgz"
 
-tns-resolver@^2.0.4:
+tns-resolver@2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/tns-resolver/-/tns-resolver-2.0.4.tgz#189f61537853096c594cfcb244ba79ea87c3b3b9"
   integrity sha512-IDSDLIbt77777mYA6E02+UUorxRMxziu1karK2SYaoF+rsaZfQTk3ZHhlUOGnlEsnq5PHslMzLsgdlWEGnBD8A==

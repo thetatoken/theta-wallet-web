@@ -145,7 +145,10 @@ export function addToken(tokenData, chainId) {
             dispatch(showLoader());
 
             const result = await Wallet.controller.RPCApi.addToken({
-                token: tokenData,
+                token: {
+                    ...tokenData,
+                    address: tokenData.address.toLowerCase()
+                },
                 chainId: chainId
             });
 

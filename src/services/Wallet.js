@@ -33,12 +33,34 @@ export const WalletUnlockStrategy = {
     PRIVATE_KEY: 'private-key',
 };
 
+function lowercaseAndUniqueTokens(data) {
+    Object.keys(data.accountTokens).forEach(account => {
+        Object.keys(data.accountTokens[account]).forEach(network => {
+            let uniqueTokens = {};
+            data.accountTokens[account][network].forEach(token => {
+                const lowercasedAddress = token.address.toLowerCase();
+                const key = lowercasedAddress + token.symbol; // Combine address and symbol for uniqueness
+                if (!uniqueTokens[key]) {
+                    uniqueTokens[key] = {
+                        ...token,
+                        address: lowercasedAddress
+                    };
+                }
+            });
+            data.accountTokens[account][network] = Object.values(uniqueTokens);
+        });
+    });
+    return data;
+}
+
 const getThetaWalletControllerState = () => {
     try {
         const preferencesControllerState = localStorage.getItem('preferencesController');
+        let state = (_.isEmpty(preferencesControllerState) ? {} : JSON.parse(preferencesControllerState));
+        state = lowercaseAndUniqueTokens(state);
 
         return {
-            preferencesController: (_.isEmpty(preferencesControllerState) ? {} : JSON.parse(preferencesControllerState))
+            preferencesController: state
         }
     }
     catch (e) {

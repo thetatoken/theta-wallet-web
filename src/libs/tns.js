@@ -15,13 +15,13 @@ function withCacheAndInFlightHandling(asyncFn, cacheKeyFn, isCacheEnabled = true
 
         // Check if caching is enabled and if the result is already cached
         if (isCacheEnabled && cache.hasOwnProperty(key)) {
-            console.log('Returning from cache for key:', key);
+            // console.log('Returning from cache for key:', key);
             return cache[key];
         }
 
         // Check if there's an in-flight request for the same key
         if (inFlightRequests[key]) {
-            console.log('Returning in-flight promise for key:', key);
+            // console.log('Returning in-flight promise for key:', key);
             return inFlightRequests[key];
         }
 

@@ -3,6 +3,7 @@ import * as thetajs from '@thetalabs/theta-js';
 import {nanoid} from 'nanoid';
 import _ from "lodash";
 import BigNumber from "bignumber.js";
+import {getExplorerApiUrl} from "../constants/Metachain";
 
 const { EventEmitter } = require('events');
 
@@ -249,8 +250,8 @@ export default class TransactionsController extends EventEmitter{
         try {
             const network = this.preferencesController.getNetwork();
             const chainId = network.chainId;
-            const explorerUrl = network.explorerUrl || thetajs.networks.getExplorerUrlForChainId(chainId);
-            let explorerApiUrl = `${explorerUrl}:8443/api`;
+            const explorerUrl = getExplorerApiUrl(network.mainchainChainId, network.chainId);
+            let explorerApiUrl = `${explorerUrl}/api`;
             let url = `${explorerApiUrl}/accounttx/${address}`;
             let response = await fetch(url);
             let responseJson = await response.json();
@@ -293,7 +294,7 @@ export default class TransactionsController extends EventEmitter{
         catch (e) {
             console.log(e);
             // No Update
-            return [];
+            txs = [];
         }
 
         // update accounts state

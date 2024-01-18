@@ -330,8 +330,8 @@ export default class AccountManager {
         try {
             const network = this._getNetwork();
             const chainId = network.chainId;
-            const explorerUrl = thetajs.networks.getExplorerUrlForChainId(chainId);
-            const explorerApiUrl = `${explorerUrl}:8443/api`;
+            const explorerUrl = thetajs.networks.getExplorerApiUrlForChainId(chainId);
+            const explorerApiUrl = `${explorerUrl}/api`;
             const listStakesUrl = `${explorerApiUrl}/stake/${address}?hasBalance=true&types[]=vcp&types[]=gcp&types[]=eenp`;
             const response = await fetch(listStakesUrl);
             const responseJson = await response.json();

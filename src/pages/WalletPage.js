@@ -35,9 +35,9 @@ export class WalletPage extends React.Component {
     }
 
     fetchTransactions(tokenType){
-        if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
+        // if(tokenType === TokenTypes.THETA || tokenType === TokenTypes.THETA_FUEL){
             this.props.dispatch(fetchThetaTransactions());
-        }
+        // }
     }
 
     fetchBalances(){

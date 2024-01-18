@@ -23,14 +23,14 @@ export const TDropStakingAddressByChainId = {
 };
 
 export const TDropAddressByChainId = {
-    [thetajs.networks.ChainIds.Mainnet]: '0x1336739B05C7Ab8a526D40DCC0d04a826b5f8B03',
-    [thetajs.networks.ChainIds.Testnet]: '0x08a0c0e8EFd07A98db11d79165063B6Bc2469ADF',
+    [thetajs.networks.ChainIds.Mainnet]: '0x1336739B05C7Ab8a526D40DCC0d04a826b5f8B03'.toLowerCase(),
+    [thetajs.networks.ChainIds.Testnet]: '0x08a0c0e8EFd07A98db11d79165063B6Bc2469ADF'.toLowerCase(),
 };
 
 export const WThetaAddressByChainId = {
-    [thetajs.networks.ChainIds.Mainnet]: '0xaf537fb7e4c77c97403de94ce141b7edb9f7fcf0',
-    [thetajs.networks.ChainIds.Testnet]: '0x90e6ca1087a2340da858069cb8d78d595e4ac798',
-    [thetajs.networks.ChainIds.Privatenet]: '0x119134418c03e4d469b45259e74c2848a19b6509',
+    [thetajs.networks.ChainIds.Mainnet]: '0xaf537fb7e4c77c97403de94ce141b7edb9f7fcf0'.toLowerCase(),
+    [thetajs.networks.ChainIds.Testnet]: '0x90e6ca1087a2340da858069cb8d78d595e4ac798'.toLowerCase(),
+    [thetajs.networks.ChainIds.Privatenet]: '0x119134418c03e4d469b45259e74c2848a19b6509'.toLowerCase(),
 };
 
 export const StakePurposeForTDROP = 1000;

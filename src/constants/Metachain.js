@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import * as thetajs from '@thetalabs/theta-js';
 
 const walletMetadata = require('@thetalabs/wallet-metadata');
 
@@ -22,6 +23,24 @@ export const getCrossTransferFee = (mainChainIdStr, subchainIDStr) => {
 
     // Default to 10
     return 10;
+}
+
+export const getExplorerApiUrl = (mainChainIdStr, subchainIDStr) => {
+    if(_.isNil(mainChainIdStr)){
+        // Not a subchain
+        mainChainIdStr = subchainIDStr;
+    }
+    const config = getMetachainConfig(mainChainIdStr);
+    if(_.isNil(subchainIDStr) || !_.startsWith(subchainIDStr, 'tsub')){
+        return config?.explorerApiUrl;
+    }
+    const subchain = getSubchain(mainChainIdStr, subchainIDStr);
+    if(subchain){
+        return subchain.explorerApiUrl;
+    }
+
+    // Default to 10
+    return thetajs.networks.getExplorerApiUrlForChainId("mainnet");
 }
 
 export const getSubchains = (mainChainIdStr) => {

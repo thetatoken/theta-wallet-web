@@ -39,7 +39,7 @@ const ThetaTransactionListItem = (props) => {
     }, [props.transaction]);
 
     const {transaction} = props;
-    const {inputs, outputs, timestamp, is_local} = transaction;
+    const {inputs, outputs, timestamp, is_local, chainId} = transaction;
     const address = Wallet.getWalletAddress();
 
     const input = (inputs ? inputs[0] : null);
