@@ -34,7 +34,7 @@ const NavBar = ({centered}) => {
         fetchTnsName();
     }, [tnsEnable]); // Update tnsName when tnsEnable changes
 
-    const logout = () => {
+    const onClickLogout = () => {
         store.dispatch(logout());
     }
 
@@ -91,7 +91,7 @@ const NavBar = ({centered}) => {
                             Settings
                         </NavLink>
                         <a className="NavBar__logout"
-                           onClick={logout}>
+                           onClick={onClickLogout}>
                             Log out
                         </a>
                     </div>
