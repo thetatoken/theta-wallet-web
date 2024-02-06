@@ -22,7 +22,7 @@ export const EthereumLedgerLiveDerivationPath = "m/44'/60'/";
 //END
 export const ThetaDevDerivationPath = "m/44'/500'/";
 
-const MnemonicPath = "m/44'/500'/0'/0/0";
+export const MnemonicPath = "m/44'/500'/0'/0/0";
 
 export const NumPathsPerPage = 5;
 
@@ -124,8 +124,8 @@ export default class Wallet {
         return web3.eth.accounts.decrypt(keystoreJsonV3, password);
     }
 
-    static walletFromMnemonic(mnemonic){
-        return ethers.Wallet.fromMnemonic(mnemonic, MnemonicPath);
+    static walletFromMnemonic(mnemonic, path = MnemonicPath){
+        return ethers.Wallet.fromMnemonic(mnemonic, path);
     }
 
     static walletFromPrivateKey(privateKey){
@@ -223,8 +223,10 @@ export default class Wallet {
             else if(strategy === WalletUnlockStrategy.MNEMONIC_PHRASE){
                 mnemonic = mnemonic.toString();
                 mnemonic = _.trim(mnemonic);
+                const derivationPath = data.derivationPath;
+                console.log('derivationPath == ', derivationPath);
 
-                wallet = Wallet.walletFromMnemonic(mnemonic.toString());
+                wallet = Wallet.walletFromMnemonic(mnemonic.toString(), derivationPath);
 
                 await this.controller.RPCApi.importAccount({
                     privateKey: wallet.privateKey
@@ -270,6 +272,7 @@ export default class Wallet {
         }
         catch (e) {
             let message = null;
+            console.log(e);
 
             if(strategy === WalletUnlockStrategy.KEYSTORE_FILE){
                 message = "Wrong password OR invalid keystore.";

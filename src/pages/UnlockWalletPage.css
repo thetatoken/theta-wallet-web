@@ -45,6 +45,10 @@
     border-radius: 12px;
 }
 
+.UnlockWalletCard--mnemonic-phrase{
+    min-height: 605px;
+}
+
 .UnlockWalletCard__content{
     display: flex;
     flex-direction: column;
@@ -248,7 +252,7 @@
     color: #92A2D6;
 }
 
-.UnlockWalletViaMnemonicPhrase__password-input{
+.UnlockWalletViaMnemonicPhrase__password-input, .UnlockWalletViaMnemonicPhrase__select{
     background-color: #8A8FB51F;
     height: 50px;
     color: white;
@@ -262,7 +266,12 @@
     box-sizing: border-box;
 }
 
-
+.UnlockWalletViaMnemonicPhrase__select{
+    width: 100%;
+    margin-bottom: 18px;
+    margin-top: 18px;
+    text-align: center;
+}
 
 
 

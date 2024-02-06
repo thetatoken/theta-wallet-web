@@ -5,7 +5,13 @@ import {connect} from 'react-redux'
 import {Link} from "react-router-dom";
 import GradientButton from '../components/buttons/GradientButton'
 import HardwareOptionButton from '../components/buttons/HardwareOptionButton';
-import Wallet, { WalletUnlockStrategy, EthereumDerivationPath, EthereumLedgerLiveDerivationPath, EthereumOtherDerivationPath } from '../services/Wallet'
+import Wallet, {
+    WalletUnlockStrategy,
+    EthereumDerivationPath,
+    EthereumLedgerLiveDerivationPath,
+    EthereumOtherDerivationPath,
+    MnemonicPath
+} from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
 import {connectHardware, unlockHardwareWalletAccount, unlockWallet} from "../state/actions/Wallet";
@@ -119,12 +125,14 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
         this.state = {
             mnemonic: "",
             password: "",
+            derivationPath: MnemonicPath, // Default
             loading: false
         };
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleUnlockClick = this.handleUnlockClick.bind(this);
+        this.handleDerivationPathChange = this.handleDerivationPathChange.bind(this);
     }
 
     isValid(){
@@ -145,7 +153,9 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
     }
 
     unlockWallet(){
-        this.props.unlockWallet(WalletUnlockStrategy.MNEMONIC_PHRASE, this.state.password, {mnemonic: this.state.mnemonic});
+        this.props.unlockWallet(WalletUnlockStrategy.MNEMONIC_PHRASE, this.state.password, {
+            mnemonic: this.state.mnemonic,
+            derivationPath: this.state.derivationPath});
 
         this.setState({loading: false});
     }
@@ -162,6 +172,10 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
         if(this.isValid()){
             this.prepareForUnlock();
         }
+    }
+
+    handleDerivationPathChange(e) {
+        this.setState({derivationPath: e.target.value});
     }
 
     render() {
@@ -192,8 +206,22 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
                        onChange={this.handleChange}
                        onKeyPress={this.handleKeyPress}
                 />
+                <select value={this.state.derivationPath}
+                        onChange={this.handleDerivationPathChange}
+                        className={"UnlockWalletViaMnemonicPhrase__select"}
+                >
+                    <option value={MnemonicPath}>Theta - m/44'/500'/0'/0 (Default)</option>
+                    <option value={`${EthereumDerivationPath}0`}>Ethereum - m/44'/60'/0'/0/0</option>
+                </select>
+                <div className="UnlockWalletViaMnemonicPhrase__mnemonic-instructions"
+                     style={{marginTop: -10}}
+                >
+                    If your wallet is opening an empty wallet, try changing the derivation path above to Ethereum.
+                </div>
+
                 <div className="UnlockWalletCard__warning">
-                    Before you enter your mnemonic phrase, we recommend you disconnect your device from the internet. You will be able to reconnect once your wallet is unlocked.
+                    Before you enter your mnemonic phrase, we recommend you disconnect your device from the internet.
+                    You will be able to reconnect once your wallet is unlocked.
                 </div>
 
                 <div className="UnlockWalletViaMnemonicPhrase__footer">
@@ -209,7 +237,7 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
 }
 
 class UnlockWalletViaKeystoreFile extends React.Component {
-    constructor(){
+    constructor() {
         super();
 
         this.fileInput = React.createRef();
@@ -621,7 +649,7 @@ class UnlockWalletCard extends React.Component {
         }
 
         return (
-            <div className="UnlockWalletCard">
+            <div className={classNames({UnlockWalletCard: true, [`UnlockWalletCard--${this.props.unlockStrategy}`]: true})}>
                 <div className="UnlockWalletCard__content">
                     <div className="UnlockWalletCard__header">
                         <TabBar centered={true}
