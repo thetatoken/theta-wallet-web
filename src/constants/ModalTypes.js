@@ -16,5 +16,6 @@ export default {
     DELEGATED_NODE_SELECTOR: 'delegated-node-selector',
     TRACK_TOKEN: 'track-token',
     COLLECTIBLES: 'collectibles',
-    TRACK_COLLECTIBLE: 'track-collectible'
+    TRACK_COLLECTIBLE: 'track-collectible',
+    DAPP: 'dapp'
 };

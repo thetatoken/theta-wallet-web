@@ -10,6 +10,9 @@ import ModalTypes from "../constants/ModalTypes";
 import {store} from "../state";
 import {WThetaAsset} from "../constants/assets";
 import config from "../Config";
+import {StakePurposeForTDROP} from "../constants";
+import {StakePurpose} from "@thetalabs/theta-js/src/constants";
+import {DAPPS_ENABLED} from "../Flags";
 
 class WalletTokenList extends React.Component {
     onAddTokenClick = () => {
@@ -36,9 +39,66 @@ class WalletTokenList extends React.Component {
         }));
     }
 
+    buildOnStake = (asset) => {
+        if(asset.id === 'theta'){
+            return () => {
+                store.dispatch(showModal({
+                    type: ModalTypes.CREATE_TRANSACTION,
+                    props: {
+                        transactionType: 'deposit-stake',
+                        defaultValues: {
+                            purpose: StakePurpose.StakeForGuardian
+                        }
+                    }
+                }));
+            }
+        }
+        else if(asset.id === 'tfuel'){
+            return () => {
+                store.dispatch(showModal({
+                    type: ModalTypes.CREATE_TRANSACTION,
+                    props: {
+                        transactionType: 'deposit-stake',
+                        defaultValues: {
+                            purpose: StakePurpose.StakeForEliteEdge
+                        }
+                    }
+                }));
+            }
+        }
+        else if(_.toLower(asset.symbol) === 'tdrop'){
+            return () => {
+                store.dispatch(showModal({
+                    type: ModalTypes.CREATE_TRANSACTION,
+                    props: {
+                        transactionType: 'deposit-stake',
+                        defaultValues: {
+                            purpose: StakePurposeForTDROP
+                        }
+                    }
+                }));
+            }
+        }
+        else if(DAPPS_ENABLED && asset.externalStaking){
+            return () => {
+                store.dispatch(showModal({
+                    type: ModalTypes.DAPP,
+                    props: {
+                        uri: asset.externalStaking, // 'http://localhost:3002/'
+                        closeable: false
+                    }
+                }));
+            }
+        }
+        else{
+
+        }
+    }
+
     render() {
-        const {selectedAccount, tokens, assets, balancesRefreshedAt, chainId, style} = this.props;
+        const {selectedAccount, tokens, assets, balancesRefreshedAt, chainId, style, dispatch} = this.props;
         const wThetaAsset = WThetaAsset(chainId);
+        const isSubchain = chainId.startsWith('tsub');
 
         return (
             <div className="WalletTokenList"
@@ -60,6 +120,7 @@ class WalletTokenList extends React.Component {
                                                  balance={formatTNT20TokenAmountToLargestUnit(balanceStr, decimals)}
                                                  onWrap={(asset.id === 'theta' && !_.isNil(wThetaAsset)) && this.onWrapTHETAClick}
                                                  onUnwrap={(asset.id === wThetaAsset?.id) && this.onUnwrapWTHETAClick}
+                                                 onStake={!isSubchain && this.buildOnStake(asset)}
                             />
                         )
                     })

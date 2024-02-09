@@ -11,6 +11,7 @@ import {
     TDropStakingAddressByChainId,
     WThetaAddressByChainId
 } from "../constants";
+import {ChainIds, getNetworkForChainId} from "@thetalabs/theta-js/src/networks";
 
 
 /**
@@ -436,6 +437,25 @@ export const isHolderSummary = (holderSummary) => {
     }
 };
 
+export function formatBalanceString(str) {
+    // Convert string to number and limit to at most 4 decimal places
+    let num = +str.replace(/,/g, '');
+    let formattedDecimal = num.toFixed(4);
+
+    // Trim unnecessary trailing zeros and the decimal point if not needed
+    formattedDecimal = parseFloat(formattedDecimal).toString();
+
+    // Split the result into integer and decimal parts
+    const parts = formattedDecimal.split('.');
+
+    // Add commas to the integer part for readability
+    const integerPartWithCommas = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    // Combine the integer part with the decimal part (if any) and return
+    // If there is no decimal part or it's "0", return only the integer part
+    return parts.length > 1 && parts[1] !== "0" ? `${integerPartWithCommas}.${parts[1]}` : integerPartWithCommas;
+}
+
 export function trimDecimalPlaces(x, maxDecimals) {
     let parts = x.split('.');
     let newFractional = '';
@@ -463,3 +483,34 @@ export function trimDecimalPlaces(x, maxDecimals) {
 export const sleep = (ms) => {
     return new Promise(r => setTimeout(r, ms));
 };
+
+
+export const getChainByChainIdNum = (chainIdNum) => {
+    const supportedChains = _(ChainIds)
+        .map(chainId => getNetworkForChainId(chainId))
+        .omitBy(chain => _.isUndefined(chain))
+        .map(chain => [
+            {
+                chainIdNum: chain.chainIdNum,
+                name: chain.name,
+                chainId: chain.chainId,
+                rpcUrl: chain.rpcUrl,
+                isSubchain: false
+            },
+            _.map(chain.metachain?.subchains, subchain => {
+                return {
+                    chainIdNum: subchain.subchainID,
+                    chainId: subchain.subchainIDStr,
+                    rpcUrl: subchain.subchainRPC,
+                    name: `${chain.name}  |  ${subchain.name}`,
+                    isSubchain: true,
+                    mainChainId: chain.chainId,
+                    subchainData: subchain
+                }
+            })])
+        .flattenDeep()
+        .keyBy('chainIdNum')
+        .value();
+
+    return supportedChains[chainIdNum];
+}

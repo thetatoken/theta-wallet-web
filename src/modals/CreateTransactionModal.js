@@ -57,7 +57,7 @@ export class CreateTransactionModal extends React.Component {
     }
 
     render() {
-        const {selectedIdentity, selectedAccount, transactionType, assets, chainId, collectible} = this.props;
+        const {selectedIdentity, selectedAccount, transactionType, assets, chainId, collectible, defaultValues} = this.props;
         const title = transactionType.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
         return (
@@ -91,6 +91,7 @@ export class CreateTransactionModal extends React.Component {
                                         assets={assets}
                                         chainId={chainId}
                                         onSubmit={this.onSubmit}
+                                        defaultValues={defaultValues}
                                         onShowDelegatedGuardianNodes={this.onShowDelegatedGuardianNodes}
                     />
                 }
@@ -136,7 +137,7 @@ export class CreateTransactionModal extends React.Component {
 }
 
 const mapStateToProps = (state, props) => {
-    const {transactionType, collectible} = props;
+    const {transactionType, collectible, defaultValues} = props;
     const {thetaWallet} = state;
     const selectedAddress = thetaWallet.selectedAddress;
     const identities = thetaWallet.identities;
@@ -145,6 +146,8 @@ const mapStateToProps = (state, props) => {
     const chainId = thetaWallet.network.chainId;
 
     return {
+        defaultValues: defaultValues,
+
         transactionType: transactionType,
 
         collectible: collectible,

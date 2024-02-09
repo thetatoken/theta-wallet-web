@@ -28,6 +28,12 @@ export function hideModals(){
     }
 }
 
+export function hideModalsExceptDapp(){
+    return {
+        type: actionTypes.HIDE_MODALS_EXCEPT_DAPP
+    }
+}
+
 export function showLoader(message) {
     return {
         type: actionTypes.SHOW_LOADER,

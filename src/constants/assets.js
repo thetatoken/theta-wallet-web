@@ -122,6 +122,8 @@ const tokenToAsset = (token, currentChainId) => {
         getKnownToken(thetajs.networks.ChainIds.Testnet, token.address) ||
         getKnownToken(currentChainId, token.address)
     );
+    const externalStakingPlatforms = new Set(knownToken?.externalStakingPlatforms || ['mobile', 'web']);
+    console.log('externalStakingPlatforms == ', externalStakingPlatforms);
 
     return {
         id: token.address,
@@ -130,7 +132,8 @@ const tokenToAsset = (token, currentChainId) => {
         contractAddress: token.address,
         decimals: token.decimals,
         iconUrl: (knownToken ? knownToken.logoUrl : null),
-        balanceKey: token.address
+        balanceKey: token.address,
+        externalStaking: (knownToken && externalStakingPlatforms.has('web') ? knownToken.externalStaking : null)
     };
 };
 

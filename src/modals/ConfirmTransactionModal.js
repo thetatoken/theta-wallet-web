@@ -25,6 +25,7 @@ import config from "../Config";
 import TemporaryState from "../services/TemporaryState";
 import tns from "../libs/tns"
 import { useSettings } from "../components/SettingContext";
+import {ProjectInfoCard} from "../components/ProjectInfoCard";
 
 const renderDataRow = (title, value, suffix = '', isLarge = false) => {
     suffix = suffix ? suffix : '';
@@ -45,7 +46,7 @@ const renderDataRow = (title, value, suffix = '', isLarge = false) => {
     return null;
 };
 
-const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, dispatch}) => {
+const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, network, dispatch, onAccept, onReject}) => {
     const { tnsEnable } = useSettings();
   
     const [password, setPassword] = useState(
@@ -106,14 +107,26 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, d
         }
     };
     
-    const onConfirmClick = () => {
+    const onConfirmClick = async () => {
         // TODO approve the request if the password matches
         // this.props.dispatch(createSendTransaction(this.props.network, this.props.transaction, this.state.password));
-        dispatch(approveTransactionRequest(transactionRequest.id, password));
+        const transactionResult = await dispatch(approveTransactionRequest(transactionRequest.id, password));
+        console.log('transactionResult == ', transactionResult);
+        console.log('onAccept == ', onAccept);
+        console.log('transactionResult?.hash == ', transactionResult?.hash);
+
+
+        if(transactionResult?.hash && onAccept) {
+            await onAccept(transactionResult?.hash);
+        }
     }
 
     const onRejectClick = () => {
         dispatch(rejectTransactionRequest(transactionRequest.id));
+
+        if(onReject){
+            onReject();
+        }
     }
 
     const renderDataRows = () => {
@@ -269,9 +282,17 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, d
         );
       }
 
+    console.log('ConfirmTransactionModal :: window.Web3Bridge.projectMetadata == ', window.Web3Bridge.projectMetadata);
+
     return (
         <Modal closeable={false}>
             <div className="TxConfirmationModal">
+                {
+                    window.Web3Bridge.projectMetadata &&
+                    <ProjectInfoCard metadata={window.Web3Bridge.projectMetadata}
+                                     chainInfo={network}
+                    />
+                }
                 <div className="ModalTitle">
                     Confirm Transaction
                 </div>
@@ -319,7 +340,7 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, d
     )
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, props) => {
     const { thetaWallet } = state;
     const selectedAddress = thetaWallet.selectedAddress;
     const identities = thetaWallet.identities;
@@ -334,6 +355,9 @@ const mapStateToProps = state => {
         selectedAccount: accounts[selectedAddress],
         assets: getAllAssets(chainId, tokens),
         transactionRequest: transactionRequest,
+        onAccept: props?.onAccept,
+        onReject: props?.onReject,
+        network: thetaWallet.network,
     };
 };
 

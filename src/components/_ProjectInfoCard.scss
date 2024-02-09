@@ -1,0 +1,39 @@
+.ProjectInfoCard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+
+  &__icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    margin-bottom: 20px;
+  }
+
+  &__name{
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+
+  &__container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &__url{
+    color: #fff;
+    font-size: 15px;
+  }
+
+  &__chain{
+    color: #9898AB;
+    font-size: 13px;
+    margin-top: 8px;
+
+  }
+}

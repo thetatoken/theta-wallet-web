@@ -4,6 +4,8 @@ import Networks, {canViewSmartContracts} from './constants/Networks';
 import ThetaJS from "./libs/thetajs.esm";
 import {getMetachainConfig} from "./constants/Metachain";
 
+export const DAPPS_ENABLED = true;
+
 export function isStakingAvailable(){
     const network = Theta.getChainID();
 

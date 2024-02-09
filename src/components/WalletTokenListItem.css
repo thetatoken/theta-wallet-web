@@ -83,4 +83,10 @@
 
 .WalletTokenListItem__button-container{
     margin-left: auto;
+    display: flex;
+    flex-direction: row;
+
+    .FlatButton{
+        margin-left: 6px;
+    }
 }

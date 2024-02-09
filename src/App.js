@@ -11,7 +11,12 @@ import {store} from "./state";
 import Router from "./services/Router";
 import UnsupportedDevice from './components/UnsupportedDevice'
 import Wallet from "./services/Wallet";
-import {isStakingAvailable, areSmartContractsAvailable, areCrossChainTransactionsAvailable} from './Flags';
+import {
+    isStakingAvailable,
+    areSmartContractsAvailable,
+    areCrossChainTransactionsAvailable,
+    DAPPS_ENABLED
+} from './Flags';
 import LoadingOverlay from "./components/LoadingOverlay";
 import {connect} from "react-redux";
 import config from "./Config";
@@ -23,6 +28,17 @@ class WalletTabBar extends Component {
 
         this.onSendClick = this.onSendClick.bind(this);
         this.onReceiveClick = this.onReceiveClick.bind(this);
+    }
+
+
+    onSwapClick() {
+        store.dispatch(showModal({
+            type: ModalTypes.DAPP,
+            props: {
+                uri: 'https://swap.thetatoken.org',
+                closeable: false
+            }
+        }));
     }
 
     onSendClick() {
@@ -76,6 +92,15 @@ class WalletTabBar extends Component {
                     normalIconUrl="/img/tab-bar/send@2x.png"
                     activeIconUrl="/img/tab-bar/send-active@2x.png"
                 />
+                {
+                    DAPPS_ENABLED &&
+                    <TabBarItem
+                        title="Swap"
+                        onClick={this.onSwapClick}
+                        normalIconUrl="/img/tab-bar/swap@2x.png"
+                        activeIconUrl="/img/tab-bar/swap-active@2x.png"
+                    />
+                }
                 {/*<TabBarItem*/}
                 {/*    title="Receive"*/}
                 {/*    onClick={this.onReceiveClick}*/}

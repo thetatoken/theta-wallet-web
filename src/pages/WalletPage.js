@@ -116,7 +116,7 @@ export class WalletPage extends React.Component {
                 {
                     !config.isEmbedMode &&
                     <div className="WalletPage__detail-view">
-                        <PageHeader title="Theta/Tfuel Transactions"
+                        <PageHeader title="Token Transactions"
                                     sticky={true}>
                             <div className="WalletPage__header-buttons">
                                 <GhostButton title="Send"

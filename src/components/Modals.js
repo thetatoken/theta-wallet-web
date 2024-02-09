@@ -14,6 +14,7 @@ import DelegatedNodeSelectorModal from "../modals/DelegatedNodeSelectorModal";
 import TrackTokenModal from "../modals/TrackTokenModal";
 import CollectiblesModal from "../modals/CollectiblesModal";
 import TrackCollectibleModal from "../modals/TrackCollectibleModal";
+import DAppModal from "../modals/DAppModal";
 
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
@@ -24,7 +25,8 @@ const ModalComponentByType = {
     [ModalTypes.DELEGATED_NODE_SELECTOR]: DelegatedNodeSelectorModal,
     [ModalTypes.TRACK_TOKEN]: TrackTokenModal,
     [ModalTypes.COLLECTIBLES]: CollectiblesModal,
-    [ModalTypes.TRACK_COLLECTIBLE]: TrackCollectibleModal
+    [ModalTypes.TRACK_COLLECTIBLE]: TrackCollectibleModal,
+    [ModalTypes.DAPP]: DAppModal
 };
 
 class ModalContainer extends React.Component {

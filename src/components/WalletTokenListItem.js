@@ -5,11 +5,12 @@ import {NavLink} from 'react-router-dom'
 import {Jazzicon} from "@ukstv/jazzicon-react";
 import GhostButton from "./buttons/GhostButton";
 import FlatButton from "./buttons/FlatButton";
+import {formatBalanceString, trimDecimalPlaces} from "../utils/Utils";
 
 class WalletTokenListItem extends React.Component {
     render() {
-        const {token, balance, onWrap, onUnwrap} = this.props;
-        let balanceStr = balance || "-";
+        const {token, balance, onWrap, onUnwrap, onStake} = this.props;
+        let balanceStr = (balance ? formatBalanceString(balance) : null) || "-";
 
         return (
             <NavLink to={`/wallet/tokens/${token.id}`}
@@ -48,6 +49,13 @@ class WalletTokenListItem extends React.Component {
                                     size={'xsmall'}
                                     onClick={onUnwrap}
                         />
+                    }
+                    {
+                        onStake &&
+                        <FlatButton
+                            title="Stake"
+                            size={'xsmall'}
+                            onClick={onStake}/>
                     }
 
                 </div>

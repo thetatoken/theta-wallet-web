@@ -12,6 +12,7 @@ import Config from "../../Config";
 import {hideLoader, hideModal, showLoader} from "./ui";
 import Theta from "../../services/Theta";
 import config from "../../Config";
+import safeLocalStorage from "../../utils/SafeLocalStorage";
 
 
 export function setNetwork(network){
@@ -44,6 +45,7 @@ export function resetWalletState(){
 }
 
 export function setWalletAddress(address){
+    safeLocalStorage.setItem('WALLET_ADDRESS', address);
     return {
         type: SET_WALLET_ADDRESS,
         address: address

@@ -11,7 +11,7 @@ import {
 import Wallet from "../../services/Wallet";
 import Theta from "../../services/Theta";
 import Timeout from 'await-timeout';
-import {hideLoader, hideModal, hideModals, showLoader, showModal} from "./ui";
+import {hideLoader, hideModal, hideModals, hideModalsExceptDapp, showLoader, showModal} from "./ui";
 import Alerts from "../../services/Alerts";
 import ThetaJS from "../../libs/thetajs.esm";
 import ContractModes from "../../constants/ContractModes";
@@ -170,7 +170,7 @@ export function resetTransactionsState(){
     }
 }
 
-export function createTransactionRequest(transactionRequest) {
+export function createTransactionRequest(transactionRequest, opts) {
     return async (dispatch) => {
         try {
             const result = Wallet.controller.RPCApi.addTransactionRequest({
@@ -180,7 +180,9 @@ export function createTransactionRequest(transactionRequest) {
             dispatch(showModal({
                 type: ModalTypes.CONFIRM_TRANSACTION,
                 props: {
-                    closeable: false
+                    closeable: false,
+                    onReject: opts && opts.onReject,
+                    onAccept: opts && opts.onAccept,
                 }
             }));
 
@@ -245,7 +247,7 @@ export function approveTransactionRequest(transactionRequestId, password) {
                     }
                 }
             });
-            dispatch(hideModals());
+            dispatch(hideModalsExceptDapp());
 
             if(window.location.href.includes('stakes')){
                 const selectedAddress = _.get(getState(), 'thetaWallet.selectedAddress');

@@ -1,4 +1,6 @@
 import * as actionTypes from '../types/ui';
+import Modals from "../../components/Modals";
+import ModalTypes from "../../constants/ModalTypes";
 
 const INITIAL_STATE = {
     modals : [],
@@ -32,6 +34,11 @@ export const uiReducer = (state = INITIAL_STATE, action) => {
         case actionTypes.HIDE_MODALS:{
             return Object.assign({}, state, {
                 modals: []
+            });
+        }
+        case actionTypes.HIDE_MODALS_EXCEPT_DAPP:{
+            return Object.assign({}, state, {
+                modals: state.modals.filter(modal => modal.type === ModalTypes.DAPP)
             });
         }
 
