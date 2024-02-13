@@ -210,7 +210,7 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
                         onChange={this.handleDerivationPathChange}
                         className={"UnlockWalletViaMnemonicPhrase__select"}
                 >
-                    <option value={MnemonicPath}>Theta - m/44'/500'/0'/0 (Default)</option>
+                    <option value={MnemonicPath}>Theta - m/44'/500'/0'/0</option>
                     <option value={`${EthereumDerivationPath}0`}>Ethereum - m/44'/60'/0'/0/0</option>
                 </select>
                 <div className="UnlockWalletViaMnemonicPhrase__mnemonic-instructions"
@@ -219,10 +219,10 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
                     If your wallet is opening an empty wallet, try changing the derivation path above to Ethereum.
                 </div>
 
-                <div className="UnlockWalletCard__warning">
-                    Before you enter your mnemonic phrase, we recommend you disconnect your device from the internet.
-                    You will be able to reconnect once your wallet is unlocked.
-                </div>
+                {/*<div className="UnlockWalletCard__warning">*/}
+                {/*    Before you enter your mnemonic phrase, we recommend you disconnect your device from the internet.*/}
+                {/*    You will be able to reconnect once your wallet is unlocked.*/}
+                {/*</div>*/}
 
                 <div className="UnlockWalletViaMnemonicPhrase__footer">
                     <GradientButton title="Unlock Wallet"
@@ -705,9 +705,9 @@ export class UnlockWalletPage extends React.Component {
         return (
             <div className="UnlockWalletPage">
                 <div className="UnlockWalletPage__wrapper">
-                    <div className="UnlockWalletPage__title">
-                        Unlock Your Wallet
-                    </div>
+                    {/*<div className="UnlockWalletPage__title">*/}
+                    {/*    Unlock Your Wallet*/}
+                    {/*</div>*/}
 
                     <UnlockWalletCard unlockStrategy={unlockStrategy}
                                       unlockWallet={this.unlockWallet}

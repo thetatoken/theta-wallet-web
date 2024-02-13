@@ -1,21 +1,21 @@
 import _ from 'lodash';
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import './SettingsPage.css';
 import PageHeader from "../components/PageHeader";
 import GradientButton from "../components/buttons/GradientButton";
 import Wallet from '../services/Wallet';
 import {downloadFile} from "../utils/Utils";
 import Alerts from '../services/Alerts';
-import { useSettings } from '../components/SettingContext';
+import {useSettings} from '../components/SettingContext';
 
 class ExportKeystoreContent extends React.Component {
-    constructor(){
+    constructor() {
         super();
 
         this.defaultState = {
             currentPassword: '',
             password: '',
-            passwordConfirmation:  '',
+            passwordConfirmation: '',
 
             loading: false,
 
@@ -29,18 +29,17 @@ class ExportKeystoreContent extends React.Component {
         this.exportKeystore = this.exportKeystore.bind(this);
     }
 
-    validate(){
-        if(this.state.password.length > 0 &&
+    validate() {
+        if (this.state.password.length > 0 &&
             this.state.passwordConfirmation.length > 0 &&
-            this.state.password !== this.state.passwordConfirmation){
+            this.state.password !== this.state.passwordConfirmation) {
             this.setState({error: "Your passwords do not match"});
-        }
-        else{
+        } else {
             this.setState({error: ""});
         }
     }
 
-    isValid(){
+    isValid() {
         return (this.state.password.length > 0 &&
             this.state.passwordConfirmation.length > 0 &&
             this.state.password === this.state.passwordConfirmation);
@@ -53,15 +52,14 @@ class ExportKeystoreContent extends React.Component {
         this.setState({[name]: value}, this.validate);
     }
 
-    exportKeystore(){
+    exportKeystore() {
         try {
             let keystore = Wallet.exportKeystore(this.state.currentPassword, this.state.password);
 
             downloadFile(keystore.address + '.keystore', JSON.stringify(keystore));
 
             this.setState(this.defaultState);
-        }
-        catch (e) {
+        } catch (e) {
             this.setState({
                 loading: false
             });
@@ -71,7 +69,7 @@ class ExportKeystoreContent extends React.Component {
 
     }
 
-    prepareForExport(){
+    prepareForExport() {
         this.setState({
             loading: true
         });
@@ -122,14 +120,14 @@ class ExportKeystoreContent extends React.Component {
 }
 
 const EnableTnsContent = () => {
-    const { tnsEnable, updateTnsEnable } = useSettings();
+    const {tnsEnable, updateTnsEnable} = useSettings();
     const [localTnsEnable, setLocalTnsEnable] = useState(tnsEnable);
 
     const handleCheckboxChange = (event) => {
         const isChecked = event.target.checked;
         setLocalTnsEnable(isChecked);
         updateTnsEnable(isChecked);
-        Alerts.showSuccess(`Theta Name Service (TNS) is now ${isChecked ? 'enabled': 'disabled'}`);
+        Alerts.showSuccess(`Theta Name Service (TNS) is now ${isChecked ? 'enabled' : 'disabled'}`);
     };
 
     useEffect(() => {
@@ -148,16 +146,20 @@ const EnableTnsContent = () => {
                 onChange={handleCheckboxChange}
             />
             <div className="InputTitle">
-                <p>Theta Name Service (TNS) is a feature that allows you to replace your wallet address (42 characters long starting with "0x") with a name of your choice (i.e. myname.theta).</p>
+                <p>Theta Name Service (TNS) is a feature that allows you to replace your wallet address (42 characters
+                    long starting with "0x") with a name of your choice (i.e. myname.theta).</p>
                 <p>By enabling, you will be able to see and use any assigned TNS throughout the Theta Wallet.</p>
-                <p>When disabled, you will only see wallet adresses and won't be able to use any TNS to refer to a wallet.</p>
-                <p>You can purchase and assign TNS at <a target="_blank" href="https://thetaboard.io/domain/search">Thetaboard.io</a></p>
+                <p>When disabled, you will only see wallet adresses and won't be able to use any TNS to refer to a
+                    wallet.</p>
+                <p>You can purchase and assign TNS at <a target="_blank"
+                                                         href="https://thetaboard.io/domain/search">Thetaboard.io</a>
+                </p>
             </div>
         </>
     );
 };
 
-export { EnableTnsContent };
+export {EnableTnsContent};
 
 
 class SettingsSection extends React.Component {
@@ -169,7 +171,7 @@ class SettingsSection extends React.Component {
                 </div>
 
                 <div className="SettingsSection__content">
-                    { this.props.children }
+                    {this.props.children}
                 </div>
             </div>
         );
@@ -188,15 +190,16 @@ class SettingsPage extends React.Component {
                     />
 
                     {
-                        canExport &&<>
-                        <SettingsSection title="Export Keystore">
-                            <ExportKeystoreContent/>
-                        </SettingsSection>
-                        {/*<SettingsSection title="TNS">*/}
-                        {/*    <EnableTnsContent />*/}
-                        {/*</SettingsSection>*/}
+                        canExport &&
+                        <>
+                            <SettingsSection title="Export Keystore">
+                                <ExportKeystoreContent/>
+                            </SettingsSection>
+                            <SettingsSection title="TNS">
+                                <EnableTnsContent/>
+                            </SettingsSection>
                         </>
-                }
+                    }
                 </div>
             </div>
         );
