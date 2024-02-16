@@ -4,6 +4,7 @@ import FlatButton from "../components/buttons/FlatButton";
 import Modal from "../components/Modal";
 import dappCloseIcon from '../img/icons/close-dapp@2x.png';
 import {hideModal} from "../state/actions/ui";
+import {updateAccountBalances} from "../state/actions/Wallet";
 
 export class DAppModal extends React.Component {
     constructor() {
@@ -29,6 +30,9 @@ export class DAppModal extends React.Component {
 
     onClose = () => {
         this.props.dispatch(hideModal());
+
+        // Update balances
+        this.props.dispatch(updateAccountBalances());
     }
 
     render() {
