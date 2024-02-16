@@ -266,3 +266,24 @@ export function approveTransactionRequest(transactionRequestId, password) {
         }
     };
 }
+
+
+export function executeSignMessage(message) {
+    return async (dispatch) => {
+        try {
+            dispatch(showLoader('Signing Message'));
+
+            const result = await Wallet.controller.RPCApi.executeSignMessage({
+                message
+            });
+            dispatch(hideLoader());
+
+            return result;
+        }
+        catch (error) {
+            dispatch(hideLoader());
+
+            return false;
+        }
+    };
+}

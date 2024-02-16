@@ -17,5 +17,6 @@ export default {
     TRACK_TOKEN: 'track-token',
     COLLECTIBLES: 'collectibles',
     TRACK_COLLECTIBLE: 'track-collectible',
-    DAPP: 'dapp'
+    DAPP: 'dapp',
+    PERSONAL_SIGN: 'personal-sign',
 };

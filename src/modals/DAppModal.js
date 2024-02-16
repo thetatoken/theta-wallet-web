@@ -13,9 +13,7 @@ export class DAppModal extends React.Component {
         this.frameRef = React.createRef();
     }
 
-    componentDidMount() {
-        window.Web3Bridge.targetFrame = this.frameRef.current;
-        window.Web3Bridge.targetOrigin = (new URL(this.props.uri)).origin;
+    sendConfigAndStartInterval = () => {
         window.Web3Bridge.sendConfig()
         this.interval = setInterval(() => {
             window.Web3Bridge.sendConfig();
@@ -23,8 +21,16 @@ export class DAppModal extends React.Component {
         window.Web3Bridge.sendConfig()
     }
 
+    componentDidMount() {
+        window.Web3Bridge.targetFrame = this.frameRef.current;
+        window.Web3Bridge.targetOrigin = (new URL(this.props.uri)).origin;
+        this.sendConfigAndStartInterval();
+    }
+
     componentWillUnmount() {
-        clearInterval(this.interval);
+        if(this.interval){
+            clearInterval(this.interval);
+        }
         window.Web3Bridge.endSession();
     }
 
@@ -36,7 +42,7 @@ export class DAppModal extends React.Component {
     }
 
     render() {
-        const {uri} = this.props;
+        let {uri} = this.props;
 
         return (
             <Fragment>
@@ -60,9 +66,14 @@ export class DAppModal extends React.Component {
                     <iframe src={uri}
                             ref={this.frameRef}
                             onLoad={() => {
+                                console.log('onLoad!!!!!!!!!!!!');
+                                if(!this.interval) {
+                                    this.sendConfigAndStartInterval();
+                                }
                                 // It's loaded, we can stop pushing the config
                                 setTimeout(() => {
                                     clearInterval(this.interval);
+                                    this.interval = null;
                                 }, 2000);
                             }}
                     />

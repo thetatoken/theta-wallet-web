@@ -24,6 +24,7 @@ export default class TransactionsController extends EventEmitter{
         this.preferencesController = opts.preferencesController;
 
         this.signAndSendTransaction = opts.signAndSendTransaction;
+        this.signMessage = opts.signMessage;
 
         this._getProvider = opts.getProvider;
 
@@ -155,6 +156,13 @@ export default class TransactionsController extends EventEmitter{
         }
 
         return true;
+    }
+
+    async executeSignMessage(message) {
+        const provider = this._getProvider();
+        const fromAddress = this.preferencesController.getSelectedAddress();
+        const result = await this.signMessage(fromAddress, message, provider);
+        return result;
     }
 
     /**

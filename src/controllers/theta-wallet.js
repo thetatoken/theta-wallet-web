@@ -76,6 +76,7 @@ export default class ThetaWalletController extends EventEmitter {
             preferencesController: this.preferencesController,
 
             signAndSendTransaction: this.keyringController.signAndSendTransaction.bind(this.keyringController),
+            signMessage: this.keyringController.signMessage.bind(this.keyringController),
 
             updateAccounts: this.accountManager.updateAccounts.bind(this.accountManager),
             detectNewTokens: this.accountManager.detectNewTokens.bind(this.accountManager)
@@ -187,6 +188,7 @@ export default class ThetaWalletController extends EventEmitter {
             addTransactionRequest: this._addTransactionRequest.bind(this),
             approveTransactionRequest: this._approveTransactionRequest.bind(this),
             rejectTransactionRequest: this._rejectTransactionRequest.bind(this),
+            executeSignMessage: this._executeSignMessage.bind(this),
 
             // Tokens
             addToken: this._addToken.bind(this),
@@ -259,6 +261,13 @@ export default class ThetaWalletController extends EventEmitter {
 
         const result = await this.transactionsController.rejectTransactionRequest(transactionRequestId);
 
+        return result;
+    }
+
+    async _executeSignMessage(args) {
+        const {message} = args;
+
+        const result = await this.transactionsController.executeSignMessage(message);
         return result;
     }
 

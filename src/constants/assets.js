@@ -123,7 +123,6 @@ const tokenToAsset = (token, currentChainId) => {
         getKnownToken(currentChainId, token.address)
     );
     const externalStakingPlatforms = new Set(knownToken?.externalStakingPlatforms || ['mobile', 'web']);
-    console.log('externalStakingPlatforms == ', externalStakingPlatforms);
 
     return {
         id: token.address,

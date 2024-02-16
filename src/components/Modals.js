@@ -15,6 +15,7 @@ import TrackTokenModal from "../modals/TrackTokenModal";
 import CollectiblesModal from "../modals/CollectiblesModal";
 import TrackCollectibleModal from "../modals/TrackCollectibleModal";
 import DAppModal from "../modals/DAppModal";
+import PersonalSignModal from "../modals/PersonalSignModal";
 
 const ModalComponentByType = {
     [ModalTypes.RECEIVE]: ReceiveModal,
@@ -26,7 +27,8 @@ const ModalComponentByType = {
     [ModalTypes.TRACK_TOKEN]: TrackTokenModal,
     [ModalTypes.COLLECTIBLES]: CollectiblesModal,
     [ModalTypes.TRACK_COLLECTIBLE]: TrackCollectibleModal,
-    [ModalTypes.DAPP]: DAppModal
+    [ModalTypes.DAPP]: DAppModal,
+    [ModalTypes.PERSONAL_SIGN]: PersonalSignModal
 };
 
 class ModalContainer extends React.Component {

@@ -172,6 +172,13 @@ export default class KeyringController extends EventEmitter {
             });
     }
 
+    signMessage(fromAddress, message, provider) {
+        return this._getKeyringForAccount(fromAddress)
+            .then((keyring) => {
+                return keyring.signMessage(fromAddress, message, provider);
+            });
+    }
+
     //
     // PRIVATE METHODS
     //

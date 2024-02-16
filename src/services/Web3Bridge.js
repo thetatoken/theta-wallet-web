@@ -5,9 +5,10 @@ import {setNetwork} from "../state/actions/Wallet";
 import {getNetworkForChainId} from "@thetalabs/theta-js/src/networks";
 import Wallet from "./Wallet";
 import * as thetajs from "@thetalabs/theta-js";
-import {hideLoader} from "../state/actions/ui";
+import {hideLoader, hideModal, showModal} from "../state/actions/ui";
 import {createTransactionRequest} from "../state/actions/Transactions";
 import {TxType} from "@thetalabs/theta-js/src/constants";
+import ModalTypes from "../constants/ModalTypes";
 
 export default class Web3Bridge {
     constructor() {
@@ -136,23 +137,25 @@ export default class Web3Bridge {
                             case 'personal_sign': {
                                 const [message, address] = params;
                                 const decodedMessage = Buffer.from(message.replace('0x', ''), 'hex').toString('utf8');
-                                // TODO need to show the modal here...
                                 console.log('personal_sign', decodedMessage);
-                                // store.dispatch(showModal(ModalTypes.PERSONAL_SIGN, {
-                                //     wallet: selectedIdentity,
-                                //     chainInfo: network,
-                                //     projectMetadata: projectMetadata,
-                                //     message: decodedMessage,
-                                //     onAccept: async (signedMessage) => {
-                                //         respond(request, signedMessage);
-                                //     },
-                                //     onReject: () => {
-                                //         respond(request, null, {
-                                //             code: 4001,
-                                //             message: 'User rejected the request.',
-                                //         });
-                                //     }
-                                // }))
+                                store.dispatch(showModal({
+                                    type: ModalTypes.PERSONAL_SIGN,
+                                    props: {
+                                        message: decodedMessage,
+                                        onAccept: async (signedMessage) => {
+
+                                            store.dispatch(hideModal());
+                                            respond(request, signedMessage);
+                                        },
+                                        onReject: () => {
+                                            store.dispatch(hideModal());
+                                            respond(request, null, {
+                                                code: 4001,
+                                                message: 'User rejected the request.',
+                                            });
+                                        }
+                                    }
+                                }));
                                 break;
                             }
                             case 'eth_sendTransaction': {

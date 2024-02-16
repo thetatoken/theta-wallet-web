@@ -63,6 +63,14 @@ class SimpleKeyring extends EventEmitter{
         return Promise.resolve(result);
     }
 
+    signMessage (fromAddress, message, provider) {
+        let wallet = this._getWalletForAccount(fromAddress);
+        wallet = wallet.connect(provider);
+        const signedMessage = wallet.signMessage(message);
+
+        return Promise.resolve(signedMessage);
+    }
+
     // exportAccount should return a hex-encoded private key:
     exportAccount (address) {
         const wallet = this._getWalletForAccount(address);
