@@ -16,7 +16,10 @@ const options = {
     position: 'top center',
     timeout: 5000,
     offset: '30px',
-    transition: 'scale'
+    transition: 'scale',
+    containerStyle: {
+        zIndex: 100000000
+    }
 };
 
 class AppWrapper extends Component {
