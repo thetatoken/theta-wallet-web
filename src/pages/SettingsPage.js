@@ -188,18 +188,15 @@ class SettingsPage extends React.Component {
                     <PageHeader title="Settings"
                                 sticky={true}
                     />
-
                     {
                         canExport &&
-                        <>
-                            <SettingsSection title="Export Keystore">
-                                <ExportKeystoreContent/>
-                            </SettingsSection>
-                            <SettingsSection title="TNS">
-                                <EnableTnsContent/>
-                            </SettingsSection>
-                        </>
+                        <SettingsSection title="Export Keystore">
+                            <ExportKeystoreContent/>
+                        </SettingsSection>
                     }
+                    <SettingsSection title="TNS">
+                        <EnableTnsContent/>
+                    </SettingsSection>
                 </div>
             </div>
         );
