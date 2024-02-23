@@ -67,13 +67,18 @@ class CollectibleItem extends React.Component {
         const {isPopoverOpen} = this.state;
 
         const onClickCollectible = (collectible) => {
+            console.log('onClickCollectible');
+            console.log('collectible == ', collectible);
             this.setState({isPopoverOpen: true})
         };
+
+        console.log('isPopoverOpen == ', isPopoverOpen);
 
         return (
             <Popover
                 isOpen={isPopoverOpen}
                 positions={['bottom']}
+                containerStyle={{zIndex: 100000000}}
                 padding={10}
                 onClickOutside={() => this.setState({isPopoverOpen: false})}
                 content={({ position, childRect, popoverRect }) => (
