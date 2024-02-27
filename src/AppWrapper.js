@@ -17,6 +17,7 @@ const options = {
     timeout: 5000,
     offset: '30px',
     transition: 'scale',
+    zIndex: 100000000,
     containerStyle: {
         zIndex: 100000000
     }
