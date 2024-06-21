@@ -6,6 +6,9 @@ import {Jazzicon} from "@ukstv/jazzicon-react";
 import GhostButton from "./buttons/GhostButton";
 import FlatButton from "./buttons/FlatButton";
 import {formatBalanceString, trimDecimalPlaces} from "../utils/Utils";
+import {store} from "../state";
+import {showModal} from "../state/actions/ui";
+import ModalTypes from "../constants/ModalTypes";
 
 class WalletTokenListItem extends React.Component {
     render() {
@@ -15,49 +18,51 @@ class WalletTokenListItem extends React.Component {
         return (
             <NavLink to={`/wallet/tokens/${token.id}`}
                      className="Balance">
-                <div className='Balance__icon-wrapper'>
-                    {
-                        token.iconUrl &&
-                        <img src={token.iconUrl}
-                             className="Balance__icon"
-                        />
-                    }
-                    {
-                        _.isNil(token.iconUrl) &&
-                        <Jazzicon address={token.contractAddress} className="Balance__icon"/>
-                    }
-                </div>
-                <div className="WalletTokenListItem__token-balance-container">
-                    <div className="Balance__name">
-                        {token.symbol}
+                <div className={'Balance__container'}>
+                    <div className='Balance__icon-wrapper'>
+                        {
+                            token.iconUrl &&
+                            <img src={token.iconUrl}
+                                 className="Balance__icon"
+                            />
+                        }
+                        {
+                            _.isNil(token.iconUrl) &&
+                            <Jazzicon address={token.contractAddress} className="Balance__icon"/>
+                        }
                     </div>
-                    <div className="Balance__amount">
-                        {balanceStr}
+                    <div className="WalletTokenListItem__token-balance-container">
+                        <div className="Balance__name">
+                            {token.symbol}
+                        </div>
+                        <div className="Balance__amount">
+                            {balanceStr}
+                        </div>
                     </div>
-                </div>
-                <div className="WalletTokenListItem__button-container">
-                    {
-                        onWrap &&
-                        <FlatButton title={'Wrap'}
-                                    size={'xsmall'}
-                                    onClick={onWrap}
-                        />
-                    }
-                    {
-                        onUnwrap &&
-                        <FlatButton title={'Unwrap'}
-                                    size={'xsmall'}
-                                    onClick={onUnwrap}
-                        />
-                    }
-                    {
-                        onStake &&
-                        <FlatButton
-                            title="Stake"
-                            size={'xsmall'}
-                            onClick={onStake}/>
-                    }
+                    <div className="WalletTokenListItem__button-container">
+                        {
+                            onWrap &&
+                            <FlatButton title={'Wrap'}
+                                        size={'xsmall'}
+                                        onClick={onWrap}
+                            />
+                        }
+                        {
+                            onUnwrap &&
+                            <FlatButton title={'Unwrap'}
+                                        size={'xsmall'}
+                                        onClick={onUnwrap}
+                            />
+                        }
+                        {
+                            onStake &&
+                            <FlatButton
+                                title="Stake"
+                                size={'xsmall'}
+                                onClick={onStake}/>
+                        }
 
+                    </div>
                 </div>
             </NavLink>
         );

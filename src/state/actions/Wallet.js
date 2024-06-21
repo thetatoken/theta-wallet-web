@@ -9,10 +9,11 @@ import Router from "../../services/Router";
 import Alerts from '../../services/Alerts'
 import {onLine} from "../../utils/Utils";
 import Config from "../../Config";
-import {hideLoader, hideModal, showLoader} from "./ui";
+import {hideLoader, hideModal, showLoader, showModal} from "./ui";
 import Theta from "../../services/Theta";
 import config from "../../Config";
 import safeLocalStorage from "../../utils/SafeLocalStorage";
+import ModalTypes from "../../constants/ModalTypes";
 
 
 export function setNetwork(network){
@@ -69,6 +70,18 @@ export function unlockWallet(strategy, password, data){
             if(onLine()){
                 //Navigate to the wallet
                 Router.push('/wallet');
+
+                if(window.afterUnlock){
+                    if(window.afterUnlock === 'elite-booster'){
+                        dispatch(showModal({
+                            type: ModalTypes.DAPP,
+                            props: {
+                                uri: 'https://elite-booster.thetatoken.org',
+                                closeable: false
+                            }
+                        }));
+                    }
+                }
             }
             else{
                 //Navigate to the offline until they enable their network again
