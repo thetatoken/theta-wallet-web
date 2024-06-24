@@ -171,11 +171,6 @@ const mapStateToProps = (state) => {
 
 export class UnconnectedApp extends Component {
     componentDidMount() {
-        let queryParams = getQueryParameters(this.props.history.location.search);
-        if(queryParams['after-unlock']){
-            window.afterUnlock = queryParams['after-unlock'];
-        }
-
         Router.setHistory(this.props.history);
     }
 

@@ -5,6 +5,12 @@ import AppWrapper from './AppWrapper';
 import {BigNumber} from 'bignumber.js';
 import { SettingsProvider } from './components/SettingContext';
 import Web3Bridge from "./services/Web3Bridge";
+import {getQueryParameters} from "./utils/Utils";
+
+let queryParams = getQueryParameters(window.location.search);
+if(queryParams['after-unlock']){
+    window.afterUnlock = queryParams['after-unlock'];
+}
 
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
