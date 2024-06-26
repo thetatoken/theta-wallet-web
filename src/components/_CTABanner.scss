@@ -1,0 +1,38 @@
+.CTABanner{
+  background-color: #453D3C;
+  border-radius: 4px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-left: 14px;
+  width: calc(100% - 28px);
+  margin-right: 14px;
+
+  &__title{
+    color: #FFA414;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  &__description{
+    color: #ffffff;
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  &__button{
+    width: 96px;
+    height: 20px;
+    background-color: #F28613;
+    border-radius: 3px;
+    color: #1E2439;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 20px;
+  }
+}

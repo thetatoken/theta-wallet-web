@@ -9,6 +9,7 @@ import {formatBalanceString, trimDecimalPlaces} from "../utils/Utils";
 import {store} from "../state";
 import {showModal} from "../state/actions/ui";
 import ModalTypes from "../constants/ModalTypes";
+import CTABanner from "./CTABanner";
 
 class WalletTokenListItem extends React.Component {
     render() {
@@ -64,6 +65,33 @@ class WalletTokenListItem extends React.Component {
 
                     </div>
                 </div>
+                {
+                    token.id === 'tfuel' &&
+                    <a className={'EliteBoosterCTA'}
+                       onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                           store.dispatch(showModal({
+                               type: ModalTypes.DAPP,
+                               props: {
+                                   uri: 'https://elite-booster.thetatoken.org',
+                                   closeable: false
+                               }
+                           }));
+                       }}
+                    >
+                        <div className={'EliteBoosterCTA__title'}>
+                            Elite Booster
+                        </div>
+                        <div className={'EliteBoosterCTA__description'}>
+                            Earn Boosted EdgeCloud rewards by locking TFUEL.
+                        </div>
+                        <div className={'EliteBoosterCTA__button'}>
+                            Lock TFUEL
+                        </div>
+                    </a>
+                }
+
             </NavLink>
         );
     }
