@@ -11,6 +11,12 @@ let queryParams = getQueryParameters(window.location.search);
 if(queryParams['after-unlock']){
     window.afterUnlock = queryParams['after-unlock'];
 }
+if(queryParams['network']){
+    window.network = queryParams['network'];
+}
+if(queryParams['dapp-window-size']){
+    window.dappWindowSize = queryParams['dapp-window-size'];
+}
 
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 

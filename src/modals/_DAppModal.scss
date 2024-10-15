@@ -10,6 +10,13 @@
     max-height: 700px;
   }
 
+  &--size-max{
+    height: 100vh;
+    width: 100vw;
+    max-width: 90vw;
+    max-height: 90vh;
+  }
+
   &__warning{
     background: #123C4A;
     height: 32px;

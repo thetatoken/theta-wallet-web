@@ -81,6 +81,17 @@ export function unlockWallet(strategy, password, data){
                             }
                         }));
                     }
+                    else if(window.afterUnlock.includes('show-dapp')){
+                        const dappUrl = window.afterUnlock.replace('show-dapp-', '');
+
+                        dispatch(showModal({
+                            type: ModalTypes.DAPP,
+                            props: {
+                                uri: dappUrl,
+                                closeable: false
+                            }
+                        }));
+                    }
                 }
             }
             else{

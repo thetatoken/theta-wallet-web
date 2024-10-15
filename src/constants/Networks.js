@@ -46,7 +46,7 @@ export const NetworksById = zipMap(NetworksWithDescriptions.map(({ id }) => id),
 
 export const NetworkExplorerUrls = {
     [Networks.THETA_MAINNET]: 'https://explorer.thetatoken.org',
-    [Networks.THETA_TESTNET]: 'https://beta-explorer.thetatoken.org',
+    [Networks.THETA_TESTNET]: 'https://testnet-explorer.thetatoken.org',
     [Networks.THETA_TESTNET_AMBER]: 'https://elite-edge-testnet-explorer.thetatoken.org',
     [Networks.THETA_TESTNET_SAPPHIRE]: 'https://guardian-testnet-explorer.thetatoken.org',
     [Networks.THETA_PRIVATENET]: 'https://smart-contracts-sandbox-explorer.thetatoken.org'

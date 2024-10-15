@@ -3,6 +3,7 @@ import React from "react";
 import './UnlockWalletPage.css';
 import {connect} from 'react-redux'
 import {Link} from "react-router-dom";
+import * as thetajs from '@thetalabs/theta-js';
 import GradientButton from '../components/buttons/GradientButton'
 import HardwareOptionButton from '../components/buttons/HardwareOptionButton';
 import Wallet, {
@@ -14,7 +15,7 @@ import Wallet, {
 } from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
-import {connectHardware, unlockHardwareWalletAccount, unlockWallet} from "../state/actions/Wallet";
+import {connectHardware, setNetwork, unlockHardwareWalletAccount, unlockWallet} from "../state/actions/Wallet";
 import DropZone from '../components/DropZone'
 import {formatNativeTokenAmountToLargestUnit, truncate} from "../utils/Utils";
 import MDSpinner from "react-md-spinner";
@@ -143,6 +144,14 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
         let name = event.target.name;
         let value = event.target.value;
 
+        if(name === 'mnemonic'){
+            if(value.trim().split(' ').length === 24) {
+                this.setState({
+                    derivationPath: `${EthereumDerivationPath}0`,
+                })
+            }
+        }
+
         this.setState({[name]: value});
     }
 
@@ -191,6 +200,16 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
                           name="mnemonic"
                           value={this.state.mnemonic}
                           onChange={this.handleChange}
+                          onPaste={(e) => {
+                                // e.preventDefault();
+                                let text = e.clipboardData.getData('text/plain');
+                                console.log('text.trim().split(\' \') == ', text.trim().split(' '));
+                                if(text.trim().split(' ').length === 24) {
+                                    this.setState({
+                                        derivationPath: `${EthereumDerivationPath}0`,
+                                    })
+                                }
+                          }}
                 />
 
                 <div className="UnlockWalletViaMnemonicPhrase__mnemonic-instructions">
@@ -696,6 +715,12 @@ export class UnlockWalletPage extends React.Component {
         if(!_.isNil(address)){
             // Incase the user went backwards after unlocking, reload the app
             window.location.reload();
+        }
+
+        if(window.network){
+            if(window.network.toLowerCase() === 'testnet'){
+                this.props.dispatch(setNetwork(thetajs.networks.Testnet));
+            }
         }
     }
 

@@ -6,6 +6,8 @@ import dappCloseIcon from '../img/icons/close-dapp@2x.png';
 import {hideModal} from "../state/actions/ui";
 import {updateAccountBalances} from "../state/actions/Wallet";
 
+const classNames = require('classnames');
+
 export class DAppModal extends React.Component {
     constructor() {
         super();
@@ -50,7 +52,9 @@ export class DAppModal extends React.Component {
                 {/*    Ensure that you trust this website before interacting with it.*/}
                 {/*</div>*/}
                 <Modal closeable={false}>
-                <div className={'DAppModal'}>
+                <div className={classNames('DAppModal', {
+                    [`DAppModal--size-${window.dappWindowSize}`]: true,
+                })}>
                     <div className="DAppTitleBar">
                         <div className={'DAppTitleBar__address'}>
                             <div>
