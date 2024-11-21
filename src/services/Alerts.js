@@ -25,6 +25,9 @@ export default class Alerts {
     }
 
     static showError(message){
+        if(message == "Please enable Contract data on the Ethereum app Settings"){
+            message = "Please enable Contract data and disable Display data on the Ethereum app Settings"
+        }
         this._show('error', message);
     }
 }

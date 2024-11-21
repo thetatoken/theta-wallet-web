@@ -561,7 +561,7 @@ class UnlockWalletViaColdWalletUnconnected extends React.Component {
             warning = "Please make sure your Trezor is connected before clicking 'Continue' below.";
         }
         else if(this.state.hardware === "ledger"){
-            warning = "Please make sure your Ledger is connected with the Ethereum app open before clicking 'Continue' below.";
+            warning = "Please make sure your Ledger is connected with the Ethereum app open. You should enable Contract data and disable Display data on the Ethereum app Settings before clicking 'Continue' below";
         }
 
         if(hardwareAccounts.length > 0){
