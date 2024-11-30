@@ -36,7 +36,7 @@ class WalletTabBar extends Component {
         store.dispatch(showModal({
             type: ModalTypes.DAPP,
             props: {
-                uri: 'https://swap.thetatoken.org',
+                uri: 'https://thetaswap.org',
                 closeable: false
             }
         }));
