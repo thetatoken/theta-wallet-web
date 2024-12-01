@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
-    "@ledgerhq/hw-app-eth": "^4.72.1",
+    "@ledgerhq/hw-app-eth": "^6.42.0",
     "@ledgerhq/hw-transport-u2f": "^4.72.1",
     "@ledgerhq/hw-transport-webusb": "^6.2.0",
     "@thetalabs/theta-js": "^0.0.86",
@@ -13,6 +13,7 @@
     "@ukstv/jazzicon-react": "^1.0.0",
     "await-timeout": "^0.3.0",
     "awesome-debounce-promise": "^2.1.0",
+    "axios": "1.4.0",
     "bignumber.js": "^8.0.1",
     "classnames": "^2.2.6",
     "ethereumjs-util": "^6.1.0",

@@ -10,13 +10,31 @@ module.exports = function override(config) {
         https: require.resolve("https-browserify"),
         os: require.resolve("os-browserify"),
         url: require.resolve("url"),
+        path: false
     });
     config.resolve.fallback = fallback;
+
+    // Add resolution for all process/browser instances
+    config.resolve.alias = {
+        ...config.resolve.alias,
+        'process/browser': require.resolve('process/browser.js'),
+        'process': require.resolve('process/browser.js')
+    };
+
     config.plugins = (config.plugins || []).concat([
         new webpack.ProvidePlugin({
-            process: "process/browser",
             Buffer: ["buffer", "Buffer"],
-        }),
+            process: require.resolve('process/browser.js')
+        })
     ]);
+
+    // Add module rules to handle .js files
+    config.module.rules.push({
+        test: /\.js$/,
+        resolve: {
+            fullySpecified: false
+        }
+    });
+
     return config;
 };
