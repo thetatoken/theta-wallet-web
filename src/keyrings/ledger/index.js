@@ -23,6 +23,7 @@ class LedgerKeyring extends EventEmitter {
         this.unlockedAccount = 0
         this.hdk = new HDKey()
         this.paths = {}
+        this._ethApp = null;
         this.deserialize(opts)
     }
 
@@ -184,6 +185,7 @@ class LedgerKeyring extends EventEmitter {
         this.unlockedAccount = 0
         this.paths = {}
         this.hdk = new HDKey()
+        this._ethApp = null;
     }
 
     /* PRIVATE METHODS */
@@ -283,6 +285,10 @@ class LedgerKeyring extends EventEmitter {
     }
 
     async _getETH () {
+        if (this._ethApp) {
+            return this._ethApp;
+        }
+
         let transport;
         if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
             transport = await TransportU2F.create();
@@ -290,9 +296,9 @@ class LedgerKeyring extends EventEmitter {
         else {
             transport = await TransportWebUSB.create();
         }
-        const app = new Eth(transport);
+        this._ethApp = new Eth(transport);
 
-        return app;
+        return this._ethApp;
     }
 }
 
