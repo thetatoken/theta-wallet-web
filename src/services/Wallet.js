@@ -140,6 +140,7 @@ export default class Wallet {
         TrezorConnect.manifest({
             email: 'walletsupport@thetanetwork.org',
             appUrl: 'https://wallet.thetatoken.org',
+            appName: 'Theta Wallet',
             keepSession: true
         });
 

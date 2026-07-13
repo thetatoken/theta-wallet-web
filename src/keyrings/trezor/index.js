@@ -13,6 +13,7 @@ const DELAY_BETWEEN_POPUPS = 1000
 const TREZOR_CONNECT_MANIFEST = {
     email: 'walletsupport@thetanetwork.org',
     appUrl: 'https://wallet.thetatoken.org',
+    appName: 'Theta Wallet',
     keepSession: true
 };
 
