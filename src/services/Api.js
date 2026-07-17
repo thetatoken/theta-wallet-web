@@ -187,7 +187,7 @@ export default class Api {
     //
 
     static fetchGuardianNodeDelegates() {
-        let url = `https://api.thetatoken.org/v1/guardian/delegated-nodes`;
+        let url = `https://theta-mkt-api.thetatoken.org/v1/guardian/delegated-nodes`;
 
         return sendRequest(url, "GET", null, null);
     }

@@ -1012,7 +1012,7 @@ export default class PreferencesController  extends EventEmitter {
         let delegatedGuardianNodes = null;
 
         try {
-            const url = `https://api.thetatoken.org/v1/guardian/delegated-nodes`;
+            const url = `https://theta-mkt-api.thetatoken.org/v1/guardian/delegated-nodes`;
             const response = await fetch(url);
             const responseJson = await response.json();
             delegatedGuardianNodes = responseJson;
