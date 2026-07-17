@@ -9,7 +9,7 @@
     "@ledgerhq/hw-transport-webusb": "^6.2.0",
     "@thetalabs/theta-js": "^0.0.86",
     "@thetalabs/wallet-metadata": "1.0.53",
-    "@trezor/connect-web": "^9.1.12",
+    "@trezor/connect-web": "^9.7.3",
     "@ukstv/jazzicon-react": "^1.0.0",
     "await-timeout": "^0.3.0",
     "awesome-debounce-promise": "^2.1.0",
