@@ -6,12 +6,27 @@ import Theta from "./Theta.js"
 
 const rpcURL = "https://mainnet.infura.io/v3/40980e2189924c8abfc5f60dd2e5dc4b";
 const web3 = new Web3(rpcURL);
+let selectedDevice = null;
 
 export default class Trezor {
-    static async signTransaction(unsignedTx){
+    static setDevice(device){
+        selectedDevice = device;
+    }
+
+    static clearDevice(){
+        selectedDevice = null;
+    }
+
+    static async signTransaction(unsignedTx, device = selectedDevice){
+        const expectedState = device && device.state && device.state.staticSessionId;
+        if(!expectedState){
+            throw new Error("Unable to verify the active Trezor session. Please reconnect your device.");
+        }
+
         let payload = Theta.prepareTxPayload(unsignedTx);
 
         const trezorSignParams = {
+            device: device,
             path: Wallet.getWalletPath(),
             transaction: {
                 chainId: 1,
@@ -24,8 +39,12 @@ export default class Trezor {
             },
         };
         const signedTx = await TrezorConnect.ethereumSignTransaction(trezorSignParams);
-        if (signedTx.payload.error) {
-            throw signedTx.payload.error;
+        if (!signedTx.success) {
+            throw new Error((signedTx.payload && signedTx.payload.error) || "Failed to sign transaction.");
+        }
+        const signedState = signedTx.device && signedTx.device.state && signedTx.device.state.staticSessionId;
+        if (signedState !== expectedState) {
+            throw new Error("The active Trezor session changed. Reconnect your device before signing.");
         }
         let signature = signedTx.payload.r + signedTx.payload.s.slice(2) + (parseInt(signedTx.payload.v, 16) - 37).toString().padStart(2, '0');
         unsignedTx.setSignature(signature);

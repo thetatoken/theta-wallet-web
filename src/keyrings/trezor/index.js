@@ -27,6 +27,8 @@ class TrezorKeyring extends EventEmitter {
         this.perPage = 5
         this.unlockedAccount = 0
         this.paths = {}
+        this.device = null
+        this.accountDevices = {}
         this.deserialize(opts)
         TrezorConnect.manifest(TREZOR_CONNECT_MANIFEST)
     }
@@ -61,8 +63,17 @@ class TrezorKeyring extends EventEmitter {
                 path: this.hdPath
             }).then(response => {
                 if (response.success) {
-                    this.hdk.publicKey = new Buffer(response.payload.publicKey, 'hex')
-                    this.hdk.chainCode = new Buffer(response.payload.chainCode, 'hex')
+                    const device = this._deviceIdentity(response.device)
+                    if (!device) {
+                        reject(new Error('Unable to verify the active Trezor session. Please reconnect your device.'))
+                        return
+                    }
+
+                    const hdk = new HDKey()
+                    hdk.publicKey = Buffer.from(response.payload.publicKey, 'hex')
+                    hdk.chainCode = Buffer.from(response.payload.chainCode, 'hex')
+                    this.hdk = hdk
+                    this.device = device
                     resolve('just unlocked')
                 } else {
                     reject(new Error(response.payload && response.payload.error || 'Unknown error'))
@@ -88,8 +99,10 @@ class TrezorKeyring extends EventEmitter {
                     for (let i = from; i < to; i++) {
                         const address = this._addressFromIndex(pathBase, i)
                         this.accounts.push(address)
+                        this.accountDevices[address.toLowerCase()] = this.device
                         this.page = 0
                     }
+                    Trezor.setDevice(this.device)
                     resolve(this.accounts)
                 })
                 .catch(e => {
@@ -99,7 +112,7 @@ class TrezorKeyring extends EventEmitter {
     }
 
     getFirstPage () {
-        this.page = 0
+        this._resetSessionCandidate()
         return this._getPage(1)
     }
 
@@ -155,7 +168,10 @@ class TrezorKeyring extends EventEmitter {
     }
 
     async signAndSendTransaction (fromAddress, transaction, provider) {
-        const unlockResult = await this.unlock();
+        const device = this.accountDevices[fromAddress.toLowerCase()]
+        if (!device) {
+            throw new Error('Unable to verify the Trezor session for this account. Please reconnect your device.')
+        }
 
         if(_.isNil(transaction.getSequenceOverride())){
             let sequence = await provider.getTransactionCount(fromAddress);
@@ -163,7 +179,7 @@ class TrezorKeyring extends EventEmitter {
             transaction.setSequence(sequence);
         }
         transaction.setFrom(ethUtil.toChecksumAddress(fromAddress));
-        const signedTxRaw = await Trezor.signTransaction(transaction);
+        const signedTxRaw = await Trezor.signTransaction(transaction, device);
         const result = provider.sendTransaction(signedTxRaw);
 
         return Promise.resolve(result);
@@ -193,9 +209,35 @@ class TrezorKeyring extends EventEmitter {
         this.page = 0
         this.unlockedAccount = 0
         this.paths = {}
+        this.device = null
+        this.accountDevices = {}
+        Trezor.clearDevice()
     }
 
     /* PRIVATE METHODS */
+
+    _resetSessionCandidate () {
+        this.hdk = new HDKey()
+        this.device = null
+        this.page = 0
+        this.paths = {}
+    }
+
+    _deviceIdentity (device) {
+        const staticSessionId = device && device.state && device.state.staticSessionId
+        if (!staticSessionId) return null
+
+        const identity = {
+            state: {
+                staticSessionId: staticSessionId,
+            },
+        }
+        if (device.path) identity.path = device.path
+        if (Number.isInteger(device.instance)) identity.instance = device.instance
+        if (typeof device.state.sessionId === 'string') identity.state.sessionId = device.state.sessionId
+        if (typeof device.state.deriveCardano === 'boolean') identity.state.deriveCardano = device.state.deriveCardano
+        return identity
+    }
 
     _normalize (buf) {
         return ethUtil.bufferToHex(buf).toString()
