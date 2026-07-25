@@ -15,10 +15,17 @@ import Wallet, {
 } from '../services/Wallet'
 import TabBarItem from "../components/TabBarItem";
 import TabBar from "../components/TabBar";
-import {connectHardware, setNetwork, unlockHardwareWalletAccount, unlockWallet} from "../state/actions/Wallet";
+import {
+    connectHardware,
+    runTrezorDiagnostics,
+    setNetwork,
+    unlockHardwareWalletAccount,
+    unlockWallet,
+} from "../state/actions/Wallet";
 import DropZone from '../components/DropZone'
 import {formatNativeTokenAmountToLargestUnit, truncate} from "../utils/Utils";
 import MDSpinner from "react-md-spinner";
+import {isTrezorDiagnosticsEnabled} from "../keyrings/trezor/diagnostics";
 
 const classNames = require('classnames');
 
@@ -200,10 +207,9 @@ class UnlockWalletViaMnemonicPhrase extends React.Component {
                           name="mnemonic"
                           value={this.state.mnemonic}
                           onChange={this.handleChange}
-                          onPaste={(e) => {
+                            onPaste={(e) => {
                                 // e.preventDefault();
                                 let text = e.clipboardData.getData('text/plain');
-                                console.log('text.trim().split(\' \') == ', text.trim().split(' '));
                                 if(text.trim().split(' ').length === 24) {
                                     this.setState({
                                         derivationPath: `${EthereumDerivationPath}0`,
@@ -450,11 +456,19 @@ class UnlockWalletViaColdWalletUnconnected extends React.Component {
     constructor(){
         super();
 
+        this.diagnosticsEnabled = isTrezorDiagnosticsEnabled(
+            typeof window === 'undefined' ? '' : window.location.search,
+        );
+        this.diagnosticAttempted = false;
+        this.diagnosticReportInput = React.createRef();
         this.state = {
             hardware: '',
             loading: false,
             hardwareAccounts: [],
-            derivationPath: EthereumDerivationPath
+            derivationPath: EthereumDerivationPath,
+            diagnosticReport: null,
+            diagnosticsRunning: false,
+            diagnosticsCopied: false,
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -479,9 +493,31 @@ class UnlockWalletViaColdWalletUnconnected extends React.Component {
             this.setState({
                 hardwareAccounts: hardwareAccounts
             });
+
+            if (this.diagnosticsEnabled
+                && !this.diagnosticAttempted
+                && hardware === 'trezor'
+                && page === 0
+                && hardwareAccounts.length > 0) {
+                this.diagnosticAttempted = true;
+                this.setState({
+                    diagnosticsRunning: true,
+                    diagnosticsCopied: false,
+                });
+                const account = hardwareAccounts[0];
+                const report = await this.props.dispatch(runTrezorDiagnostics(
+                    account.index,
+                    account.address,
+                    derivationPath,
+                ));
+                this.setState({
+                    diagnosticReport: report,
+                    diagnosticsRunning: false,
+                });
+            }
         }
         catch (e) {
-
+            this.setState({diagnosticsRunning: false});
         }
         finally {
             setTimeout(() => {
@@ -551,6 +587,66 @@ class UnlockWalletViaColdWalletUnconnected extends React.Component {
         this.props.dispatch(unlockHardwareWalletAccount(account.index, account.address, hardware, path ));
     };
 
+    copyDiagnosticReport = async () => {
+        const {diagnosticReport} = this.state;
+        if (!diagnosticReport) return;
+
+        const reportText = JSON.stringify(diagnosticReport, null, 2);
+        let copied = false;
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(reportText);
+                copied = true;
+            }
+            else if (this.diagnosticReportInput.current) {
+                this.diagnosticReportInput.current.select();
+                copied = document.execCommand('copy');
+            }
+        }
+        catch (error) {
+            copied = false;
+        }
+        this.setState({diagnosticsCopied: copied});
+    };
+
+    renderDiagnosticPanel() {
+        const {diagnosticReport, diagnosticsRunning, diagnosticsCopied} = this.state;
+        if (!this.diagnosticsEnabled) return null;
+
+        if (diagnosticsRunning) {
+            return (
+                <div className="TrezorDiagnostics TrezorDiagnostics--running">
+                    Confirm the read-only address check on your Trezor.
+                </div>
+            );
+        }
+
+        if (!diagnosticReport) return null;
+        const reportText = JSON.stringify(diagnosticReport, null, 2);
+        return (
+            <div className="TrezorDiagnostics">
+                <div className="TrezorDiagnostics__title">
+                    Diagnostic report (safe to share)
+                </div>
+                <textarea
+                    aria-label="Trezor diagnostic report"
+                    className="TrezorDiagnostics__report"
+                    readOnly={true}
+                    ref={this.diagnosticReportInput}
+                    value={reportText}
+                    onFocus={(event) => event.target.select()}
+                />
+                <button
+                    className="TrezorDiagnostics__copy"
+                    type="button"
+                    onClick={this.copyDiagnosticReport}
+                >
+                    {diagnosticsCopied ? 'Copied' : 'Copy report'}
+                </button>
+            </div>
+        );
+    }
+
     render() {
         const {accounts} = this.props;
         const {hardwareAccounts, page} = this.state;
@@ -574,6 +670,8 @@ class UnlockWalletViaColdWalletUnconnected extends React.Component {
                                           accounts={Object.assign({}, accounts)}
                                           onClick={this.onChooseHardwareAccount}
                     />
+
+                    {this.renderDiagnosticPanel()}
 
                     <div className="UnlockWalletViaColdWallet__footer">
                         <a onClick={this.goToPrevPage}>{'< Prev'}</a>
@@ -606,6 +704,13 @@ class UnlockWalletViaColdWalletUnconnected extends React.Component {
                 <div className="UnlockWalletCard__warning">
                     {warning}
                 </div>
+
+                {
+                    this.diagnosticsEnabled && this.state.hardware === 'trezor' &&
+                    <div className="TrezorDiagnostics__notice">
+                        Diagnostics are enabled. After connection, one read-only address check will require confirmation on your Trezor. The report excludes keys, addresses, and device identifiers.
+                    </div>
+                }
 
                 <div className="UnlockColdWalletLedger__choose-derivation-path">
                     {
@@ -645,6 +750,11 @@ const UnlockWalletViaColdWallet = connect(UnlockWalletViaColdWalletStateToProps)
 class UnlockWalletCard extends React.Component {
     render() {
         let unlockWalletStrategyContent = null;
+        const diagnosticsSearch = typeof window !== 'undefined'
+            && isTrezorDiagnosticsEnabled(window.location.search)
+            ? '?trezorDiagnostics=1'
+            : '';
+        const unlockHref = strategy => `/unlock/${strategy}${diagnosticsSearch}`;
 
         if(this.props.unlockStrategy === WalletUnlockStrategy.KEYSTORE_FILE){
             unlockWalletStrategyContent = (
@@ -676,19 +786,19 @@ class UnlockWalletCard extends React.Component {
                                 className="UnlockWalletCard__tab-bar">
                             <TabBarItem
                                 title="Keystore"
-                                href={"/unlock/" + WalletUnlockStrategy.KEYSTORE_FILE}
+                                href={unlockHref(WalletUnlockStrategy.KEYSTORE_FILE)}
                             />
                             <TabBarItem
                                 title="Mnemonic"
-                                href={"/unlock/" + WalletUnlockStrategy.MNEMONIC_PHRASE}
+                                href={unlockHref(WalletUnlockStrategy.MNEMONIC_PHRASE)}
                             />
                             <TabBarItem
                                 title="Private Key"
-                                href={"/unlock/" + WalletUnlockStrategy.PRIVATE_KEY}
+                                href={unlockHref(WalletUnlockStrategy.PRIVATE_KEY)}
                             />
                             <TabBarItem
                                 title="Hardware"
-                                href={"/unlock/" + WalletUnlockStrategy.COLD_WALLET}
+                                href={unlockHref(WalletUnlockStrategy.COLD_WALLET)}
                             />
                         </TabBar>
                     </div>

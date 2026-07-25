@@ -14,6 +14,7 @@ import Theta from "../../services/Theta";
 import config from "../../Config";
 import safeLocalStorage from "../../utils/SafeLocalStorage";
 import ModalTypes from "../../constants/ModalTypes";
+import {isTrezorDiagnosticsEnabled} from "../../keyrings/trezor/diagnostics";
 
 
 export function setNetwork(network){
@@ -324,6 +325,14 @@ export function connectHardware(deviceName, page, hdPath) {
         dispatch(hideLoader())
 
         return accounts
+    }
+}
+
+export function runTrezorDiagnostics(index, address, hdPath) {
+    return async () => {
+        const search = typeof window === 'undefined' ? '' : window.location.search
+        if (!isTrezorDiagnosticsEnabled(search)) return null
+        return Wallet.controller.runTrezorDiagnostics(index, address, hdPath)
     }
 }
 

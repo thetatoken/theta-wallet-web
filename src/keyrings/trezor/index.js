@@ -1,6 +1,11 @@
 import _ from 'lodash';
 import Trezor from "../../services/Trezor";
 import TrezorConnect from '@trezor/connect-web';
+import {
+    createTrezorDiagnosticReport,
+    normalizeDiagnosticAddress,
+    sanitizeDiagnosticErrorCode,
+} from './diagnostics';
 const { EventEmitter } = require('events')
 const ethUtil = require('ethereumjs-util')
 const HDKey = require('hdkey')
@@ -29,6 +34,7 @@ class TrezorKeyring extends EventEmitter {
         this.paths = {}
         this.device = null
         this.accountDevices = {}
+        this.diagnosticPublicKeyCheck = null
         this.deserialize(opts)
         TrezorConnect.manifest(TREZOR_CONNECT_MANIFEST)
     }
@@ -74,6 +80,13 @@ class TrezorKeyring extends EventEmitter {
                     hdk.chainCode = Buffer.from(response.payload.chainCode, 'hex')
                     this.hdk = hdk
                     this.device = device
+                    this.diagnosticPublicKeyCheck = {
+                        success: true,
+                        publicKeyBytes: hdk.publicKey.length,
+                        chainCodeBytes: hdk.chainCode.length,
+                        returnedPathMatches: response.payload.serializedPath === this.hdPath,
+                        deviceStateAvailable: true,
+                    }
                     resolve('just unlocked')
                 } else {
                     reject(new Error(response.payload && response.payload.error || 'Unknown error'))
@@ -160,6 +173,109 @@ class TrezorKeyring extends EventEmitter {
         return Promise.resolve(this.accounts.slice())
     }
 
+    async runDiagnostics (index, uiAddress) {
+        const validIndex = typeof index === 'number'
+            && Number.isSafeInteger(index)
+            && index >= 0
+            && index < MAX_INDEX
+        const childPath = validIndex ? `${this.hdPath}/${index}` : 'UNKNOWN'
+        const emptyAddressCheck = {
+            success: false,
+            returnedPathMatches: false,
+            deviceStateAvailable: false,
+            displayConfirmed: false,
+        }
+        const publicKeyCheck = this.diagnosticPublicKeyCheck || {
+            success: false,
+            publicKeyBytes: 0,
+            chainCodeBytes: 0,
+            returnedPathMatches: false,
+            deviceStateAvailable: false,
+        }
+        const createReport = (addressCheck, comparison, error) => (
+            createTrezorDiagnosticReport({
+                parentPath: this.hdPath,
+                childPath,
+                publicKeyCheck,
+                addressCheck,
+                comparison,
+                error,
+            })
+        )
+
+        if (!validIndex
+            || !this.isUnlocked()
+            || !this.device
+            || !this.diagnosticPublicKeyCheck) {
+            return createReport(emptyAddressCheck, null, {
+                stage: 'precondition',
+                code: 'UNKNOWN',
+            })
+        }
+
+        const boundDevice = this.device
+        let localAddress
+        try {
+            localAddress = this._addressFromIndex(pathBase, index)
+        }
+        catch (error) {
+            return createReport(emptyAddressCheck, null, {
+                stage: 'precondition',
+                code: 'UNKNOWN',
+            })
+        }
+
+        try {
+            const response = await TrezorConnect.ethereumGetAddress({
+                device: boundDevice,
+                path: childPath,
+                showOnTrezor: true,
+                chunkify: true,
+            })
+
+            if (!response.success) {
+                return createReport(emptyAddressCheck, null, {
+                    stage: 'getAddress',
+                    code: sanitizeDiagnosticErrorCode(response.payload && response.payload.code),
+                })
+            }
+
+            const responseDevice = this._deviceIdentity(response.device)
+            const normalizedLocalAddress = normalizeDiagnosticAddress(localAddress)
+            const normalizedDeviceAddress = normalizeDiagnosticAddress(
+                response.payload && response.payload.address,
+            )
+            const normalizedUiAddress = normalizeDiagnosticAddress(uiAddress)
+            const addressCheck = {
+                success: Boolean(normalizedDeviceAddress),
+                returnedPathMatches: response.payload.serializedPath === childPath,
+                deviceStateAvailable: Boolean(responseDevice),
+                displayConfirmed: true,
+            }
+
+            if (!responseDevice || !normalizedDeviceAddress || !normalizedLocalAddress || !normalizedUiAddress) {
+                return createReport(addressCheck, null, {
+                    stage: 'comparison',
+                    code: 'UNKNOWN',
+                })
+            }
+
+            return createReport(addressCheck, {
+                sameDeviceWalletState:
+                    this.device === boundDevice
+                    && boundDevice.state.staticSessionId === responseDevice.state.staticSessionId,
+                localMatchesDevice: normalizedLocalAddress === normalizedDeviceAddress,
+                uiMatchesLocal: normalizedUiAddress === normalizedLocalAddress,
+            }, null)
+        }
+        catch (error) {
+            return createReport(emptyAddressCheck, null, {
+                stage: 'getAddress',
+                code: sanitizeDiagnosticErrorCode(error && error.code),
+            })
+        }
+    }
+
     removeAccount (address) {
         if (!this.accounts.map(a => a.toLowerCase()).includes(address.toLowerCase())) {
             throw new Error(`Address ${address} not found in this keyring`)
@@ -211,6 +327,7 @@ class TrezorKeyring extends EventEmitter {
         this.paths = {}
         this.device = null
         this.accountDevices = {}
+        this.diagnosticPublicKeyCheck = null
         Trezor.clearDevice()
     }
 
@@ -221,6 +338,7 @@ class TrezorKeyring extends EventEmitter {
         this.device = null
         this.page = 0
         this.paths = {}
+        this.diagnosticPublicKeyCheck = null
     }
 
     _deviceIdentity (device) {

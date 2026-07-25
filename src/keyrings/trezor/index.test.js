@@ -8,6 +8,7 @@ jest.mock('@trezor/connect-web', () => ({
     __esModule: true,
     default: {
         manifest: jest.fn(),
+        ethereumGetAddress: jest.fn(),
         ethereumGetPublicKey: jest.fn(),
     },
 }));
@@ -44,6 +45,7 @@ const publicKeyResponse = (parent, device) => ({
     payload: {
         publicKey: parent.publicKey,
         chainCode: parent.chainCode,
+        serializedPath: "m/44'/60'/0'/0",
     },
     device,
 });
@@ -95,6 +97,7 @@ describe('TrezorKeyring session integrity', () => {
             '0xfc14f18a490873c7a13ef3c2d07ace7078dabf99',
             '0x8170d7b3397f24a835e9da96dbe8c7688ef7a1e9',
         ]);
+        expect(TrezorConnect.ethereumGetAddress).not.toHaveBeenCalled();
     });
 
     it('binds the selected account to the full Trezor device identity', async () => {
@@ -190,5 +193,341 @@ describe('TrezorKeyring session integrity', () => {
         expect(keyring.device).toBeNull();
         expect(keyring.accountDevices).toEqual({});
         expect(Trezor.clearDevice).toHaveBeenCalledTimes(1);
+    });
+
+    it('runs an opt-in read-only address comparison against the same device wallet state', async () => {
+        const device = deviceIdentity('diagnostic');
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue(
+            publicKeyResponse(parentKeys[0], device),
+        );
+
+        const keyring = new TrezorKeyring();
+        const [account] = await keyring.getFirstPage();
+        TrezorConnect.ethereumGetAddress.mockResolvedValue({
+            success: true,
+            payload: {
+                address: account.address.toUpperCase(),
+                serializedPath: "m/44'/60'/0'/0/0",
+            },
+            device,
+        });
+
+        const report = await keyring.runDiagnostics(account.index, account.address);
+
+        expect(TrezorConnect.ethereumGetAddress).toHaveBeenCalledWith({
+            device,
+            path: "m/44'/60'/0'/0/0",
+            showOnTrezor: true,
+            chunkify: true,
+        });
+        expect(TrezorConnect.ethereumGetAddress).toHaveBeenCalledTimes(1);
+        expect(report.status).toBe('passed');
+        expect(report.getPublicKey).toEqual({
+            success: true,
+            publicKeyBytes: 33,
+            chainCodeBytes: 32,
+            returnedPathMatches: true,
+            deviceStateAvailable: true,
+        });
+        expect(report.getAddress).toEqual({
+            success: true,
+            returnedPathMatches: true,
+            deviceStateAvailable: true,
+            displayConfirmed: true,
+        });
+        expect(report.comparison).toEqual({
+            sameDeviceWalletState: true,
+            localMatchesDevice: true,
+            uiMatchesLocal: true,
+        });
+    });
+
+    it('reports a mismatch if the direct address comes from another device wallet state', async () => {
+        const firstDevice = deviceIdentity('first-wallet');
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue(
+            publicKeyResponse(parentKeys[1], firstDevice),
+        );
+
+        const keyring = new TrezorKeyring();
+        const [account] = await keyring.getFirstPage();
+        TrezorConnect.ethereumGetAddress.mockResolvedValue({
+            success: true,
+            payload: {
+                address: account.address,
+                serializedPath: "m/44'/60'/0'/0/0",
+            },
+            device: deviceIdentity('second-wallet'),
+        });
+
+        const report = await keyring.runDiagnostics(account.index, account.address);
+
+        expect(report.status).toBe('mismatch');
+        expect(report.comparison).toEqual({
+            sameDeviceWalletState: false,
+            localMatchesDevice: true,
+            uiMatchesLocal: true,
+        });
+    });
+
+    it('fails closed when the direct address response has no device identity', async () => {
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue(
+            publicKeyResponse(parentKeys[2], deviceIdentity('missing-response-identity')),
+        );
+
+        const keyring = new TrezorKeyring();
+        const [account] = await keyring.getFirstPage();
+        TrezorConnect.ethereumGetAddress.mockResolvedValue({
+            success: true,
+            payload: {
+                address: account.address,
+                serializedPath: "m/44'/60'/0'/0/0",
+            },
+        });
+
+        const report = await keyring.runDiagnostics(account.index, account.address);
+
+        expect(report.status).toBe('error');
+        expect(report.getAddress.deviceStateAvailable).toBe(false);
+        expect(report.comparison).toBeNull();
+        expect(report.error).toEqual({
+            stage: 'comparison',
+            code: 'UNKNOWN',
+        });
+    });
+
+    it('preserves only an allowlisted Connect error code', async () => {
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue(
+            publicKeyResponse(parentKeys[3], deviceIdentity('known-error')),
+        );
+
+        const keyring = new TrezorKeyring();
+        const [account] = await keyring.getFirstPage();
+        TrezorConnect.ethereumGetAddress.mockResolvedValue({
+            success: false,
+            payload: {
+                code: 'Device_Disconnected',
+                error: 'raw customer-specific error',
+            },
+        });
+
+        const report = await keyring.runDiagnostics(account.index, account.address);
+        const serialized = JSON.stringify(report);
+
+        expect(report.status).toBe('error');
+        expect(report.error).toEqual({
+            stage: 'getAddress',
+            code: 'Device_Disconnected',
+        });
+        expect(serialized).not.toContain('customer-specific');
+    });
+
+    it('does not expose addresses, key material, or device identity in the report', async () => {
+        const device = deviceIdentity('private-device', 7);
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue(
+            publicKeyResponse(parentKeys[4], device),
+        );
+
+        const keyring = new TrezorKeyring();
+        const [account] = await keyring.getFirstPage();
+        TrezorConnect.ethereumGetAddress.mockResolvedValue({
+            success: true,
+            payload: {
+                address: account.address,
+                serializedPath: "m/44'/60'/0'/0/0",
+            },
+            device,
+        });
+
+        const report = await keyring.runDiagnostics(account.index, account.address);
+        const serialized = JSON.stringify(report);
+
+        expect(serialized).not.toContain(account.address.slice(2));
+        expect(serialized).not.toContain(parentKeys[4].publicKey);
+        expect(serialized).not.toContain(parentKeys[4].chainCode);
+        expect(serialized).not.toContain(device.path);
+        expect(serialized).not.toContain(device.state.staticSessionId);
+        expect(serialized).not.toContain(device.state.sessionId);
+    });
+
+    it('keeps diagnostics transient and out of serialized wallet state', async () => {
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue(
+            publicKeyResponse(parentKeys[5], deviceIdentity('transient')),
+        );
+
+        const keyring = new TrezorKeyring();
+        const [account] = await keyring.getFirstPage();
+        TrezorConnect.ethereumGetAddress.mockResolvedValue({
+            success: true,
+            payload: {
+                address: account.address,
+                serializedPath: "m/44'/60'/0'/0/0",
+            },
+            device: deviceIdentity('transient'),
+        });
+        await keyring.runDiagnostics(account.index, account.address);
+
+        const serializedState = await keyring.serialize();
+
+        expect(serializedState).not.toHaveProperty('diagnosticPublicKeyCheck');
+        expect(serializedState).not.toHaveProperty('diagnosticReport');
+        expect(JSON.stringify(serializedState)).not.toContain('transient');
+    });
+
+    it.each([
+        null,
+        '',
+        false,
+        [],
+        '0',
+        '0x5',
+        -1,
+        1000,
+        1.5,
+    ])('rejects an invalid diagnostic index without calling the device: %p', async (invalidIndex) => {
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue(
+            publicKeyResponse(parentKeys[0], deviceIdentity('invalid-index')),
+        );
+
+        const keyring = new TrezorKeyring();
+        const [account] = await keyring.getFirstPage();
+        const report = await keyring.runDiagnostics(invalidIndex, account.address);
+
+        expect(report.status).toBe('error');
+        expect(report.error).toEqual({
+            stage: 'precondition',
+            code: 'UNKNOWN',
+        });
+        expect(report.childPath).toBe('UNKNOWN');
+        expect(TrezorConnect.ethereumGetAddress).not.toHaveBeenCalled();
+    });
+
+    it('sanitizes a rejected Connect call without exposing the thrown error', async () => {
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue(
+            publicKeyResponse(parentKeys[1], deviceIdentity('rejected-call')),
+        );
+
+        const keyring = new TrezorKeyring();
+        const [account] = await keyring.getFirstPage();
+        const error = new Error('raw sensitive thrown message');
+        error.code = 'Method_Cancel';
+        TrezorConnect.ethereumGetAddress.mockRejectedValue(error);
+
+        const report = await keyring.runDiagnostics(account.index, account.address);
+        const serialized = JSON.stringify(report);
+
+        expect(report.status).toBe('error');
+        expect(report.error).toEqual({
+            stage: 'getAddress',
+            code: 'Method_Cancel',
+        });
+        expect(serialized).not.toContain('sensitive');
+    });
+
+    it('reports all address and path mismatches without exposing their values', async () => {
+        const device = deviceIdentity('mismatches');
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue(
+            publicKeyResponse(parentKeys[2], device),
+        );
+
+        const keyring = new TrezorKeyring();
+        const [account] = await keyring.getFirstPage();
+        const differentAddress = '0x0000000000000000000000000000000000000001';
+        const differentUiAddress = '0x0000000000000000000000000000000000000002';
+        TrezorConnect.ethereumGetAddress.mockResolvedValue({
+            success: true,
+            payload: {
+                address: differentAddress,
+                serializedPath: "m/44'/60'/0'/0/1",
+            },
+            device,
+        });
+
+        const report = await keyring.runDiagnostics(account.index, differentUiAddress);
+        const serialized = JSON.stringify(report);
+
+        expect(report.status).toBe('mismatch');
+        expect(report.getAddress.returnedPathMatches).toBe(false);
+        expect(report.comparison).toEqual({
+            sameDeviceWalletState: true,
+            localMatchesDevice: false,
+            uiMatchesLocal: false,
+        });
+        expect(serialized).not.toContain(differentAddress.slice(2));
+        expect(serialized).not.toContain(differentUiAddress.slice(2));
+    });
+
+    it('does not mutate wallet state or refetch the parent key while diagnosing', async () => {
+        const device = deviceIdentity('state-integrity');
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue(
+            publicKeyResponse(parentKeys[3], device),
+        );
+
+        const keyring = new TrezorKeyring();
+        const [account] = await keyring.getFirstPage();
+        TrezorConnect.ethereumGetAddress.mockResolvedValue({
+            success: true,
+            payload: {
+                address: account.address,
+                serializedPath: "m/44'/60'/0'/0/0",
+            },
+            device,
+        });
+        const before = {
+            page: keyring.page,
+            paths: {...keyring.paths},
+            accounts: keyring.accounts.slice(),
+            publicKey: keyring.hdk.publicKey.toString('hex'),
+            chainCode: keyring.hdk.chainCode.toString('hex'),
+        };
+
+        await keyring.runDiagnostics(account.index, account.address);
+
+        expect(keyring.page).toBe(before.page);
+        expect(keyring.paths).toEqual(before.paths);
+        expect(keyring.accounts).toEqual(before.accounts);
+        expect(keyring.hdk.publicKey.toString('hex')).toBe(before.publicKey);
+        expect(keyring.hdk.chainCode.toString('hex')).toBe(before.chainCode);
+        expect(TrezorConnect.ethereumGetPublicKey).toHaveBeenCalledTimes(1);
+        expect(TrezorConnect.ethereumGetAddress).toHaveBeenCalledTimes(1);
+        expect(Trezor.signTransaction).not.toHaveBeenCalled();
+    });
+
+    it('fails closed if the active keyring device changes during diagnostics', async () => {
+        const originalDevice = deviceIdentity('race-original');
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue(
+            publicKeyResponse(parentKeys[4], originalDevice),
+        );
+
+        const keyring = new TrezorKeyring();
+        const [account] = await keyring.getFirstPage();
+        let resolveAddress;
+        TrezorConnect.ethereumGetAddress.mockImplementation(() => (
+            new Promise(resolve => {
+                resolveAddress = resolve;
+            })
+        ));
+
+        const reportPromise = keyring.runDiagnostics(account.index, account.address);
+        keyring.device = deviceIdentity('race-replacement');
+        resolveAddress({
+            success: true,
+            payload: {
+                address: account.address,
+                serializedPath: "m/44'/60'/0'/0/0",
+            },
+            device: originalDevice,
+        });
+
+        const report = await reportPromise;
+
+        expect(report.status).toBe('mismatch');
+        expect(report.comparison).toEqual({
+            sameDeviceWalletState: false,
+            localMatchesDevice: true,
+            uiMatchesLocal: true,
+        });
+        expect(TrezorConnect.ethereumGetAddress).toHaveBeenCalledWith(
+            expect.objectContaining({device: originalDevice}),
+        );
     });
 });

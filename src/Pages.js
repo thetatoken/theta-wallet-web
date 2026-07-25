@@ -20,6 +20,7 @@ import {getAllAssets} from "./constants/assets";
 import {transformThetaNetworkTransaction} from "./state/selectors/Transactions";
 import TemporaryState from "./services/TemporaryState";
 import MDSpinner from "react-md-spinner";
+import {isTrezorDiagnosticsEnabled} from "./keyrings/trezor/diagnostics";
 
 class UnconnectedEmbedPage extends React.Component{
     loadWallet(){
@@ -73,7 +74,18 @@ export class Pages extends React.Component {
                 <Route path="/create" component={CreateWalletPage}/>
 
                 <Switch>
-                    <Redirect from='/unlock' to='/unlock/keystore-file' exact={true}/>
+                    <Route
+                        path="/unlock"
+                        exact={true}
+                        render={({location}) => (
+                            <Redirect to={{
+                                pathname: '/unlock/keystore-file',
+                                search: isTrezorDiagnosticsEnabled(location.search)
+                                    ? '?trezorDiagnostics=1'
+                                    : '',
+                            }}/>
+                        )}
+                    />
                     <Route path="/unlock/:unlockStrategy" component={UnlockWalletPage}/>
                 </Switch>
 

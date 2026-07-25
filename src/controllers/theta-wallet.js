@@ -477,6 +477,11 @@ export default class ThetaWalletController extends EventEmitter {
         return keyring.isUnlocked()
     }
 
+    async runTrezorDiagnostics(index, uiAddress, hdPath) {
+        const keyring = await this.getKeyringForDevice('trezor', hdPath)
+        return keyring.runDiagnostics(index, uiAddress)
+    }
+
     /**
      * Clear
      *

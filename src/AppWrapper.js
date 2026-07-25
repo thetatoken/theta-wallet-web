@@ -9,6 +9,7 @@ import Alert from './components/Alert'
 import { hot } from 'react-hot-loader/root'
 import Wallet from "./services/Wallet";
 import {UPDATE_THETA_WALLET_STATE} from "./state/types/ThetaWallet";
+import {isTrezorDiagnosticsEnabled} from "./keyrings/trezor/diagnostics";
 
 // optional cofiguration
 const options = {
@@ -43,7 +44,18 @@ class AppWrapper extends Component {
                                    template={Alert}
                                    {...options}>
                         <Switch>
-                            <Redirect from='/' to='/unlock' exact={true}/>
+                            <Route
+                                path="/"
+                                exact={true}
+                                render={({location}) => (
+                                    <Redirect to={{
+                                        pathname: '/unlock',
+                                        search: isTrezorDiagnosticsEnabled(location.search)
+                                            ? '?trezorDiagnostics=1'
+                                            : '',
+                                    }}/>
+                                )}
+                            />
                             <Route path="/wallet" component={WalletApp}/>
                             <Route path="/" component={App}/>
                         </Switch>
@@ -56,4 +68,3 @@ class AppWrapper extends Component {
 
 // export default AppWrapper;
 export default process.env.NODE_ENV === "development" ? hot(AppWrapper) : AppWrapper;
-
