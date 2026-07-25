@@ -55,7 +55,7 @@ function isValidByteCode(value) {
 }
 
 function validateByteCode(value) {
-    return (isValidByteCode(value) || "Invalid byte code");
+    return (isValidByteCode(value) || "Invalid bytecode");
 }
 
 function isValidABI(value) {
@@ -186,14 +186,14 @@ function DeployContractForm(props) {
                     {errors.abi && <div className="InputError">{errors.abi.message}</div>}
                 </div>
 
-                {/*Byte Code Section*/}
+                {/*Bytecode Section*/}
                 <div className="FormColumn">
-                    <div className="FormSectionTitle">Byte Code</div>
+                    <div className="FormSectionTitle">Bytecode</div>
                     <textarea className="RoundedInput"
-                              placeholder="Paste byte code"
+                              placeholder="Paste bytecode"
                               name="byteCode"
                               ref={register({
-                                  required: "Contract byte code is required.",
+                                  required: "Contract bytecode is required.",
                                   validate: validateByteCode
                               })}
                     />
