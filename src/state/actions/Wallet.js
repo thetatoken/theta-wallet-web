@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import TrezorConnect from '@trezor/connect-web';
 import Api from '../../services/Api'
 import { reduxFetch } from'./Api'
 import {FETCH_WALLET_BALANCES, SET_WALLET_ADDRESS, RESET, SET_NETWORK} from "../types/Wallet";
@@ -14,7 +15,10 @@ import Theta from "../../services/Theta";
 import config from "../../Config";
 import safeLocalStorage from "../../utils/SafeLocalStorage";
 import ModalTypes from "../../constants/ModalTypes";
-import {isTrezorDiagnosticsEnabled} from "../../keyrings/trezor/diagnostics";
+import {
+    isTrezorDiagnosticsEnabled,
+    withTrezorDiagnosticConnectionTimeout,
+} from "../../keyrings/trezor/diagnostics";
 
 
 export function setNetwork(network){
@@ -306,17 +310,24 @@ export function removeCollectible(collectibleData) {
 }
 
 
-export function connectHardware(deviceName, page, hdPath) {
+export function connectHardware(deviceName, page, hdPath, diagnosticTimeoutMs = null) {
     return async (dispatch) => {
         dispatch(showLoader(`Looking for your ${_.capitalize(deviceName)}...`));
 
         let accounts
         try {
-            accounts = await Wallet.controller.connectHardware(
+            const connectionPromise = Wallet.controller.connectHardware(
                 deviceName,
                 page,
                 hdPath,
             )
+            accounts = diagnosticTimeoutMs
+                ? await withTrezorDiagnosticConnectionTimeout(
+                    connectionPromise,
+                    diagnosticTimeoutMs,
+                    timeoutError => TrezorConnect.cancel(timeoutError.message),
+                )
+                : await connectionPromise
         } catch (error) {
             dispatch(hideLoader())
             Alerts.showError(error.message);

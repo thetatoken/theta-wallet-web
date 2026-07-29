@@ -170,6 +170,39 @@ describe('TrezorKeyring session integrity', () => {
         expect(keyring.device).toBeNull();
     });
 
+    it('preserves an allowlisted Connect code when the initial request fails', async () => {
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue({
+            success: false,
+            payload: {
+                code: 'Browser_LocalNetworkPermissionMissing',
+                error: 'raw browser error',
+            },
+        });
+
+        const keyring = new TrezorKeyring();
+
+        await expect(keyring.getFirstPage()).rejects.toMatchObject({
+            code: 'Browser_LocalNetworkPermissionMissing',
+        });
+        expect(keyring.isUnlocked()).toBe(false);
+    });
+
+    it('preserves an unknown Connect code until the report boundary', async () => {
+        TrezorConnect.ethereumGetPublicKey.mockResolvedValue({
+            success: false,
+            payload: {
+                code: 'Future_StandardizedCode',
+                error: 'future error',
+            },
+        });
+
+        const keyring = new TrezorKeyring();
+
+        await expect(keyring.getFirstPage()).rejects.toMatchObject({
+            code: 'Future_StandardizedCode',
+        });
+    });
+
     it('does not sign an account that has no verified session binding', async () => {
         const keyring = new TrezorKeyring();
         const provider = {sendTransaction: jest.fn()};

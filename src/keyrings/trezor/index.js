@@ -89,10 +89,22 @@ class TrezorKeyring extends EventEmitter {
                     }
                     resolve('just unlocked')
                 } else {
-                    reject(new Error(response.payload && response.payload.error || 'Unknown error'))
+                    const error = new Error(
+                        response.payload && response.payload.error || 'Unknown error',
+                    )
+                    if (response.payload && typeof response.payload.code === 'string') {
+                        error.code = response.payload.code
+                    }
+                    reject(error)
                 }
             }).catch(e => {
-                reject(new Error(e && e.toString() || 'Unknown error'))
+                const error = new Error(
+                    e && e.message || e && e.toString() || 'Unknown error',
+                )
+                if (e && typeof e.code === 'string') {
+                    error.code = e.code
+                }
+                reject(error)
             })
         })
     }
