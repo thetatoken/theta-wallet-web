@@ -17,7 +17,10 @@ import TrackCollectibleModal from "../modals/TrackCollectibleModal";
 import DAppModal from "../modals/DAppModal";
 import PersonalSignModal from "../modals/PersonalSignModal";
 
+import DAppNetworkModal from '../modals/DAppNetworkModal';
+
 const ModalComponentByType = {
+    [ModalTypes.DAPP_NETWORK]: DAppNetworkModal,
     [ModalTypes.RECEIVE]: ReceiveModal,
     [ModalTypes.PRIVATE_KEY]: PrivateKeyModal,
     [ModalTypes.NETWORK_SELECTOR]: NetworkSelectorModal,

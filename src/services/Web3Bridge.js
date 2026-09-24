@@ -1,193 +1,175 @@
-import _ from 'lodash';
-import {store} from "../state";
-import {getChainByChainIdNum, sleep} from "../utils/Utils";
-import {setNetwork} from "../state/actions/Wallet";
-import {getNetworkForChainId} from "@thetalabs/theta-js/src/networks";
-import Wallet from "./Wallet";
-import * as thetajs from "@thetalabs/theta-js";
-import {hideLoader, hideModal, showModal} from "../state/actions/ui";
-import {createTransactionRequest} from "../state/actions/Transactions";
-import {TxType} from "@thetalabs/theta-js/src/constants";
-import ModalTypes from "../constants/ModalTypes";
+import {store} from '../state';
+import {getChainByChainIdNum} from '../utils/Utils';
+import {setNetwork} from '../state/actions/Wallet';
+import {getNetworkForChainId} from '@thetalabs/theta-js/src/networks';
+import Wallet from './Wallet';
+import {hideModal, showModal} from '../state/actions/ui';
+import {createTransactionRequest} from '../state/actions/Transactions';
+import {TxType} from '@thetalabs/theta-js/src/constants';
+import ModalTypes from '../constants/ModalTypes';
+import {getDAppUrl} from './DAppOrigin';
 
 export default class Web3Bridge {
     constructor() {
-        this.projectMetadata = null;
-        this.targetOrigin = '*'; //Gets set by the DAppModal
-        this.targetFrame = null;
+        this.session = null;
+        this.requestSequence = 0;
+        this.listener = event => this.handleMessage(event);
     }
-    endSession() {
-        this.projectMetadata = null;
-        this.targetFrame = null;
-    }
-    sendConfig() {
-        const {thetaWallet} = store.getState();
-        const selectedAddress = thetaWallet.selectedAddress;
-        const identities = thetaWallet.identities;
-        const chainId = thetaWallet.network?.chainId;
-        const network = getNetworkForChainId(chainId);
 
-        const config = {
-            origin: window.location.origin,
-            chainId: network.chainIdNum,
-            jsonRpcUrl: network.ethRpcUrl,
-            accounts: [selectedAddress]
+    // Called only after the user approves the displayed browser-derived origin.
+    startSession(frame, uri, onEnd) {
+        this.endSession();
+        const url = getDAppUrl(uri);
+        const {selectedAddress, network} = store.getState().thetaWallet;
+        if (!url || !frame?.contentWindow || !Wallet.unlocked() || !selectedAddress ||
+            !getNetworkForChainId(network?.chainId)) return null;
+        const session = {
+            frame, source: frame.contentWindow, origin: url.origin,
+            address: selectedAddress, chainId: network.chainId, pending: null, onEnd
         };
-        this.targetFrame.contentWindow.postMessage(JSON.stringify({
-            type: 'wallet_setConfig',
-            config: config
-        }), this.targetOrigin);
+        this.session = session;
+        this.unsubscribe = store.subscribe(() => {
+            if (!this.isActive(session)) this.endSession(session);
+        });
+        return session;
     }
+
+    isActive(session) {
+        const wallet = store.getState().thetaWallet;
+        return !!session && this.session === session && Wallet.unlocked() &&
+            session.source === session.frame.contentWindow &&
+            wallet.selectedAddress === session.address && wallet.network?.chainId === session.chainId;
+    }
+
+    endSession(session = this.session) {
+        if (!session || this.session !== session) return;
+        this.session = null;
+        if (this.unsubscribe) this.unsubscribe();
+        this.unsubscribe = null;
+        if (session.pending) session.pending.cancel();
+        if (session.onEnd) session.onEnd();
+    }
+
+    sendConfig(session = this.session) {
+        if (!this.isActive(session)) return;
+        const network = getNetworkForChainId(session.chainId);
+        session.source.postMessage(JSON.stringify({
+            type: 'wallet_setConfig',
+            config: {
+                origin: window.location.origin, chainId: network.chainIdNum,
+                jsonRpcUrl: network.ethRpcUrl, accounts: [session.address]
+            }
+        }), session.origin);
+    }
+
     init() {
-        window.addEventListener('message', async (event) => {
-            // TODO ensure the origin is whitelisted in our wallet-metadata
-            // if (event.origin !== "https://example-dapp.com") return; // Check origin for security
+        window.removeEventListener('message', this.listener);
+        window.addEventListener('message', this.listener);
+    }
 
-            try {
-                const sourceFrame = event.source;
-
-                const {thetaWallet} = store.getState();
-                const selectedAddress = thetaWallet.selectedAddress;
-                const identities = thetaWallet.identities;
-                const selectedIdentity = identities[selectedAddress];
-                const chainId = thetaWallet.network?.chainId;
-                const network = getNetworkForChainId(chainId);
-
-
-                const buildRPCResponse = (id, result, error) => {
-                    if(error){
-                        return {
-                            id: id,
-                            jsonrpc: '2.0',
-                            error: error,
+    async handleMessage(event) {
+        const session = this.session;
+        if (!this.isActive(session) || event.source !== session.source || event.origin !== session.origin) return;
+        let data;
+        try { data = JSON.parse(event.data); } catch (error) { return; }
+        // Metadata from websites is not a verified identity and is not used.
+        if (!data || data.type !== 'request') return;
+        const request = data.request;
+        if (!request || !['string', 'number'].includes(typeof request.id)) return;
+        const respond = (result, error) => {
+            if (!this.isActive(session)) return;
+            session.source.postMessage(JSON.stringify({
+                id: request.id, jsonrpc: '2.0', ...(error ? {error} : {result})
+            }), session.origin);
+        };
+        const fail = (code, message) => respond(null, {code, message});
+        const {method, params = []} = request;
+        if (!Array.isArray(params)) return fail(-32602, 'Invalid parameters.');
+        if (method === 'eth_requestAccounts') return respond([session.address]);
+        if (!['wallet_switchEthereumChain', 'personal_sign', 'eth_sendTransaction'].includes(method)) {
+            return fail(-32601, 'Unsupported method.');
+        }
+        // One confirmation at a time, including native wallet dialogs/transactions.
+        if (session.pending || store.getState().ui.modals.some(modal => modal.type !== ModalTypes.DAPP) ||
+            store.getState().thetaWallet.transactionRequests?.length) {
+            return fail(-32002, 'A wallet request is already pending.');
+        }
+        const chainId = session.chainId;
+        const dappRequestId = `dapp-${++this.requestSequence}`;
+        let settled = false;
+        let modalOpen = false;
+        let transactionId = null;
+        const isValid = () => !settled && this.isActive(session) && session.chainId === chainId;
+        const finish = (result, error, closeModal = false) => {
+            if (settled) return;
+            settled = true;
+            session.pending = null;
+            if (closeModal && modalOpen) store.dispatch(hideModal(dappRequestId));
+            respond(result, error);
+        };
+        const reject = () => finish(null, {code: 4001, message: 'User rejected the request.'}, true);
+        session.pending = {cancel: () => {
+            if (transactionId) Wallet.controller.RPCApi.rejectTransactionRequest({transactionRequestId: transactionId});
+            // The old document is no longer trusted to receive a response.
+            finish(null, null, true);
+        }};
+        const openModal = (type, props) => {
+            if (!isValid()) return;
+            modalOpen = true;
+            store.dispatch(showModal({type, props: {closeable: false, origin: session.origin, isValid, dappRequestId, ...props}}));
+        };
+        try {
+            if (method === 'wallet_switchEthereumChain') {
+                const value = params[0]?.chainId;
+                if (typeof value !== 'string' || !/^0x[0-9a-f]+$/i.test(value)) throw new Error('Invalid chain.');
+                const network = getChainByChainIdNum(Number(value));
+                if (!network || !getNetworkForChainId(network.chainId)) {
+                    finish(null, {code: 4902, message: 'Unsupported chain id.'});
+                } else if (network.chainId === chainId) {
+                    finish(null);
+                } else {
+                    openModal(ModalTypes.DAPP_NETWORK, {network, onReject: reject, onAccept: async () => {
+                        if (!isValid()) return reject();
+                        // Keep the approved session valid during the synchronous store update.
+                        session.chainId = network.chainId;
+                        try {
+                            await store.dispatch(setNetwork(network));
+                            this.sendConfig(session);
+                            finish(null, null, true);
+                        } catch (error) {
+                            this.endSession(session);
                         }
-                    }
-
-                    return {
-                        id: id,
-                        jsonrpc: '2.0',
-                        result: result,
-                    }
+                    }});
                 }
-                const respond = (request, result, error) => {
-                    const {id} = request;
-                    const response = buildRPCResponse(id, result, error);
-                    sourceFrame.postMessage(JSON.stringify(response), this.targetOrigin);
+            } else if (method === 'personal_sign') {
+                const [message, address] = params;
+                if (typeof message !== 'string' || !/^0x(?:[0-9a-f]{2})*$/i.test(message) ||
+                    typeof address !== 'string' || address.toLowerCase() !== session.address.toLowerCase()) {
+                    throw new Error('Invalid signing parameters.');
                 }
-
-                const data = JSON.parse(event.data);
-                if (data.type === 'connect') {
-                    // Ignore?
+                openModal(ModalTypes.PERSONAL_SIGN, {
+                    message: Buffer.from(message.slice(2), 'hex').toString('utf8'),
+                    onAccept: signature => signature ? finish(signature, null, true) :
+                        finish(null, {code: -32603, message: 'Signing failed.'}, true),
+                    onReject: reject
+                });
+            } else {
+                const transaction = params[0];
+                if (!transaction || typeof transaction !== 'object' || Array.isArray(transaction) ||
+                    (transaction.from && transaction.from.toLowerCase() !== session.address.toLowerCase())) {
+                    throw new Error('Invalid transaction parameters.');
                 }
-                else if(data.type === 'wallet_sendDomainMetadata'){
-                    this.projectMetadata = data.metadata;
-                }
-                else if(data.type === 'request') {
-                    const request = data.request;
-                    const {id, method, params} = request;
-
-                    try {
-                        switch (method) {
-                            case 'wallet_switchEthereumChain': {
-                                const [targetChain] = params;
-                                let {chainId} = targetChain;
-                                chainId = parseInt(chainId, 16);
-                                const network = getChainByChainIdNum(chainId);
-
-                                if (network === null) {
-                                    respond(request, null, {
-                                        code: -32000,
-                                        message: 'Unsupported chain id',
-                                    });
-                                    break;
-                                }
-
-                                // TODO set network
-                                await store.dispatch(setNetwork(network));
-                                respond(request, true);
-                                break;
-                            }
-                            case 'eth_requestAccounts': {
-                                respond(request, [selectedAddress]);
-                                break;
-                            }
-                            case 'eth_sign': {
-                                const [address, message] = params;
-                                const decodedMessage = Buffer.from(message.replace('0x', ''), 'hex').toString('utf8');
-
-                                // TODO need to show the modal here...
-                                console.log('eth_sign', decodedMessage);
-                                // store.dispatch(showModal(ModalTypes.PERSONAL_SIGN, {
-                                //     wallet: selectedIdentity,
-                                //     chainInfo: network,
-                                //     projectMetadata: projectMetadata,
-                                //     message: decodedMessage,
-                                //     onAccept: async (signedMessage) => {
-                                //         respond(request, signedMessage);
-                                //     },
-                                //     onReject: () => {
-                                //         respond(request, null, {
-                                //             code: 4001,
-                                //             message: 'User rejected the request.',
-                                //         });
-                                //     }
-                                // }))
-                                break;
-                            }
-                            case 'personal_sign': {
-                                const [message, address] = params;
-                                const decodedMessage = Buffer.from(message.replace('0x', ''), 'hex').toString('utf8');
-                                console.log('personal_sign', decodedMessage);
-                                store.dispatch(showModal({
-                                    type: ModalTypes.PERSONAL_SIGN,
-                                    props: {
-                                        message: decodedMessage,
-                                        onAccept: async (signedMessage) => {
-
-                                            store.dispatch(hideModal());
-                                            respond(request, signedMessage);
-                                        },
-                                        onReject: () => {
-                                            store.dispatch(hideModal());
-                                            respond(request, null, {
-                                                code: 4001,
-                                                message: 'User rejected the request.',
-                                            });
-                                        }
-                                    }
-                                }));
-                                break;
-                            }
-                            case 'eth_sendTransaction': {
-                                const [transaction] = params;
-                                window.transaction = transaction;
-                                store.dispatch(createTransactionRequest({
-                                    txData: transaction,
-                                    txType: TxType.SmartContract
-                                }, {
-                                    onAccept: async (txHash) => {
-                                        respond(request, txHash);
-                                    },
-                                    onReject: () => {
-                                        respond(request, null, {
-                                            code: 4001,
-                                            message: 'User rejected the request.',
-                                        });
-                                    }
-                                }));
-                            }
-                        }
-                    } catch (e) {
-                        respond(request, null, {
-                            code: -32603,
-                            message: 'Internal JSON-RPC error.',
-                        });
-                    }
-                }
+                await store.dispatch(createTransactionRequest({txData: transaction, txType: TxType.SmartContract}, {
+                    origin: session.origin, isValid, dappRequestId,
+                    onCreated: id => { transactionId = id; modalOpen = true; },
+                    onAccept: hash => finish(hash),
+                    // The transaction modal/action closes itself.
+                    onReject: () => finish(null, {code: 4001, message: 'User rejected the request.'}),
+                    onError: () => finish(null, {code: -32603, message: 'Unable to prepare the transaction.'})
+                }));
             }
-            catch (e){
-
-            }
-        }, false);
+        } catch (error) {
+            finish(null, {code: -32602, message: 'Invalid request parameters.'}, true);
+        }
     }
 }

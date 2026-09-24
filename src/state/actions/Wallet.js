@@ -86,8 +86,8 @@ export function unlockWallet(strategy, password, data){
                             }
                         }));
                     }
-                    else if(window.afterUnlock.includes('show-dapp')){
-                        const dappUrl = window.afterUnlock.replace('show-dapp-', '');
+                    else if(window.afterUnlock.startsWith('show-dapp-')){
+                        const dappUrl = window.afterUnlock.slice('show-dapp-'.length);
 
                         dispatch(showModal({
                             type: ModalTypes.DAPP,
@@ -113,6 +113,8 @@ export function unlockWallet(strategy, password, data){
 
 export function logout(){
     return async function(dispatch, getState){
+        window.Web3Bridge?.endSession();
+
         //Clear the wallet
         Wallet.setWallet(null);
 

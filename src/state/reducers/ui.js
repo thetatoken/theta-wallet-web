@@ -28,7 +28,9 @@ export const uiReducer = (state = INITIAL_STATE, action) => {
         }
         case actionTypes.HIDE_MODAL:{
             return Object.assign({}, state, {
-                modals: state.modals.slice(0, -1)
+                modals: action.dappRequestId
+                    ? state.modals.filter(modal => modal.props?.dappRequestId !== action.dappRequestId)
+                    : state.modals.slice(0, -1)
             });
         }
         case actionTypes.HIDE_MODALS:{

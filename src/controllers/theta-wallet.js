@@ -241,9 +241,9 @@ export default class ThetaWalletController extends EventEmitter {
     }
 
     async _addTransactionRequest(args) {
-        const {transactionRequest} = args;
+        const {transactionRequest, onCreated, isValid} = args;
 
-        const result = await this.transactionsController.addTransactionRequest(transactionRequest);
+        const result = await this.transactionsController.addTransactionRequest(transactionRequest, {onCreated, isValid});
 
         return result;
     }
