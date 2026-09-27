@@ -16,7 +16,17 @@ export class DAppModal extends React.Component {
         this.state = {approved: false, error: null};
     }
 
-    componentDidMount() { this.mounted = true; }
+    componentDidMount() {
+        this.mounted = true;
+        // The wallet-owned CTA supplies a one-use capability. Its consumed state
+        // survives modal remounts because Redux retains the same callback.
+        if (window.top === window.self &&
+            typeof this.props.consumeEliteBoosterConnection === 'function' &&
+            getDAppUrl(this.props.uri)?.href === 'https://elite-booster.thetatoken.org/' &&
+            this.props.consumeEliteBoosterConnection() === true) {
+            this.onConnect();
+        }
+    }
 
     componentDidUpdate(previousProps) {
         if (previousProps.uri !== this.props.uri) {

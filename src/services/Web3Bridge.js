@@ -16,7 +16,7 @@ export default class Web3Bridge {
         this.listener = event => this.handleMessage(event);
     }
 
-    // Called only after the user approves the displayed browser-derived origin.
+    // Called after connection approval or an explicit wallet-owned Booster CTA click.
     startSession(frame, uri, onEnd) {
         this.endSession();
         const url = getDAppUrl(uri);
