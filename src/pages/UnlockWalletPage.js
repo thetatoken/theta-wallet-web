@@ -25,7 +25,13 @@ import {
 import DropZone from '../components/DropZone'
 import {formatNativeTokenAmountToLargestUnit, truncate} from "../utils/Utils";
 import MDSpinner from "react-md-spinner";
-import {isTrezorDiagnosticsEnabled} from "../keyrings/trezor/diagnostics";
+import {
+    createTrezorConnectionDiagnosticReport,
+    getTrezorBrowserConnectionContext,
+    isTrezorDiagnosticsEnabled,
+    TREZOR_DIAGNOSTIC_CONNECTION_TIMEOUT_CODE,
+    TREZOR_DIAGNOSTIC_CONNECTION_TIMEOUT_MS,
+} from "../keyrings/trezor/diagnostics";
 
 const classNames = require('classnames');
 
@@ -483,12 +489,28 @@ class UnlockWalletViaColdWalletUnconnected extends React.Component {
     }
 
     connectHardware = async (hardware, page, derivationPath) => {
+        const connectionDiagnosticsEnabled = this.diagnosticsEnabled
+            && hardware === 'trezor'
+            && page === 0;
+        let connectionCompleted = false;
         this.setState({
             loading: true,
+            ...(connectionDiagnosticsEnabled ? {
+                diagnosticReport: null,
+                diagnosticsCopied: false,
+            } : {}),
         });
 
         try {
-            const hardwareAccounts = await this.props.dispatch(connectHardware(hardware, page, derivationPath));
+            const hardwareAccounts = await this.props.dispatch(connectHardware(
+                hardware,
+                page,
+                derivationPath,
+                connectionDiagnosticsEnabled
+                    ? TREZOR_DIAGNOSTIC_CONNECTION_TIMEOUT_MS
+                    : null,
+            ));
+            connectionCompleted = true;
 
             this.setState({
                 hardwareAccounts: hardwareAccounts
@@ -517,7 +539,23 @@ class UnlockWalletViaColdWalletUnconnected extends React.Component {
             }
         }
         catch (e) {
-            this.setState({diagnosticsRunning: false});
+            if (connectionDiagnosticsEnabled && !connectionCompleted) {
+                const browserContext = await getTrezorBrowserConnectionContext();
+                this.setState({
+                    diagnosticReport: createTrezorConnectionDiagnosticReport({
+                        parentPath: derivationPath,
+                        browserContext,
+                        errorCode: e && e.code,
+                        settledWithinLimit:
+                            e && e.code !== TREZOR_DIAGNOSTIC_CONNECTION_TIMEOUT_CODE,
+                    }),
+                    diagnosticsRunning: false,
+                    diagnosticsCopied: false,
+                });
+            }
+            else {
+                this.setState({diagnosticsRunning: false});
+            }
         }
         finally {
             setTimeout(() => {
@@ -708,9 +746,11 @@ class UnlockWalletViaColdWalletUnconnected extends React.Component {
                 {
                     this.diagnosticsEnabled && this.state.hardware === 'trezor' &&
                     <div className="TrezorDiagnostics__notice">
-                        Diagnostics are enabled. After connection, one read-only address check will require confirmation on your Trezor. The report excludes keys, addresses, and device identifiers.
+                        Diagnostics are enabled. Connection failures and timeouts will produce a safe report. After connection, one read-only address check will require confirmation on your Trezor. The report excludes keys, addresses, and device identifiers.
                     </div>
                 }
+
+                {this.state.hardware === 'trezor' && this.renderDiagnosticPanel()}
 
                 <div className="UnlockColdWalletLedger__choose-derivation-path">
                     {

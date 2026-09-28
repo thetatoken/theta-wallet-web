@@ -71,10 +71,16 @@ class WalletTokenListItem extends React.Component {
                        onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
+                           let connectionAvailable = true;
                            store.dispatch(showModal({
                                type: ModalTypes.DAPP,
                                props: {
                                    uri: 'https://elite-booster.thetatoken.org',
+                                   consumeEliteBoosterConnection: () => {
+                                       const available = connectionAvailable;
+                                       connectionAvailable = false;
+                                       return available;
+                                   },
                                    closeable: false
                                }
                            }));
@@ -84,7 +90,7 @@ class WalletTokenListItem extends React.Component {
                             Elite Booster
                         </div>
                         <div className={'EliteBoosterCTA__description'}>
-                            Earn Boosted EdgeCloud rewards by locking TFUEL.
+                            Connect your wallet to Theta's Elite Booster to lock TFUEL and earn boosted EdgeCloud rewards.
                         </div>
                         <div className={'EliteBoosterCTA__button'}>
                             Lock TFUEL

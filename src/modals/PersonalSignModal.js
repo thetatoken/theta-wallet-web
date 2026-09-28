@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as thetajs from '@thetalabs/theta-js';
 import './TxConfirmationModal.css';
 import connect from "react-redux/es/connect/connect";
@@ -25,7 +25,7 @@ import config from "../Config";
 import TemporaryState from "../services/TemporaryState";
 import tns from "../libs/tns"
 import { useSettings } from "../components/SettingContext";
-import {ProjectInfoCard} from "../components/ProjectInfoCard";
+import DAppOrigin from '../components/DAppOrigin';
 
 const renderDataRow = (title, value, suffix = '', isLarge = false) => {
     suffix = suffix ? suffix : '';
@@ -56,24 +56,24 @@ const renderDataRow = (title, value, suffix = '', isLarge = false) => {
     return null;
 };
 
-const PersonalSignModal = ({selectedAddress, transactionRequest, assets, network, dispatch, onAccept, onReject, message}) => {
-    const [password, setPassword] = useState(
-        config.isEmbedMode ? TemporaryState.getWalletData().password : ''
-    );
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setPassword(value);
-    };
+const PersonalSignModal = ({selectedAddress, transactionRequest, assets, network, dispatch, onAccept, onReject, message, origin, isValid}) => {
+    const [busy, setBusy] = useState(false);
+    const inFlight = useRef(false);
 
     const onConfirmClick = async () => {
+        if (inFlight.current || (isValid && !isValid())) return;
+        inFlight.current = true;
+        setBusy(true);
         const signedMessage = await store.dispatch(executeSignMessage(message));
+        inFlight.current = false;
+        setBusy(false);
         if(onAccept){
             onAccept(signedMessage);
         }
     }
 
     const onRejectClick = () => {
+        if (inFlight.current) return;
         if(onReject){
             onReject();
         }
@@ -92,12 +92,7 @@ const PersonalSignModal = ({selectedAddress, transactionRequest, assets, network
     return (
         <Modal closeable={false}>
             <div className="TxConfirmationModal">
-                {
-                    window.Web3Bridge.projectMetadata &&
-                    <ProjectInfoCard metadata={window.Web3Bridge.projectMetadata}
-                                     chainInfo={network}
-                    />
-                }
+                {origin && <DAppOrigin origin={origin}/>}
                 <div className="ModalTitle">
                     Sign Message
                 </div>
@@ -114,7 +109,7 @@ const PersonalSignModal = ({selectedAddress, transactionRequest, assets, network
                                 size={'large'}
                                 onClick={onRejectClick}
                                 borderless centered/>
-                    <GradientButton title={'Confirm'}
+                    <GradientButton title={'Confirm'} disabled={busy || (isValid && !isValid())}
                                     className={'ConfirmTransactionPage__confirm-button'}
                                     onClick={onConfirmClick}
                     />

@@ -1,13 +1,17 @@
 /** @jest-environment node */
 
 import {
+    createTrezorConnectionDiagnosticReport,
     createTrezorDiagnosticReport,
+    getTrezorBrowserConnectionContext,
     isTrezorDiagnosticsEnabled,
     normalizeDiagnosticAddress,
     sanitizeDiagnosticBuildVersion,
     sanitizeDiagnosticErrorCode,
     sanitizeDiagnosticPath,
+    TREZOR_DIAGNOSTIC_CONNECTION_TIMEOUT_CODE,
     TREZOR_CONNECT_VERSION,
+    withTrezorDiagnosticConnectionTimeout,
 } from './diagnostics';
 
 const installedTrezorConnectVersion = require('@trezor/connect-web/package.json').version;
@@ -54,12 +58,19 @@ describe('Trezor diagnostic report helpers', () => {
 
     it('allowlists error codes and rejects arbitrary text', () => {
         expect(sanitizeDiagnosticErrorCode('Device_Disconnected')).toBe('Device_Disconnected');
+        expect(sanitizeDiagnosticErrorCode('Desktop_ConnectionMissing')).toBe(
+            'Desktop_ConnectionMissing',
+        );
+        expect(sanitizeDiagnosticErrorCode(TREZOR_DIAGNOSTIC_CONNECTION_TIMEOUT_CODE)).toBe(
+            TREZOR_DIAGNOSTIC_CONNECTION_TIMEOUT_CODE,
+        );
         expect(sanitizeDiagnosticErrorCode('customer-specific secret')).toBe('UNKNOWN');
         expect(sanitizeDiagnosticErrorCode(undefined)).toBe('UNKNOWN');
     });
 
     it('allows only derivation-path syntax in report paths', () => {
         expect(sanitizeDiagnosticPath("m/44'/60'/0'/0/0")).toBe("m/44'/60'/0'/0/0");
+        expect(sanitizeDiagnosticPath("m/44'/60'/0'/0/")).toBe("m/44'/60'/0'/0");
         expect(sanitizeDiagnosticPath('m/44h/60h/0h/0/0')).toBe('m/44h/60h/0h/0/0');
         expect(sanitizeDiagnosticPath('sensitive path text')).toBe('UNKNOWN');
         expect(sanitizeDiagnosticPath(null)).toBe('UNKNOWN');
@@ -77,6 +88,109 @@ describe('Trezor diagnostic report helpers', () => {
 
     it('reports the installed Trezor Connect version', () => {
         expect(TREZOR_CONNECT_VERSION).toBe(installedTrezorConnectVersion);
+    });
+
+    it('collects only safe browser connection capabilities', async () => {
+        const query = jest.fn().mockResolvedValue({state: 'denied'});
+        const context = await getTrezorBrowserConnectionContext({
+            permissions: {query},
+            usb: {privateDeviceDetails: 'sensitive'},
+            privateBrowserProperty: 'sensitive',
+        });
+
+        expect(query).toHaveBeenCalledWith({name: 'local-network-access'});
+        expect(context).toEqual({
+            coreMode: 'auto',
+            localNetworkPermission: 'denied',
+            webUsbAvailable: true,
+        });
+        expect(JSON.stringify(context)).not.toContain('sensitive');
+    });
+
+    it('reports unsupported local network permission checks safely', async () => {
+        const context = await getTrezorBrowserConnectionContext({
+            permissions: {
+                query: jest.fn().mockRejectedValue(new Error('private browser error')),
+            },
+        });
+
+        expect(context).toEqual({
+            coreMode: 'auto',
+            localNetworkPermission: 'unsupported',
+            webUsbAvailable: false,
+        });
+    });
+
+    it('creates a connection failure report without raw error or browser details', () => {
+        const report = createTrezorConnectionDiagnosticReport({
+            parentPath: "m/44'/60'/0'/0",
+            browserContext: {
+                coreMode: 'sensitive-mode',
+                localNetworkPermission: 'denied',
+                webUsbAvailable: true,
+                browserDetails: 'sensitive-browser-details',
+            },
+            errorCode: 'Browser_LocalNetworkPermissionMissing',
+            errorMessage: 'sensitive-error-message',
+            settledWithinLimit: true,
+        });
+        const serialized = JSON.stringify(report);
+
+        expect(report).toEqual({
+            schemaVersion: 1,
+            reportType: 'connection',
+            appVersion: '0.1.0',
+            buildVersion: 'local',
+            trezorConnectVersion: installedTrezorConnectVersion,
+            mode: 'opt-in',
+            status: 'error',
+            parentPath: "m/44'/60'/0'/0",
+            connection: {
+                coreMode: 'auto',
+                localNetworkPermission: 'denied',
+                webUsbAvailable: true,
+                settledWithinLimit: true,
+            },
+            error: {
+                stage: 'getPublicKey',
+                code: 'Browser_LocalNetworkPermissionMissing',
+            },
+        });
+        expect(serialized).not.toContain('sensitive');
+    });
+
+    it('bounds a diagnostic-only connection attempt', async () => {
+        jest.useFakeTimers();
+        const cancelConnection = jest.fn();
+        const result = withTrezorDiagnosticConnectionTimeout(
+            new Promise(() => {}),
+            1000,
+            cancelConnection,
+        );
+
+        jest.advanceTimersByTime(1000);
+        await expect(result).rejects.toMatchObject({
+            code: TREZOR_DIAGNOSTIC_CONNECTION_TIMEOUT_CODE,
+        });
+        expect(cancelConnection).toHaveBeenCalledWith(expect.objectContaining({
+            code: TREZOR_DIAGNOSTIC_CONNECTION_TIMEOUT_CODE,
+        }));
+        jest.useRealTimers();
+    });
+
+    it('clears the diagnostic timeout when a connection settles', async () => {
+        jest.useFakeTimers();
+        const cancelConnection = jest.fn();
+        const result = withTrezorDiagnosticConnectionTimeout(
+            Promise.resolve('connected'),
+            1000,
+            cancelConnection,
+        );
+
+        await expect(result).resolves.toBe('connected');
+        jest.advanceTimersByTime(1000);
+        expect(cancelConnection).not.toHaveBeenCalled();
+        jest.useRealTimers();
     });
 
     it('reports a passing verification with only explicit fields', () => {

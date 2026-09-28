@@ -44,14 +44,16 @@ export default class TransactionsController extends EventEmitter{
         });
     }
 
-    _addTransactionRequest(request, resolve, reject){
+    _addTransactionRequest(request, resolve, reject, isValid){
         const transactionRequests = this._getTransactionRequests();
         transactionRequests.push(request);
         this._setTransactionRequests(transactionRequests);
         this.pendingTransactionRequests.set(request.id, {
             request: request,
             resolve,
-            reject
+            reject,
+            isValid,
+            approving: false
         });
 
         return true;
@@ -64,7 +66,7 @@ export default class TransactionsController extends EventEmitter{
         });
 
         this._setTransactionRequests(transactionRequests);
-        delete this.pendingTransactionRequests[transactionRequestId];
+        this.pendingTransactionRequests.delete(transactionRequestId);
 
         return true;
     }
@@ -82,7 +84,8 @@ export default class TransactionsController extends EventEmitter{
      *
      * @returns {Object}
      */
-    async addTransactionRequest(transactionRequest) {
+    async addTransactionRequest(transactionRequest, {onCreated, isValid} = {}) {
+        if (isValid && !isValid()) throw new Error('The dApp session ended.');
         const fromAddress = this.preferencesController.getSelectedAddress();
         const transaction = thetajs.transactions.transactionFromJson(transactionRequest);
         transaction.setFrom(fromAddress);
@@ -104,15 +107,18 @@ export default class TransactionsController extends EventEmitter{
             transactionRequest.dependencies = [transactionDepJson]
         }
 
+        if (isValid && !isValid()) throw new Error('The dApp session ended.');
         return new Promise((resolve, reject) => {
+            const id = nanoid();
             this._addTransactionRequest(Object.assign({}, transactionRequest, {
-                id: nanoid(),
+                id,
                 txData: {
                     ...transactionRequest.txData,
                     ..._.pick(gasFeeData, ['gasPrice', 'gasLimit'])
                 },
                 gasFeeData: gasFeeData
-            }), resolve, reject);
+            }), resolve, reject, isValid);
+            if (onCreated) onCreated(id);
         });
     }
 
@@ -125,37 +131,49 @@ export default class TransactionsController extends EventEmitter{
     async approveTransactionRequest(transactionRequestId, onDependencySent) {
         const provider = this._getProvider();
         const approval = this.pendingTransactionRequests.get(transactionRequestId);
-        const transactionRequest = approval.request;
-        const fromAddress = this.preferencesController.getSelectedAddress();
-        const transactionDepJson = (transactionRequest.dependencies || [])[0];
-        if(transactionDepJson){
-            const transactionDep = thetajs.transactions.transactionFromJson(transactionDepJson);
-            await this.signAndSendTransaction(fromAddress, transactionDep, provider);
+        if (!approval || approval.approving || (approval.isValid && !approval.isValid())) {
+            throw new Error('This transaction request is no longer available.');
+        }
+        approval.approving = true;
+        try {
+            const transactionRequest = approval.request;
+            const fromAddress = this.preferencesController.getSelectedAddress();
+            const transactionDepJson = (transactionRequest.dependencies || [])[0];
+            if(transactionDepJson){
+                const transactionDep = thetajs.transactions.transactionFromJson(transactionDepJson);
+                await this.signAndSendTransaction(fromAddress, transactionDep, provider);
 
-            if(onDependencySent){
-                onDependencySent();
+                if(onDependencySent){
+                    onDependencySent();
+                }
+            }
+            const transaction = thetajs.transactions.transactionFromJson(transactionRequest);
+            const result = await this.signAndSendTransaction(fromAddress, transaction, provider);
+
+            if(result){
+                this._removeTransactionRequest(transactionRequestId);
+
+                // Refresh balances because we just sent a tx
+                this._updateAccounts();
+                setTimeout(async () => {
+                    await this._detectNewTokens();
+                    this._updateAccounts();
+                }, 2000);
+
+                approval.resolve(result);
+
+                return result;
+            }
+
+            return false;
+        } finally {
+            approval.approving = false;
+            // A confirmed signing operation cannot be cancelled retroactively.
+            // If it fails after disconnect, remove the now-unusable request.
+            if (approval.isValid && !approval.isValid() && this.pendingTransactionRequests.has(transactionRequestId)) {
+                await this.rejectTransactionRequest(transactionRequestId);
             }
         }
-        const transaction = thetajs.transactions.transactionFromJson(transactionRequest);
-        const result = await this.signAndSendTransaction(fromAddress, transaction, provider);
-
-        if(result){
-            const approval = this.pendingTransactionRequests.get(transactionRequestId);
-            this._removeTransactionRequest(transactionRequestId);
-
-            // Refresh balances because we just sent a tx
-            this._updateAccounts();
-            setTimeout(async () => {
-                await this._detectNewTokens();
-                this._updateAccounts();
-            }, 2000);
-
-            approval.resolve(result);
-
-            return result;
-        }
-
-        return true;
     }
 
     async executeSignMessage(message) {
@@ -172,9 +190,11 @@ export default class TransactionsController extends EventEmitter{
      * @returns {Object}
      */
     async rejectTransactionRequest(transactionRequestId) {
-        this._removeTransactionRequest(transactionRequestId);
         const approval = this.pendingTransactionRequests.get(transactionRequestId);
-        // approval.reject(new Error('User rejected transaction.'));
+        if (approval?.approving) return false;
+        this._removeTransactionRequest(transactionRequestId);
+        // Settle the waiting caller without an unhandled promise rejection.
+        if (approval) approval.resolve(false);
 
         return true;
     }

@@ -170,38 +170,41 @@ export function resetTransactionsState(){
     }
 }
 
-export function createTransactionRequest(transactionRequest, opts) {
+export function createTransactionRequest(transactionRequest, opts = {}) {
     return async (dispatch) => {
         try {
-            const result = Wallet.controller.RPCApi.addTransactionRequest({
-                transactionRequest: transactionRequest
-            });
-
-            dispatch(showModal({
-                type: ModalTypes.CONFIRM_TRANSACTION,
-                props: {
-                    closeable: false,
-                    onReject: opts && opts.onReject,
-                    onAccept: opts && opts.onAccept,
+            // This promise settles on approval/rejection, not on queue insertion.
+            return await Wallet.controller.RPCApi.addTransactionRequest({
+                transactionRequest,
+                isValid: opts.isValid,
+                onCreated: id => {
+                    if (opts.onCreated) opts.onCreated(id);
+                    dispatch(showModal({
+                        type: ModalTypes.CONFIRM_TRANSACTION,
+                        props: {
+                            closeable: false, transactionRequestId: id,
+                            origin: opts.origin, isValid: opts.isValid, dappRequestId: opts.dappRequestId,
+                            onReject: opts.onReject, onAccept: opts.onAccept,
+                        }
+                    }));
                 }
-            }));
-
-            return result;
-        }
-        catch (error) {
+            });
+        } catch (error) {
+            if (opts.onError) opts.onError(error);
+            else Alerts.showError('Unable to prepare the transaction.');
             return false;
         }
     };
 }
 
-export function rejectTransactionRequest(transactionRequestId) {
+export function rejectTransactionRequest(transactionRequestId, dappRequestId) {
     return async (dispatch) => {
         try {
             const result = Wallet.controller.RPCApi.rejectTransactionRequest({
                 transactionRequestId: transactionRequestId
             });
 
-            dispatch(hideModal());
+            dispatch(hideModal(dappRequestId));
 
             return result;
         }
@@ -211,7 +214,7 @@ export function rejectTransactionRequest(transactionRequestId) {
     };
 }
 
-export function approveTransactionRequest(transactionRequestId, password) {
+export function approveTransactionRequest(transactionRequestId, password, dappRequestId) {
     return async (dispatch, getState) => {
         try {
             const transactionRequest = Wallet.controller.transactionsController.pendingTransactionRequests.get(transactionRequestId);
@@ -247,7 +250,9 @@ export function approveTransactionRequest(transactionRequestId, password) {
                     }
                 }
             });
-            dispatch(hideModalsExceptDapp());
+            if (result?.hash) {
+                dispatch(dappRequestId ? hideModal(dappRequestId) : hideModalsExceptDapp());
+            }
 
             if(window.location.href.includes('stakes')){
                 const selectedAddress = _.get(getState(), 'thetaWallet.selectedAddress');

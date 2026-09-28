@@ -16,9 +16,10 @@ export function showModal(modal){
     }
 }
 
-export function hideModal(){
+export function hideModal(dappRequestId){
     return {
-        type: actionTypes.HIDE_MODAL
+        type: actionTypes.HIDE_MODAL,
+        dappRequestId
     }
 }
 

@@ -18,5 +18,6 @@ export default {
     COLLECTIBLES: 'collectibles',
     TRACK_COLLECTIBLE: 'track-collectible',
     DAPP: 'dapp',
+    DAPP_NETWORK: 'dapp-network',
     PERSONAL_SIGN: 'personal-sign',
 };

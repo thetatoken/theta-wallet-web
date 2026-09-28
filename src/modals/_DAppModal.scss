@@ -104,3 +104,17 @@
     }
   }
 }
+.DAppOrigin {
+  margin: 12px 0 24px;
+  text-align: center;
+  color: #fff;
+  strong { display: block; margin-top: 8px; overflow-wrap: anywhere; }
+}
+
+.DAppApproval {
+  min-height: 0;
+  max-width: calc(100vw - 32px);
+  color: #fff;
+  p { margin: 8px 0 24px; line-height: 1.5; text-align: center; }
+  .TxConfirmationModal__footer .FlatButton { height: 50px; }
+}

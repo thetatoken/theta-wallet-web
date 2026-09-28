@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as thetajs from '@thetalabs/theta-js';
 import './TxConfirmationModal.css';
 import connect from "react-redux/es/connect/connect";
@@ -25,7 +25,7 @@ import config from "../Config";
 import TemporaryState from "../services/TemporaryState";
 import tns from "../libs/tns"
 import { useSettings } from "../components/SettingContext";
-import {ProjectInfoCard} from "../components/ProjectInfoCard";
+import DAppOrigin from '../components/DAppOrigin';
 
 const renderDataRow = (title, value, suffix = '', isLarge = false) => {
     suffix = suffix ? suffix : '';
@@ -46,13 +46,14 @@ const renderDataRow = (title, value, suffix = '', isLarge = false) => {
     return null;
 };
 
-const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, network, dispatch, onAccept, onReject}) => {
+const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, network, dispatch, onAccept, onReject, origin, dappRequestId, isValid: isRequestValid}) => {
     const { tnsEnable } = useSettings();
   
     const [password, setPassword] = useState(
         config.isEmbedMode ? TemporaryState.getWalletData().password : ''
     );
-    const [estimatedGasFee, setEstimatedGasFee] = useState(null);
+    const [busy, setBusy] = useState(false);
+    const inFlight = useRef(false);
     const [fromTns, setFromTns] = useState(false);
     const [toTns, setToTns] = useState(false);
     const [contractTns, setContractTns] = useState(false);
@@ -108,13 +109,14 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, n
     };
     
     const onConfirmClick = async () => {
-        // TODO approve the request if the password matches
-        // this.props.dispatch(createSendTransaction(this.props.network, this.props.transaction, this.state.password));
-        const transactionResult = await dispatch(approveTransactionRequest(transactionRequest.id, password));
-        console.log('transactionResult == ', transactionResult);
-        console.log('onAccept == ', onAccept);
-        console.log('transactionResult?.hash == ', transactionResult?.hash);
-
+        if (inFlight.current || !transactionRequest || (isRequestValid && !isRequestValid())) return;
+        inFlight.current = true;
+        setBusy(true);
+        const transactionResult = await dispatch(approveTransactionRequest(transactionRequest.id, password, dappRequestId));
+        if (!transactionResult?.hash) {
+            inFlight.current = false;
+            setBusy(false);
+        }
 
         if(transactionResult?.hash && onAccept) {
             await onAccept(transactionResult?.hash);
@@ -122,7 +124,8 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, n
     }
 
     const onRejectClick = () => {
-        dispatch(rejectTransactionRequest(transactionRequest.id));
+        if (inFlight.current || !transactionRequest) return;
+        dispatch(rejectTransactionRequest(transactionRequest.id, dappRequestId));
 
         if(onReject){
             onReject();
@@ -259,7 +262,8 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, n
       }, [transactionRequest, selectedAddress, tnsEnable]);
     
 
-    let isValid = Wallet.getWalletHardware() || password.length > 0;
+    let isValid = !!transactionRequest && !busy && (!isRequestValid || isRequestValid()) &&
+        (Wallet.getWalletHardware() || password.length > 0);
     let txDataRows = renderDataRows();
     let passwordRow = null;
 
@@ -282,17 +286,12 @@ const ConfirmTransactionModal = ({selectedAddress, transactionRequest, assets, n
         );
       }
 
-    console.log('ConfirmTransactionModal :: window.Web3Bridge.projectMetadata == ', window.Web3Bridge.projectMetadata);
+
 
     return (
         <Modal closeable={false}>
             <div className="TxConfirmationModal">
-                {
-                    window.Web3Bridge.projectMetadata &&
-                    <ProjectInfoCard metadata={window.Web3Bridge.projectMetadata}
-                                     chainInfo={network}
-                    />
-                }
+                {origin && <DAppOrigin origin={origin}/>}
                 <div className="ModalTitle">
                     Confirm Transaction
                 </div>
@@ -345,7 +344,9 @@ const mapStateToProps = (state, props) => {
     const selectedAddress = thetaWallet.selectedAddress;
     const identities = thetaWallet.identities;
     const accounts = thetaWallet.accounts;
-    const transactionRequest = state.thetaWallet.transactionRequests[0];
+    const transactionRequest = props.transactionRequestId
+        ? state.thetaWallet.transactionRequests.find(request => request.id === props.transactionRequestId)
+        : state.thetaWallet.transactionRequests[0];
     const tokens = thetaWallet.tokens;
     const chainId = thetaWallet.network.chainId;
 

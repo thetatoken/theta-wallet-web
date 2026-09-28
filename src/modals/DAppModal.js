@@ -1,103 +1,116 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
-import FlatButton from "../components/buttons/FlatButton";
-import Modal from "../components/Modal";
+import FlatButton from '../components/buttons/FlatButton';
+import GradientButton from '../components/buttons/GradientButton';
+import Modal from '../components/Modal';
+import DAppOrigin from '../components/DAppOrigin';
 import dappCloseIcon from '../img/icons/close-dapp@2x.png';
-import {hideModal} from "../state/actions/ui";
-import {updateAccountBalances} from "../state/actions/Wallet";
-
-const classNames = require('classnames');
+import {hideModal} from '../state/actions/ui';
+import {updateAccountBalances} from '../state/actions/Wallet';
+import {getDAppUrl} from '../services/DAppOrigin';
 
 export class DAppModal extends React.Component {
-    constructor() {
-        super();
-
+    constructor(props) {
+        super(props);
         this.frameRef = React.createRef();
-    }
-
-    sendConfigAndStartInterval = () => {
-        window.Web3Bridge.sendConfig()
-        this.interval = setInterval(() => {
-            window.Web3Bridge.sendConfig();
-        }, 10);
-        window.Web3Bridge.sendConfig()
+        this.state = {approved: false, error: null};
     }
 
     componentDidMount() {
-        window.Web3Bridge.targetFrame = this.frameRef.current;
-        window.Web3Bridge.targetOrigin = (new URL(this.props.uri)).origin;
-        this.sendConfigAndStartInterval();
+        this.mounted = true;
+        // The wallet-owned CTA supplies a one-use capability. Its consumed state
+        // survives modal remounts because Redux retains the same callback.
+        if (window.top === window.self &&
+            typeof this.props.consumeEliteBoosterConnection === 'function' &&
+            getDAppUrl(this.props.uri)?.href === 'https://elite-booster.thetatoken.org/' &&
+            this.props.consumeEliteBoosterConnection() === true) {
+            this.onConnect();
+        }
+    }
+
+    componentDidUpdate(previousProps) {
+        if (previousProps.uri !== this.props.uri) {
+            if (this.session) window.Web3Bridge.endSession(this.session);
+            else this.onEnd();
+        }
     }
 
     componentWillUnmount() {
-        if(this.interval){
-            clearInterval(this.interval);
-        }
-        window.Web3Bridge.endSession();
+        this.mounted = false;
+        clearInterval(this.interval);
+        clearTimeout(this.timeout);
+        if (this.session) window.Web3Bridge.endSession(this.session);
     }
+
+    onEnd = () => {
+        clearInterval(this.interval);
+        clearTimeout(this.timeout);
+        this.session = null;
+        this.loaded = false;
+        if (this.mounted) this.setState({approved: false});
+    };
+
+    onConnect = () => {
+        const url = getDAppUrl(this.props.uri);
+        if (!url || this.state.approved) return;
+        this.setState({approved: true, error: null}, () => {
+            this.session = window.Web3Bridge.startSession(this.frameRef.current, url.href, this.onEnd);
+            if (!this.session) {
+                this.onEnd();
+                this.setState({error: 'This wallet network does not support dApp connections. Close this dialog and select a supported network.'});
+                return;
+            }
+            window.Web3Bridge.sendConfig(this.session);
+            this.interval = setInterval(() => window.Web3Bridge.sendConfig(this.session), 50);
+            this.timeout = setTimeout(() => clearInterval(this.interval), 15000);
+        });
+    };
+
+    onLoad = () => {
+        // A new iframe document requires fresh consent. Cross-origin redirects
+        // never receive config because postMessage targets the approved origin.
+        if (this.loaded) return window.Web3Bridge.endSession(this.session);
+        this.loaded = true;
+        window.Web3Bridge.sendConfig(this.session);
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => clearInterval(this.interval), 2000);
+    };
 
     onClose = () => {
+        if (this.session) window.Web3Bridge.endSession(this.session);
         this.props.dispatch(hideModal());
-
-        // Update balances
         this.props.dispatch(updateAccountBalances());
-    }
+    };
 
     render() {
-        let {uri} = this.props;
-
-        return (
-            <Fragment>
-                {/*<div className={'DAppModal__warning'}>*/}
-                {/*    Ensure that you trust this website before interacting with it.*/}
-                {/*</div>*/}
-                <Modal closeable={false}>
-                <div className={classNames('DAppModal', {
-                    [`DAppModal--size-${window.dappWindowSize}`]: true,
-                })}>
-                    <div className="DAppTitleBar">
-                        <div className={'DAppTitleBar__address'}>
-                            <div>
-                                {uri}
-                            </div>
-                        </div>
-                        <a className={'DAppTitleBar__close-button'}
-                            onClick={this.onClose}
-                        >
-                            <img src={dappCloseIcon}/>
-                        </a>
+        const url = getDAppUrl(this.props.uri);
+        if (!url || !this.state.approved) {
+            return <Modal closeable={false}>
+                <div className="TxConfirmationModal DAppApproval">
+                    <div className="ModalTitle">{url && !this.state.error ? 'Connect to Website' : 'Unable to Connect'}</div>
+                    {url ? <>
+                        <DAppOrigin origin={url.origin}/>
+                        <p>{this.state.error || 'This website will see your wallet address and can request signatures and transactions. Each request requires your approval.'}</p>
+                    </> : <p>This website does not have a supported HTTPS address.</p>}
+                    <div className="TxConfirmationModal__footer">
+                        <FlatButton title="Cancel" onClick={this.onClose} borderless centered/>
+                        {url && !this.state.error && <GradientButton title="Connect" onClick={this.onConnect}/>}
                     </div>
-                    <iframe src={uri}
-                            ref={this.frameRef}
-                            onLoad={() => {
-                                console.log('onLoad!!!!!!!!!!!!');
-                                if(!this.interval) {
-                                    this.sendConfigAndStartInterval();
-                                }
-                                // It's loaded, we can stop pushing the config
-                                setTimeout(() => {
-                                    clearInterval(this.interval);
-                                    this.interval = null;
-                                }, 2000);
-                            }}
-                    />
                 </div>
-                    </Modal>
-            </Fragment>
-        );
+            </Modal>;
+        }
+        return <Modal closeable={false}>
+            <div className={`DAppModal DAppModal--size-${window.dappWindowSize}`}>
+                <div className="DAppTitleBar">
+                    <div className="DAppTitleBar__address"><div>{url.origin}</div></div>
+                    <a className="DAppTitleBar__close-button" onClick={this.onClose} aria-label="Disconnect website">
+                        <img src={dappCloseIcon} alt="Disconnect"/>
+                    </a>
+                </div>
+                <iframe title="Connected website" src={url.href} ref={this.frameRef} onLoad={this.onLoad}/>
+            </div>
+        </Modal>;
     }
 }
 
-const mapStateToProps = (state, props) => {
-    const {thetaWallet} = state;
-    const {selectedAddress} = thetaWallet;
-    const chainId = thetaWallet.network?.chainId;
-
-    return {
-        ...props,
-        selectedAddress,
-        chainId
-    };
-};
-
-export default connect(mapStateToProps)(DAppModal);
+export default connect()(DAppModal);
